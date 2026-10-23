@@ -1,0 +1,27 @@
+# Normalise line endings so a file edited on Windows and on Colab/Linux does
+# not show up as a whole-file diff. Text files are stored LF in the repository
+# and checked out with the platform's native endings.
+* text=auto eol=lf
+
+# Python sources are always text.
+*.py   text diff=python
+*.md   text
+*.txt  text
+*.json text
+*.yml  text
+*.yaml text
+
+# Notebooks: treat as text, but they diff badly by nature.
+*.ipynb text
+
+# Binary assets - never normalise these.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.pdf  binary
+*.docx binary
+*.xlsx binary
+*.pt   binary
+*.pth  binary
+*.bin  binary
+*.safetensors binary

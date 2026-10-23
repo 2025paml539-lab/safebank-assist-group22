@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Model weights and caches - never commit these, they are large and re-downloadable
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+.cache/
+hf_cache/
+transformers_cache/
+
+# Raw dataset dumps - re-downloadable from PolyAI/banking77 with a frozen seed.
+# artifacts/results and artifacts/figures are intentionally NOT ignored:
+# they are report evidence and should be versioned.
+artifacts/data/
+
+# Local tooling
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
