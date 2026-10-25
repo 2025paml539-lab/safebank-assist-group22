@@ -77,12 +77,25 @@ class PipelineResult:
         return None
 
     def to_row(self) -> dict:
-        """Flatten into one record for the results DataFrame."""
+        """
+        Flatten into one record for the results DataFrame.
+
+        ``response`` carries the model's own customer-facing reply, not the
+        composed ``final_text``. Evaluation criterion 4 asks whether the model
+        invented an account fact, so the screen must read what the *model*
+        wrote. ``final_text`` additionally contains application-added content -
+        the ``[system lookup: ...]`` trace and the mandatory disclaimer - which
+        is provenance-controlled by us and would be a false positive if
+        screened as a model-invented fact. Use ``PipelineResult.final_text``
+        directly when you want the full composed envelope for an appendix
+        sample.
+        """
         return {
             "query": self.query,
             "ok": self.ok,
             "intent": self.response.intent if self.response else None,
             "confidence": self.response.confidence if self.response else None,
+            "response": self.response.response if self.response else None,
             "attempts": self.n_attempts,
             "needed_repair": self.needed_repair,
             "first_failure": self.first_failure.value if self.first_failure else None,

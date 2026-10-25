@@ -84,6 +84,26 @@ class TestHappyPath(unittest.TestCase):
         self.assertIn("card_arrival", self.result.attempts[0].prompt)
         self.assertIn("My card has not arrived", self.result.attempts[0].prompt)
 
+    def test_row_response_is_the_model_reply_not_the_envelope(self):
+        """
+        Criterion 4 screens what the *model* wrote.
+
+        ``final_text`` also carries the system-lookup trace and the mandatory
+        disclaimer, which the application adds. Screening those as
+        model-invented account facts would be a false positive, so ``to_row()``
+        exposes the model's own reply instead.
+        """
+        row = self.result.to_row()
+        self.assertEqual(row["response"], self.result.response.response)
+        self.assertNotIn(config.SAFETY_DISCLAIMER, row["response"])
+        self.assertNotIn("system lookup", row["response"])
+        self.assertIn(config.SAFETY_DISCLAIMER, self.result.final_text)
+
+    def test_row_response_is_none_when_run_failed(self):
+        result = build(["bad", "worse", "worst"]).run("q")
+        self.assertFalse(result.ok)
+        self.assertIsNone(result.to_row()["response"])
+
     def test_row_export_shape(self):
         row = self.result.to_row()
         for key in (
@@ -91,6 +111,7 @@ class TestHappyPath(unittest.TestCase):
             "ok",
             "intent",
             "confidence",
+            "response",
             "attempts",
             "needed_repair",
             "first_failure",

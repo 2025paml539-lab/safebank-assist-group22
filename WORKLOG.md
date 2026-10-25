@@ -302,7 +302,9 @@ SafeBankPipeline(generator, allowed_intents, strategy=...).run(query, decode) ->
 PipelineResult.to_row() -> dict
 ```
 
-`PipelineResult.to_row()` keys: `query`, `ok`, `intent`, `confidence`, `attempts`, `needed_repair`, `first_failure`, `tool`, `tool_ok`, `escalated`, `latency_ms`.
+`PipelineResult.to_row()` keys: `query`, `ok`, `intent`, `confidence`, `response`, `attempts`, `needed_repair`, `first_failure`, `tool`, `tool_ok`, `escalated`, `latency_ms`.
+
+`response` is the **model's own reply**, not the composed `final_text`. Evaluation criterion 4 asks whether the model invented an account fact, so the screen must read what the model wrote; `final_text` also carries the `[system lookup: ...]` trace and the mandatory disclaimer, which the application adds and which would be false positives. Use `PipelineResult.final_text` directly for appendix samples.
 
 **Nobody edits `schema.py`, `tools.py`, `pipeline.py`, `generator.py`, `config.py`, `intents.py` or `__init__.py` without telling Kishore first.**
 
