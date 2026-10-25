@@ -28,7 +28,7 @@ Full detail in [`ARCHITECTURE.md`](ARCHITECTURE.md). This page is the 2-minute v
 
 **Kishore's share is complete.** 195 tests pass with only pydantic installed.
 
-**Satya's share (E2/E3/E6) is complete.** That original 195 already includes the 42 prompt-seam tests in `test_prompts.py`; Satya's work added **74 more, taking the suite to 269**. Breakdown: `test_prompts.py` grew 42 → 59 (+17, the three new variants replacing the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (34). The E6 evaluation metrics (macro-F1, the results DataFrame) brought numpy, pandas and scikit-learn into the dependency set — see the install list below.
+**Satya's share (E2/E3/E6) is complete.** That original 195 already includes the 42 prompt-seam tests in `test_prompts.py`; Satya's work added **79 more, taking the suite to 274**. Breakdown: `test_prompts.py` grew 42 → 59 (+17, the three new variants replacing the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (39). The E6 evaluation metrics (macro-F1, the results DataFrame) brought numpy, pandas and scikit-learn into the dependency set — see the install list below.
 
 ---
 
@@ -41,7 +41,7 @@ python -m pip install pydantic numpy pandas scikit-learn
 python -m unittest discover -s tests -t . -v
 ```
 
-Expected: `Ran 269 tests ... OK`. No `PYTHONPATH` — the suite puts `src` on the path itself; no torch, no GPU, no network.
+Expected: `Ran 274 tests ... OK`. No `PYTHONPATH` — the suite puts `src` on the path itself; no torch, no GPU, no network.
 
 To see the whole application actually run:
 

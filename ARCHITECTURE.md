@@ -223,11 +223,11 @@ python -m unittest discover -s tests -t . -v
 ```
 
 ```
-Ran 269 tests in 2.0s
+Ran 274 tests in 3.1s
 OK
 ```
 
-Satya's E2/E3/E6 work took the suite from 195 to **269** — a net **+74**: the original 195 already included 42 prompt-seam tests in `test_prompts.py`, which grew to 59 (+17 as the three variants replaced the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (34). Running the full suite and the application now needs **pydantic, numpy, pandas and scikit-learn** — the E6 evaluation metrics (macro-F1, the results DataFrame) added the latter three. They stay out of module scope: the heavy imports in `evaluate.py` live inside the functions that use them, following the same pattern as `model_loader.py`'s torch imports, so `import safebank` never pulls them in at import time. The model stack (torch, transformers, datasets) is still needed only in Colab for the real E1/E7 runs; Vishruth pins the complete set in `requirements.txt`.
+Satya's E2/E3/E6 work took the suite from 195 to **274** — a net **+79**: the original 195 already included 42 prompt-seam tests in `test_prompts.py`, which grew to 59 (+17 as the three variants replaced the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (39). Running the full suite and the application now needs **pydantic, numpy, pandas and scikit-learn** — the E6 evaluation metrics (macro-F1, the results DataFrame) added the latter three. They stay out of module scope: the heavy imports in `evaluate.py` live inside the functions that use them, following the same pattern as `model_loader.py`'s torch imports, so `import safebank` never pulls them in at import time. The model stack (torch, transformers, datasets) is still needed only in Colab for the real E1/E7 runs; Vishruth pins the complete set in `requirements.txt`.
 
 | Module | Tests | Covers |
 |---|---|---|
@@ -238,7 +238,7 @@ Satya's E2/E3/E6 work took the suite from 195 to **269** — a net **+74**: the 
 | `test_intents.py` | 21 | label-space structure, confusable pairs, validation guard |
 | `test_prompts.py` | 59 | E2: all 4 variants, shared-block reuse across variants, dispatch |
 | `test_decoding.py` | 23 | E3: 6-config grid, per-strategy kwargs, seed self-consistency set |
-| `test_evaluate.py` | 34 | E6: 6 metrics, failure taxonomy, confusable pairs, pipeline rows |
+| `test_evaluate.py` | 39 | E6: 6 metrics, destructive-refusal routing credit, failure taxonomy, confusable pairs, pipeline rows |
 
 **Known verification gap.** The 20 `FOCUS_INTENTS` names are checked for structure (20 unique, 5 themes × 4, all confusable-pair members present) but **not** against the real BANKING77 label space, because `datasets` is not installed. `intents.validate_label_space` will raise `LabelSpaceError` naming any mismatch the first time `data_prep.py` supplies the real labels. That check must be run before any number is quoted in the report.
 
