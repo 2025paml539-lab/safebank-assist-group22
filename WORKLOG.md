@@ -29,7 +29,7 @@ This is the single source of truth for project status. If this file and `PROJECT
 |---|---|---|
 | **Kishore** | Architecture + application code | ✅ **100% — merged** |
 | **Satya** | Prompts, decoding, evaluation code | ✅ **100% code — merged (PR #1).** Experiment *runs* still pending the environment |
-| **Vishruth** | Data, model loading, environment, E1 | 🔴 **0% — not started. BLOCKS EVERYTHING.** |
+| **Vishruth** | Data, model loading, environment, E1 | 🟡 **Code done on branch `vishruth/data-prep-model-loader` (PR pending).** E1 + clean Colab T4 run still to execute |
 | **Bhavani** | Report assembly, submission | 🔴 **~5% — not started** |
 
 ### Rubric estimate (20 marks)
@@ -57,7 +57,7 @@ Only **one** buffer day. This is thin.
 | Day | Must land | Owner | State |
 |---|---|---|---|
 | **Sun 25** | PR #1 reviewed and merged · `to_row()` extended for criterion 4 · `PROJECT_PLAN.md` corrected · work log published | Kishore | ✅ **done** |
-| **Sun 25** | Colab decision locked · `data_prep.py` + `model_loader.py` started | Vishruth | 🔴 **outstanding** |
+| **Sun 25** | Colab decision locked · `data_prep.py` + `model_loader.py` started | Vishruth | ✅ **written + verified on real data / GPT-2 / Qwen (CPU); PR pending** |
 | **Sun 25** | Report §1/§5 drafted from `ARCHITECTURE.md` | Bhavani | 🔴 **outstanding** |
 | **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth | pending |
 | **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore | pending |
@@ -137,7 +137,7 @@ Kept as a record because the bug it caught is worth writing up in the report's l
 
 ## 5. PENDING — full specifications
 
-### 🔴 5.1 Vishruth — `src/safebank/data_prep.py` (NOT STARTED, blocks everything)
+### 🟡 5.1 Vishruth — `src/safebank/data_prep.py` (WRITTEN, PR pending)
 
 Load BANKING77, freeze a reproducible stratified evaluation sample, and supply a train-split example bank for few-shot.
 
@@ -190,7 +190,7 @@ The 20 `FOCUS_INTENTS` names in `intents.py` have **never been checked against t
 
 ---
 
-### 🔴 5.2 Vishruth — `src/safebank/model_loader.py` (NOT STARTED, blocks everything)
+### 🟡 5.2 Vishruth — `src/safebank/model_loader.py` (WRITTEN, PR pending)
 
 ```python
 def device_report() -> DeviceReport:
@@ -234,7 +234,7 @@ assert isinstance(HFGenerator(model, tok), TextGenerator)   # runtime_checkable 
 
 ---
 
-### 🔴 5.3 Vishruth — `requirements.txt` + Colab notebook + E1
+### 🟡 5.3 Vishruth — `requirements.txt` + Colab notebook + E1 (files written; E1 run on T4 pending)
 
 **Dependency split.** The application layer and the whole test suite depend only on **pydantic**. The evaluation code additionally uses `numpy`, `pandas` and `scikit-learn`. The model stack — `torch`, `transformers`, `datasets`, `tokenizers` — is **not** part of the local development environment and is installed in **Colab only**; `requirements.txt` should make that split explicit with comments so a reader knows what runs where.
 
@@ -385,6 +385,7 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 25 Oct | Satya: blocker fixed — `n_correctly_withheld` category + 5 regression tests. 274 tests |
 | 25 Oct | Kishore: `to_row()` extended with the model reply for evaluation criterion 4 |
 | 25 Oct | Kishore: **PR #1 approved and merged.** 276 tests on `main`. All code complete except `data_prep.py` and `model_loader.py` |
+| 25 Oct | Vishruth: `data_prep.py`, `model_loader.py`, `requirements*.txt`, `notebooks/safebank_colab.ipynb` on `vishruth/data-prep-model-loader`. 313 tests (+37; 6 real-GPT-2 tests gated by `SAFEBANK_MODEL_TESTS=1`, all pass). `validate_label_space()` **passes on the real 77 labels**. Findings: Hub dataset is script-based so `datasets` ≥4 cannot load it (loader reads the official CSVs instead); Qwen's shipped `top_k=20/top_p=0.8/rep_penalty=1.05` neutralised so E3 configs are clean; GPT-2's 1024-token window needs left-truncation for few-shot; 6 texts appear in both splits (excluded from the few-shot bank); **`SafeBankPipeline` does not forward `examples=` to `build_prompt`**, so few-shot via the pipeline uses the fallback bank (Kishore to fix) |
 
 ### Still open for the group
 1. 🔴 **Colab environment decision** — blocks E1/E2/E3 and the real E7. Proposal: Colab for all model work, local for the application layer and tests.

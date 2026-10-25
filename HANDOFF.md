@@ -24,9 +24,9 @@ Last updated: 23 Oct 2026 by Kishore (Solution Architect).
 | **E2** prompt strategies | `prompts.py` | ✅ Done, 59 tests (4 of 4) | Kishore (seam) → **Satya** |
 | **E3** decoding grid | `decoding.py` | ✅ Done, 23 tests | **Satya** |
 | **E6** metrics + failure analysis | `evaluate.py` | ✅ Done, 39 tests | **Satya** |
-| Dataset load + sampling | `data_prep.py` | ⬜ Not started | **Vishruth** |
-| **E1** model/tokenizer loading | `model_loader.py` | ⬜ Not started | **Vishruth** |
-| Pinned dependencies | `requirements.txt` | ⬜ Not started | **Vishruth** |
+| Dataset load + sampling | `data_prep.py` | 🟡 Written, PR pending | **Vishruth** |
+| **E1** model/tokenizer loading | `model_loader.py` | 🟡 Written, PR pending | **Vishruth** |
+| Pinned dependencies | `requirements.txt` | 🟡 Written, PR pending | **Vishruth** |
 | Report assembly | — | ⬜ Not started | **Bhavani** |
 
 **Kishore's and Satya's shares are both complete and merged.** **276 tests pass**, about 3 seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
