@@ -71,8 +71,11 @@ class TestStrategyRegistry(unittest.TestCase):
     def test_implemented_and_pending_do_not_overlap(self):
         self.assertFalse(set(implemented_strategies()) & set(pending_strategies()))
 
-    def test_zero_shot_is_the_implemented_one(self):
-        self.assertEqual(implemented_strategies(), (PromptStrategy.ZERO_SHOT,))
+    def test_all_four_strategies_are_implemented(self):
+        self.assertSetEqual(set(implemented_strategies()), set(PromptStrategy))
+
+    def test_nothing_is_pending(self):
+        self.assertEqual(pending_strategies(), ())
 
 
 class TestSharedBlocks(unittest.TestCase):
@@ -208,60 +211,185 @@ class TestDispatch(unittest.TestCase):
         self.assertIn("zero_shot", str(ctx.exception))
 
 
-class TestPendingVariantsAreHonestlyAbsent(unittest.TestCase):
+class TestVariantsShareTheSameBlocks(unittest.TestCase):
     """
-    The three variants Satya still owns.
+    The guarantee that makes the E2 table meaningful.
 
-    Each must raise, and the message must name what is required. A silent
-    fallback to zero-shot would produce four identical rows in the E2 accuracy
-    table and look like a finding instead of a missing implementation.
+    Every variant must embed the shared intent catalogue, tool catalogue and
+    schema contract byte-for-byte. If a variant hand-wrote its own schema text,
+    an accuracy delta could be caused by wording drift rather than by the
+    strategy, and the comparison would be meaningless.
     """
 
-    def test_few_shot_raises(self):
-        with self.assertRaises(NotImplementedError):
-            build_few_shot_prompt(QUERY, INTENTS)
+    def _all_variant_prompts(self) -> dict[PromptStrategy, str]:
+        return {
+            PromptStrategy.ZERO_SHOT: build_zero_shot_prompt(QUERY, INTENTS),
+            PromptStrategy.FEW_SHOT: build_few_shot_prompt(QUERY, INTENTS),
+            PromptStrategy.ROLE_CONTEXT: build_role_context_prompt(QUERY, INTENTS),
+            PromptStrategy.CONSTRAINT_BASED: build_constraint_based_prompt(
+                QUERY, INTENTS
+            ),
+        }
 
-    def test_role_context_raises(self):
-        with self.assertRaises(NotImplementedError):
-            build_role_context_prompt(QUERY, INTENTS)
+    def test_every_variant_embeds_the_shared_schema_contract(self):
+        contract = format_schema_contract()
+        for strategy, prompt in self._all_variant_prompts().items():
+            self.assertIn(contract, prompt, strategy)
 
-    def test_constraint_based_raises(self):
-        with self.assertRaises(NotImplementedError):
-            build_constraint_based_prompt(QUERY, INTENTS)
+    def test_every_variant_embeds_the_shared_intent_catalogue(self):
+        catalogue = format_intent_catalogue(INTENTS)
+        for strategy, prompt in self._all_variant_prompts().items():
+            self.assertIn(catalogue, prompt, strategy)
 
-    def test_dispatch_propagates_not_implemented(self):
-        for strategy in pending_strategies():
-            with self.assertRaises(NotImplementedError, msg=strategy):
-                build_prompt(strategy, QUERY, INTENTS)
+    def test_every_variant_embeds_the_shared_tool_catalogue(self):
+        catalogue = format_tool_catalogue()
+        for strategy, prompt in self._all_variant_prompts().items():
+            self.assertIn(catalogue, prompt, strategy)
 
-    def test_messages_name_the_owner(self):
-        for builder in (
-            build_few_shot_prompt,
-            build_role_context_prompt,
-            build_constraint_based_prompt,
+    def test_every_variant_contains_the_query_and_cues_json(self):
+        for strategy, prompt in self._all_variant_prompts().items():
+            self.assertIn(QUERY, prompt, strategy)
+            self.assertTrue(prompt.rstrip().endswith("JSON:"), strategy)
+
+    def test_every_variant_is_deterministic(self):
+        first = self._all_variant_prompts()
+        second = self._all_variant_prompts()
+        for strategy in PromptStrategy:
+            self.assertEqual(first[strategy], second[strategy], strategy)
+
+    def test_variants_are_distinct_from_zero_shot(self):
+        """Each strategy must actually differ, or it is not a variant."""
+        prompts = self._all_variant_prompts()
+        zero = prompts[PromptStrategy.ZERO_SHOT]
+        for strategy in (
+            PromptStrategy.FEW_SHOT,
+            PromptStrategy.ROLE_CONTEXT,
+            PromptStrategy.CONSTRAINT_BASED,
         ):
-            with self.assertRaises(NotImplementedError) as ctx:
-                builder(QUERY, INTENTS)
-            self.assertIn("Satya", str(ctx.exception))
+            self.assertNotEqual(prompts[strategy], zero, strategy)
 
-    def test_messages_state_what_is_required(self):
-        for builder in (
-            build_few_shot_prompt,
-            build_role_context_prompt,
-            build_constraint_based_prompt,
-        ):
-            with self.assertRaises(NotImplementedError) as ctx:
-                builder(QUERY, INTENTS)
-            self.assertIn("Required", str(ctx.exception))
 
-    def test_stubs_accept_their_documented_keyword_arguments(self):
-        """The signatures are the handover contract; they must be callable."""
-        with self.assertRaises(NotImplementedError):
-            build_few_shot_prompt(QUERY, INTENTS, n_examples=6)
-        with self.assertRaises(NotImplementedError):
-            build_role_context_prompt(QUERY, INTENTS, role="fraud analyst")
-        with self.assertRaises(NotImplementedError):
-            build_constraint_based_prompt(QUERY, INTENTS, forbid_prose=False)
+class TestFewShotPrompt(unittest.TestCase):
+    def test_includes_worked_examples(self):
+        prompt = build_few_shot_prompt(QUERY, INTENTS, n_examples=3)
+        # Each example ends with a JSON block; expect at least n example cues
+        # plus the final query cue.
+        self.assertGreaterEqual(prompt.count("JSON:"), 3)
+
+    def test_respects_n_examples(self):
+        few = build_few_shot_prompt(QUERY, INTENTS, n_examples=1)
+        many = build_few_shot_prompt(QUERY, INTENTS, n_examples=4)
+        self.assertLess(few.count("JSON:"), many.count("JSON:"))
+
+    def test_accepts_caller_supplied_examples(self):
+        examples = [
+            (
+                "where is my card",
+                '{"intent": "card_arrival", "confidence": 0.9, '
+                '"response": "checking", "tool_call": null, '
+                '"requires_human": false}',
+            )
+        ]
+        prompt = build_few_shot_prompt(QUERY, INTENTS, examples=examples, n_examples=1)
+        self.assertIn("where is my card", prompt)
+
+    def test_leads_with_a_confusable_pair_example(self):
+        """The fallback set must exercise the disambiguation hypothesis."""
+        prompt = build_few_shot_prompt(QUERY, INTENTS, n_examples=1)
+        self.assertIn("card_arrival", prompt)
+
+    def test_rejects_non_positive_n_examples(self):
+        with self.assertRaises(ValueError):
+            build_few_shot_prompt(QUERY, INTENTS, n_examples=0)
+
+    def test_is_deterministic(self):
+        self.assertEqual(
+            build_few_shot_prompt(QUERY, INTENTS),
+            build_few_shot_prompt(QUERY, INTENTS),
+        )
+
+
+class TestRoleContextPrompt(unittest.TestCase):
+    def test_states_the_role(self):
+        prompt = build_role_context_prompt(QUERY, INTENTS)
+        self.assertIn("tier-1 retail banking support agent", prompt)
+
+    def test_role_is_overridable(self):
+        prompt = build_role_context_prompt(QUERY, INTENTS, role="fraud analyst")
+        self.assertIn("fraud analyst", prompt)
+
+    def test_channel_is_overridable(self):
+        prompt = build_role_context_prompt(QUERY, INTENTS, channel="phone")
+        self.assertIn("phone", prompt)
+
+    def test_frames_simulated_systems_and_escalation(self):
+        prompt = build_role_context_prompt(QUERY, INTENTS).lower()
+        self.assertIn("simulated", prompt)
+        self.assertIn("colleague", prompt)
+
+    def test_still_asks_for_json(self):
+        self.assertTrue(
+            build_role_context_prompt(QUERY, INTENTS).rstrip().endswith("JSON:")
+        )
+
+
+class TestConstraintBasedPrompt(unittest.TestCase):
+    def test_has_one_rule_per_failure_kind(self):
+        """
+        The headline property: every schema.FailureKind cause is addressed by
+        an explicit constraint, so E2 and E4 line up failure-kind by failure-kind.
+        """
+        prompt = build_constraint_based_prompt(QUERY, INTENTS).lower()
+        # NO_JSON_FOUND
+        self.assertIn("single json object", prompt)
+        # MALFORMED_JSON
+        self.assertIn("valid json", prompt)
+        # SCHEMA_VIOLATION
+        self.assertIn("five fields", prompt)
+        # UNKNOWN_INTENT
+        self.assertIn("verbatim", prompt)
+
+    def test_forbid_prose_is_toggleable(self):
+        on = build_constraint_based_prompt(QUERY, INTENTS, forbid_prose=True)
+        off = build_constraint_based_prompt(QUERY, INTENTS, forbid_prose=False)
+        self.assertIn("prose", on.lower())
+        self.assertNotEqual(on, off)
+
+    def test_forbid_code_fences_is_toggleable(self):
+        on = build_constraint_based_prompt(QUERY, INTENTS, forbid_code_fences=True)
+        off = build_constraint_based_prompt(QUERY, INTENTS, forbid_code_fences=False)
+        self.assertIn("fences", on.lower())
+        self.assertNotEqual(on, off)
+
+    def test_warns_against_inventing_fields(self):
+        """extra='forbid' consequence must be stated to the model."""
+        prompt = build_constraint_based_prompt(QUERY, INTENTS).lower()
+        self.assertIn("extra", prompt)
+
+
+class TestDispatchReachesEveryVariant(unittest.TestCase):
+    """build_prompt is the only entry point pipeline.py uses."""
+
+    def test_dispatch_matches_direct_call_for_every_strategy(self):
+        self.assertEqual(
+            build_prompt(PromptStrategy.FEW_SHOT, QUERY, INTENTS),
+            build_few_shot_prompt(QUERY, INTENTS),
+        )
+        self.assertEqual(
+            build_prompt(PromptStrategy.ROLE_CONTEXT, QUERY, INTENTS),
+            build_role_context_prompt(QUERY, INTENTS),
+        )
+        self.assertEqual(
+            build_prompt(PromptStrategy.CONSTRAINT_BASED, QUERY, INTENTS),
+            build_constraint_based_prompt(QUERY, INTENTS),
+        )
+
+    def test_dispatch_forwards_keyword_arguments(self):
+        direct = build_few_shot_prompt(QUERY, INTENTS, n_examples=2)
+        viadispatch = build_prompt(
+            PromptStrategy.FEW_SHOT, QUERY, INTENTS, n_examples=2
+        )
+        self.assertEqual(direct, viadispatch)
 
 
 if __name__ == "__main__":

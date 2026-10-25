@@ -86,9 +86,9 @@ Every stage is captured in a `PipelineResult`, and `PipelineResult.to_row()` fla
 | `generator.py` | `TextGenerator` protocol, `DecodeConfig`, `FakeGenerator` | E3 surface | Kishore | **Done** |
 | `pipeline.py` | End-to-end orchestration | **E7** | Kishore | **Done** |
 | `__init__.py` | Curated public API, 44 exports | — | Kishore | **Done** |
-| `prompts.py` | 4 prompt strategies | E2 | Kishore (seam + zero-shot) → Satya (3 variants) | **Seam done**, 1 of 4 implemented |
-| `decoding.py` | Decoding grid | E3 | Satya | Not started |
-| `evaluate.py` | 6 metrics, comparison, failure analysis | E6 | Satya | Not started |
+| `prompts.py` | 4 prompt strategies | **E2** | Kishore (seam + zero-shot) → Satya (3 variants) | **Done**, 4 of 4 implemented |
+| `decoding.py` | Decoding grid | **E3** | Satya | **Done** |
+| `evaluate.py` | 6 metrics, comparison, failure analysis | **E6** | Satya | **Done** |
 | `data_prep.py` | BANKING77 load, stratified sample | — | Vishruth | Not started |
 | `model_loader.py` | HF model + tokenizer loading | E1 | Vishruth | Not started |
 
@@ -223,9 +223,11 @@ python -m unittest discover -s tests -t . -v
 ```
 
 ```
-Ran 195 tests in 0.014s
+Ran 269 tests in 2.0s
 OK
 ```
+
+Satya's E2/E3/E6 work took the suite from 195 to **269** — a net **+74**: the original 195 already included 42 prompt-seam tests in `test_prompts.py`, which grew to 59 (+17 as the three variants replaced the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (34). Running the full suite and the application now needs **pydantic, numpy, pandas and scikit-learn** — the E6 evaluation metrics (macro-F1, the results DataFrame) added the latter three. They stay out of module scope: the heavy imports in `evaluate.py` live inside the functions that use them, following the same pattern as `model_loader.py`'s torch imports, so `import safebank` never pulls them in at import time. The model stack (torch, transformers, datasets) is still needed only in Colab for the real E1/E7 runs; Vishruth pins the complete set in `requirements.txt`.
 
 | Module | Tests | Covers |
 |---|---|---|
@@ -234,7 +236,9 @@ OK
 | `test_pipeline.py` | 37 | E7: happy path, repair-retry, confidence gate, destructive refusal, hallucination guards |
 | `test_generator.py` | 22 | seam: `DecodeConfig` per-strategy kwargs, protocol conformance, fake |
 | `test_intents.py` | 21 | label-space structure, confusable pairs, validation guard |
-| `test_prompts.py` | 42 | zero-shot reference, shared blocks, dispatch, stub contracts |
+| `test_prompts.py` | 59 | E2: all 4 variants, shared-block reuse across variants, dispatch |
+| `test_decoding.py` | 23 | E3: 6-config grid, per-strategy kwargs, seed self-consistency set |
+| `test_evaluate.py` | 34 | E6: 6 metrics, failure taxonomy, confusable pairs, pipeline rows |
 
 **Known verification gap.** The 20 `FOCUS_INTENTS` names are checked for structure (20 unique, 5 themes × 4, all confusable-pair members present) but **not** against the real BANKING77 label space, because `datasets` is not installed. `intents.validate_label_space` will raise `LabelSpaceError` naming any mismatch the first time `data_prep.py` supplies the real labels. That check must be run before any number is quoted in the report.
 

@@ -18,9 +18,9 @@ Full detail in [`ARCHITECTURE.md`](ARCHITECTURE.md). This page is the 2-minute v
 | Generation seam, decode config | `generator.py` | ✅ Done, 22 tests | Kishore |
 | **E7** end-to-end pipeline | `pipeline.py` | ✅ Done, 37 tests | Kishore |
 | Package API | `__init__.py` | ✅ Done | Kishore |
-| **E2** prompt strategies | `prompts.py` | 🟡 **1 of 4 done** (`ZERO_SHOT`) | Kishore → **Satya** |
-| **E3** decoding grid | `decoding.py` | ⬜ Not started | **Satya** |
-| **E6** metrics + failure analysis | `evaluate.py` | ⬜ Not started | **Satya** |
+| **E2** prompt strategies | `prompts.py` | ✅ Done, 59 tests (4 of 4) | Kishore (seam) → **Satya** |
+| **E3** decoding grid | `decoding.py` | ✅ Done, 23 tests | **Satya** |
+| **E6** metrics + failure analysis | `evaluate.py` | ✅ Done, 34 tests | **Satya** |
 | Dataset load + sampling | `data_prep.py` | ⬜ Not started | **Vishruth** |
 | **E1** model/tokenizer loading | `model_loader.py` | ⬜ Not started | **Vishruth** |
 | Pinned dependencies | `requirements.txt` | ⬜ Not started | **Vishruth** |
@@ -28,16 +28,20 @@ Full detail in [`ARCHITECTURE.md`](ARCHITECTURE.md). This page is the 2-minute v
 
 **Kishore's share is complete.** 195 tests pass with only pydantic installed.
 
+**Satya's share (E2/E3/E6) is complete.** That original 195 already includes the 42 prompt-seam tests in `test_prompts.py`; Satya's work added **74 more, taking the suite to 269**. Breakdown: `test_prompts.py` grew 42 → 59 (+17, the three new variants replacing the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (34). The E6 evaluation metrics (macro-F1, the results DataFrame) brought numpy, pandas and scikit-learn into the dependency set — see the install list below.
+
 ---
 
 ## Verify it yourself in 30 seconds
 
+Install the current dependency set, then run the suite:
+
 ```powershell
-cd GenAI_Project1
+python -m pip install pydantic numpy pandas scikit-learn
 python -m unittest discover -s tests -t . -v
 ```
 
-Expected: `Ran 195 tests ... OK`. No install step, no `PYTHONPATH` — the suite puts `src` on the path itself. Needs **only pydantic**; no torch, no GPU, no network.
+Expected: `Ran 269 tests ... OK`. No `PYTHONPATH` — the suite puts `src` on the path itself; no torch, no GPU, no network.
 
 To see the whole application actually run:
 
@@ -47,19 +51,19 @@ python -c "import sys; sys.path.insert(0,'src'); from safebank import *; p=SafeB
 
 ---
 
-## Satya — start here
+## Satya — done
 
-Three things are waiting for you, in this order.
+All three modules are implemented and tested through the real pipeline control flow via the `TextGenerator` seam, using the scripted `FakeGenerator` in place of the model so the logic can be verified with no GPU or model runtime present. The modules are model-agnostic by design: when Vishruth's `model_loader.HFGenerator` lands, the same code produces the real E2/E3/E6 numbers in Colab with no change — `FakeGenerator` is a development fixture, never a source of reported results. Summary of what landed, for the group:
 
-**1. `prompts.py` — finish 3 of the 4 variants.** `ZERO_SHOT` is implemented as the reference. `FEW_SHOT`, `ROLE_CONTEXT` and `CONSTRAINT_BASED` raise `NotImplementedError` and each docstring already contains the intended signature, the design rationale, and numbered implementation notes. Read the docstring, then write the body.
+**1. `prompts.py` — 4 of 4 variants done.** `FEW_SHOT`, `ROLE_CONTEXT` and `CONSTRAINT_BASED` now build real prompts; none falls back to zero-shot. All reuse `format_intent_catalogue()`, `format_tool_catalogue()` and `format_schema_contract()`, so the shared blocks are byte-identical across variants and an E2 accuracy delta is attributable to the strategy. Few-shot takes train-split pairs via its `examples=` argument (offline fallback bank is clearly marked as illustrative, **not** eval data — pass Vishruth's train split for real E2 numbers). `TestPendingVariantsAreHonestlyAbsent` was replaced with content assertions; `test_prompts.py` is now 59 tests.
 
-- **Reuse** `format_intent_catalogue()`, `format_tool_catalogue()` and `format_schema_contract()`. If each variant hand-writes its own schema text, an accuracy difference in E2 could be caused by wording drift instead of by the strategy, and the comparison table stops meaning anything.
-- Few-shot examples must come from the **train split only**. Drawing them from the evaluation sample contaminates every number in E2.
-- `test_prompts.py::TestPendingVariantsAreHonestlyAbsent` asserts these still raise. **Those tests are meant to fail when you implement a variant** — replace each with real content assertions as you go.
+**2. `decoding.py` — E3 grid done.** Built on top of `DecodeConfig`/`DecodeStrategy` (not redefined), via `to_generate_kwargs()` and `.with_seed(n)`. `build_decoding_grid()` returns the 6-config grid (greedy, two temperatures, top-k, two top-p); `self_consistency_configs()` returns the seed-varied run set for criterion 6. 23 tests.
 
-**2. `decoding.py` — build the E3 grid.** `DecodeConfig` and `DecodeStrategy` already exist in `generator.py`; build the grid on top, do not redefine them. `DecodeConfig.to_generate_kwargs()` already emits only the knobs relevant to each strategy, and `.with_seed(n)` gives you the seed variation for the self-consistency measurement.
+**3. `evaluate.py` — 6 metrics + E6 failure analysis done.** Consumes `PipelineResult.to_row()` via `EvalRecord` (which pairs a row with its gold intent). All six metrics plus `analyse_failures()` and the `evaluate_run()`/`results_dataframe()` helpers. 34 tests.
 
-**3. `evaluate.py` — the 6 metrics.** Consume `PipelineResult.to_row()`; it already carries `ok`, `intent`, `confidence`, `attempts`, `needed_repair`, `first_failure`, `tool`, `tool_ok`, `escalated`, `latency_ms`. **scikit-learn 1.9.0, pandas and matplotlib are already installed locally**, so you can write and unit-test all the metrics code before any model exists — feed it `FakeGenerator` output.
+**Dependencies this adds (for Vishruth's `requirements.txt`).** The E6 evaluation metrics bring **numpy, pandas and scikit-learn** into the application-layer dependency set (macro-F1 and the results DataFrame). Please pin all three alongside pydantic and the model stack. They are imported inside the functions that use them rather than at module top, following `model_loader.py`'s torch pattern, so `import safebank` stays lightweight — but to run the suite or the evaluation they do need to be installed.
+
+**Note on the top-level API.** `__init__.py` is unchanged, so import the new modules as `from safebank.decoding import …` / `from safebank.evaluate import …`. Kishore: happy to add them to the curated exports if you'd prefer — your call since it's your file.
 
 ### Interfaces that are frozen — build against these, don't change them
 
