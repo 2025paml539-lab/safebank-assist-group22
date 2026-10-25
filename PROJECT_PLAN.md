@@ -59,9 +59,9 @@ customer query
 
 | Item | Choice | Reason |
 |---|---|---|
-| Model | `Qwen2.5-1.5B-Instruct` | Causal LM, instruction-tuned, ~3 GB fp16, fits 8 GB VRAM and Colab T4 |
+| Model | `Qwen2.5-1.5B-Instruct` | Causal LM, instruction-tuned, ~3 GB fp16, fits a free Colab T4 |
 | Naive baseline | `gpt-2` | Deliberately weak, makes E1→E2 improvement visible |
-| Schema validation | `pydantic` v2 | Already installed locally |
+| Schema validation | `pydantic` v2 | Only dependency of the application layer; no model runtime needed to test it |
 | Intent scope | **All 77 intents** kept in the label space (`config.EXPECTED_N_INTENTS = 77`) | *Corrected 25 Oct.* Fine-grained 77-way classification is the defining characteristic of BANKING77; narrowing it would weaken the dataset analysis. The curated 20 survive as `intents.FOCUS_INTENTS`, used only for the E6 failure analysis. |
 | Eval set | **385 rows** = 5 per intent × 77, stratified, `seed=42` (`config.EVAL_EXAMPLES_PER_INTENT = 5`) | *Corrected 25 Oct (was 200).* Every intent represented. Note the inference cost: see `WORKLOG.md` §5 for the budget and the agreed scope cut for E3. |
 | Tools | 3 simulated functions | No real banking data or credentials (Section 8 compliance) |
@@ -206,10 +206,10 @@ Rubric ownership: components 3, 7, half of 2 → **~6.5 marks**
 
 **Owns everything to do with dependencies and making it run anywhere.** No conceptual writing load.
 
-- Environment setup: `requirements.txt` with pinned versions, isolated venv or Colab runtime
-- Resolve the Python 3.14 / Blackwell GPU CUDA question; confirm `torch.cuda.get_device_capability()`
+- Environment setup: `requirements.txt` with pinned versions, Colab runtime for the model stack
+- Confirm the Colab GPU is usable for the chosen model; record `torch.cuda.get_device_capability()`
 - Model + tokenizer loading, device placement, caching (`model_loader.py`)
-- `data_prep.py` — BANKING77 load, 20-intent curation, stratified 200-row sample, seed freeze
+- `data_prep.py` — BANKING77 load, full 77-intent label space read from the dataset, stratified **385-row** sample (5 per intent), seed freeze, mandatory `validate_label_space()` call *(corrected 25 Oct; see `WORKLOG.md` §5.1 for the full spec)*
 - E1 baseline implementation
 - Colab packaging: pip-install cell, clean top-to-bottom run on free T4
 - Reproducibility appendix (versions, seeds, hardware)
@@ -284,6 +284,6 @@ Rubric ownership: component 8 (assembly half) → **~1 mark**
 ## 9. Open Items
 
 1. ~~**Dataset confirmation**~~ — **CLOSED.** D1 BANKING77 confirmed by the instructor. Group membership correction (Takkars Bhavani in place of Shruti Dubey) also acknowledged. SQuAD fallback no longer needed.
-2. 🔴 **Environment decision — STILL OPEN, and now the critical path.** Verified 25 Oct on Kishore's machine (Python 3.14.5): `pydantic 2.13.4`, `numpy 2.5.2`, `pandas 2.3.3`, `scikit-learn 1.9.0`, `matplotlib`, `seaborn`, `scipy` are all present, but **`torch`, `transformers`, `datasets` and `tokenizers` are absent and cannot be installed** — it is a company laptop, and Python 3.14.5 predates stable torch wheels regardless. Local venv is therefore **not available**. *Proposal: all model work in Colab, application layer and tests stay local.* This blocks E1, E2, E3 and the real E7 run. See `WORKLOG.md` §5.
+2. 🔴 **Environment decision — STILL OPEN, and now the critical path.** The local development environment provides `pydantic 2.13.4`, `numpy 2.5.2`, `pandas 2.3.3`, `scikit-learn 1.9.0`, `matplotlib`, `seaborn` and `scipy`, but **not** `torch`, `transformers`, `datasets` or `tokenizers`. A local model runtime is therefore not available. *Proposal: all model work in Colab; the application layer and tests stay local.* This blocks E1, E2, E3 and the real E7 run. See `WORKLOG.md` §5.3 for the dependency split.
 3. **BITS IDs** for all 4 members, needed for the report title page.
 4. **Lecture alignment** — Kishore/Satya to confirm the concept sections match the depth covered in CS1–CS3.

@@ -93,7 +93,7 @@ If you think one of these needs to change, message me first — `pipeline.py` an
 ## 3 open items that need a group decision
 
 **1. 🔴 Environment — this blocks E1, E2, E3 and the real E7 run.**
-`torch`, `transformers`, `datasets` and `tokenizers` are **not installed** and will not be installed on Kishore's machine (company laptop; Python 3.14.5 also predates stable wheels). Verified present: pydantic 2.13.4, numpy 2.5.2, pandas 2.3.3, scikit-learn 1.9.0, matplotlib, seaborn, scipy.
+The model stack — `torch`, `transformers`, `datasets`, `tokenizers` — is **not** part of the local development environment and runs in Colab only. Available locally: pydantic 2.13.4, numpy 2.5.2, pandas 2.3.3, scikit-learn 1.9.0, matplotlib, seaborn, scipy — so the evaluation code can be written and unit-tested locally before any model exists.
 **Proposal:** all model work runs in Colab; the application layer and tests stay local. This is Open Item 2 in `PROJECT_PLAN.md` and it is now the critical path.
 
 **2. 🟠 `PROJECT_PLAN.md` is stale — Bhavani must not quote it yet.**

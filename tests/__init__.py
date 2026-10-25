@@ -14,14 +14,13 @@ exist yet: ``decoding.py`` and ``evaluate.py`` (Satya), ``data_prep.py`` and
 
 Framework
 ---------
-Standard-library ``unittest``. pytest is not installed on the development
-machine and must not be installed, so every test here runs on a stock
-interpreter plus pydantic.
+Standard-library ``unittest``, not pytest, so every test here runs on a stock
+interpreter plus pydantic with no extra dependency.
 
 Zero model dependency
 ---------------------
-Verified on Python 3.14.5: torch, transformers, datasets and tokenizers are
-all absent. The suite still exercises the full application control flow,
+No model runtime is required: torch, transformers, datasets and tokenizers are
+not needed. The suite still exercises the full application control flow,
 because ``pipeline.SafeBankPipeline`` depends on the ``TextGenerator``
 protocol rather than on a model runtime, and ``FakeGenerator`` satisfies that
 protocol with scripted completions. This is the practical payoff of the seam

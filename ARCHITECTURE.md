@@ -108,7 +108,7 @@ class TextGenerator(Protocol):
 
 Three consequences, all of which the project depends on:
 
-1. **The application is testable with no model runtime.** Verified on this machine: Python 3.14.5 has pydantic 2.13.4, numpy, pandas and scikit-learn, but `torch`, `transformers`, `datasets` and `tokenizers` are all absent and must not be installed. The full 195-test suite still exercises the complete control flow via `FakeGenerator`.
+1. **The application is testable with no model runtime.** The local development environment provides pydantic, numpy, pandas and scikit-learn, but no `torch`, `transformers`, `datasets` or `tokenizers` — the model stack runs in Colab only. The full 195-test suite still exercises the complete control flow via `FakeGenerator`.
 2. **Teammate modules can land independently.** `model_loader.HFGenerator` drops in behind the same protocol without touching a line of the pipeline.
 3. **E3 is a data change, not a code change.** The decoding grid varies `DecodeConfig`; no branch in the pipeline knows which strategy is running.
 
@@ -216,7 +216,7 @@ The destructive-tool refusal is the control worth leading with in the demo. An L
 
 ## 9. Verification
 
-Standard-library `unittest`. pytest is not installed on the development machine and must not be installed, so the suite runs on a stock interpreter plus pydantic.
+Standard-library `unittest`, not pytest, so the suite runs on a stock interpreter plus pydantic with no extra dependency.
 
 ```
 python -m unittest discover -s tests -t . -v
@@ -287,4 +287,4 @@ The three stub tests in `test_prompts.py::TestPendingVariantsAreHonestlyAbsent` 
 
 **→ Vishruth (E1, environment).** `model_loader.HFGenerator` must satisfy `TextGenerator` structurally and return the completion **only**, with the prompt stripped; the pipeline feeds the result straight into `parse_response`, and a prompt echo would be scored as a model failure. Seed from `decode.seed` before every sampled generation and pass `**decode.to_generate_kwargs()`. Keep `import torch` inside function bodies so the package still imports on a machine without it. `data_prep.py` must call `intents.validate_label_space(labels)` on the loaded label space.
 
-**Open decision, still blocking.** `torch`, `transformers` and `datasets` are absent and will not be installed on this machine (company laptop; Python 3.14.5 also predates stable wheels for them). E1, E2, E3 and the real E7 run therefore need Colab. The application layer and this test suite stay local. This is PROJECT_PLAN.md Open Item 2 and it now gates three of the four workstreams.
+**Open decision, still blocking.** The model stack (`torch`, `transformers`, `datasets`) is not part of the local development environment, so E1, E2, E3 and the real E7 run need Colab. The application layer and this test suite stay local. This is PROJECT_PLAN.md Open Item 2 and it now gates three of the four workstreams.

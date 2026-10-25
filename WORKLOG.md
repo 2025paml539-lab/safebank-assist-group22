@@ -5,7 +5,7 @@
 
 This is the single source of truth for project status. If this file and `PROJECT_PLAN.md` disagree, **this file wins** — the plan was written before the code existed.
 
-> **Picking this up in your own AI IDE?** Read sections 1, 6, 7 and 8. Section 6 contains complete specifications for every unwritten file: exact paths, signatures, contracts, gotchas and verification commands. You should not need to ask anyone a question to start.
+> **Picking this up in your own AI IDE?** Read sections 1, 5, 6 and 7. Section 5 contains complete specifications for every unwritten file: exact paths, signatures, contracts, gotchas and verification commands. You should not need to ask anyone a question to start.
 
 ---
 
@@ -65,7 +65,7 @@ Only **one** buffer day. This is thin.
 
 ### 🔴 Escalation trigger — agreed safeguard
 
-**If `data_prep.py` and `model_loader.py` are not running by Monday 26 Oct evening, Kishore takes them over.** They are ~150 lines each, both contracts are fully specified in section 6 below, and Tue–Wed collapse without them. The contribution statement will record who actually did what.
+**If `data_prep.py` and `model_loader.py` are not running by Monday 26 Oct evening, Kishore takes them over.** They are ~150 lines each, both contracts are fully specified in section 5 below, and Tue–Wed collapse without them. The contribution statement will record who actually did what.
 
 ---
 
@@ -130,59 +130,9 @@ Measured on a run where every label is predicted **correctly**:
 
 ---
 
-## 5. Environment — VERIFIED FACTS (do not re-investigate)
+## 5. PENDING — full specifications
 
-Measured on Kishore's machine, **25 Oct 2026**.
-
-```
-Python 3.14.5  @ C:\Users\vl543f\AppData\Local\Programs\Python\Python314\python.exe
-```
-
-| Package | Status |
-|---|---|
-| pydantic | **2.13.4** ✅ |
-| pydantic-core | 2.46.4 ✅ |
-| numpy | 2.5.2 ✅ |
-| pandas | 2.3.3 ✅ |
-| scikit-learn | **1.9.0** ✅ |
-| matplotlib / seaborn / scipy | 3.11.1 / 0.13.2 / 1.18.1 ✅ |
-| **torch** | ❌ **MISSING** |
-| **transformers** | ❌ **MISSING** |
-| **datasets** | ❌ **MISSING** |
-| **tokenizers** | ❌ **MISSING** |
-| pytest | ❌ MISSING → **use stdlib `unittest`** |
-| jupyter / nbformat | ❌ MISSING |
-
-### 🔴 Hard constraints
-
-1. **Nothing may be installed on Kishore's machine.** It is a company laptop. Not negotiable.
-2. **Python 3.14.5 predates stable `torch` wheels.** Even if installing were allowed, the model stack would likely not build.
-3. **Therefore: all model work runs in Google Colab.** The application layer and the test suite stay local. This is the resolution of `PROJECT_PLAN.md` Open Item 2.
-4. **Tests must use stdlib `unittest`.** pytest is unavailable and must not be added.
-5. **Keep `torch` / `transformers` / `datasets` imports inside function bodies**, never at module top level, so `import safebank` and the offline suite keep working.
-
-### Inference budget (free Colab T4, Qwen2.5-1.5B fp16)
-
-Prompt carries all 77 labels ≈ 800 tokens (few-shot ≈ 1,600).
-
-| Run | Generations | Unbatched | Batched |
-|---|---|---|---|
-| E2 — 4 variants × 385 rows | 1,540 | ~1.5 h | ~25 min |
-| E3 — 6 configs × 385 rows | 2,310 | ~2.2 h | ~40 min |
-| E1 + repair retries | ~400 | ~0.5 h | ~10 min |
-| **Total** | | **~4–6 h** | **~1.5 h** |
-
-**Two agreed scope cuts, both defensible in the report:**
-1. **Run E3 on a stratified subset — 77 rows, 1 per intent.** E3 measures decoding behaviour and stability, not accuracy precision. Saves ~1.8 h.
-2. **Batch the generation.** This is the difference between 6 hours and 90 minutes on a T4.
-
-Keep E2 on the full 385 rows — that is the headline accuracy table.
-
----
-
-## 6. PENDING — full specifications
-
-### 🔴 6.1 Vishruth — `src/safebank/data_prep.py` (NOT STARTED, blocks everything)
+### 🔴 5.1 Vishruth — `src/safebank/data_prep.py` (NOT STARTED, blocks everything)
 
 Load BANKING77, freeze a reproducible stratified evaluation sample, and supply a train-split example bank for few-shot.
 
@@ -227,13 +177,13 @@ from .intents import validate_label_space
 validate_label_space(dataset_label_space(train_split))   # raises LabelSpaceError on mismatch
 ```
 
-The 20 `FOCUS_INTENTS` names in `intents.py` have **never been checked against the real dataset** — `datasets` isn't installed locally. This call is the check. If it raises, a name is misspelled: fix `intents.py` and tell Kishore. **Nothing may be reported until this passes.**
+The 20 `FOCUS_INTENTS` names in `intents.py` have **never been checked against the real dataset**, because `datasets` is not part of the local environment. This call is the check. If it raises, a name is misspelled: fix `intents.py` and tell Kishore. **Nothing may be reported until this passes.**
 
 **Facts you need:** `config.DATASET_ID = "PolyAI/banking77"` · `config.EXPECTED_N_INTENTS = 77` · `config.EVAL_EXAMPLES_PER_INTENT = 5` · `config.SEED = 42`
 
 ---
 
-### 🔴 6.2 Vishruth — `src/safebank/model_loader.py` (NOT STARTED, blocks everything)
+### 🔴 5.2 Vishruth — `src/safebank/model_loader.py` (NOT STARTED, blocks everything)
 
 ```python
 def device_report() -> DeviceReport:
@@ -277,30 +227,49 @@ assert isinstance(HFGenerator(model, tok), TextGenerator)   # runtime_checkable 
 
 ---
 
-### 🔴 6.3 Vishruth — `requirements.txt` + Colab notebook + E1
+### 🔴 5.3 Vishruth — `requirements.txt` + Colab notebook + E1
 
-- **`requirements.txt`** at the project root, pinned. Comment which packages are already available locally vs needed only in Colab. Writing the file installs nothing.
+**Dependency split.** The application layer and the whole test suite depend only on **pydantic**. The evaluation code additionally uses `numpy`, `pandas` and `scikit-learn`. The model stack — `torch`, `transformers`, `datasets`, `tokenizers` — is **not** part of the local development environment and is installed in **Colab only**; `requirements.txt` should make that split explicit with comments so a reader knows what runs where.
+
+- **`requirements.txt`** at the project root, pinned versions.
 - **Colab notebook** — pip-install cell, clean top-to-bottom run on a free T4, `%cd` into the repo, `sys.path.insert(0, "src")`.
 - **E1 baseline** — one simple prompt, **≥3 outputs** (plan says 5), GPT-2 vs Qwen side by side. This is what makes the E1→E2 improvement visible.
 - **Reproducibility appendix** — versions, seeds, hardware from `device_report()`.
 
 ---
 
-### 🟡 6.4 Satya — after PR #1 is fixed
+### 🟡 5.4 Satya — after PR #1 is fixed
 
 1. Fix `tool_routing` (section 4), add the regression test, drop the stale docstring.
 2. **E2** — 4 variants × 385 rows → accuracy comparison table + per-variant design rationale (already in `STRATEGY_RATIONALE`).
-3. **E3** — 6-config grid on a 77-row subset, 3 sample outputs each, variability analysis via `self_consistency_configs()`.
+3. **E3** — 6-config grid, 3 sample outputs each, variability analysis via `self_consistency_configs()`.
 4. **E6** — 6 metrics, baseline vs final comparison, **≥3 analysed failure cases** (plan targets 6) with root causes. `CONFUSABLE_PAIRS` gives you the predicted failure modes to test against.
 5. Report §4a (model families), §7 (prompts), §8 (decoding), §11 (results), §13 (limitations).
 
-### 🟡 6.5 Kishore — remaining
+#### Inference budget — size this before you start
+
+The prompt carries all 77 intent labels, so it is ~800 tokens (few-shot ~1,600). On a free Colab T4 with Qwen2.5-1.5B in fp16:
+
+| Run | Generations | Unbatched | Batched |
+|---|---|---|---|
+| E2 — 4 variants × 385 rows | 1,540 | ~1.5 h | ~25 min |
+| E3 — 6 configs × 385 rows | 2,310 | ~2.2 h | ~40 min |
+| E1 + repair retries | ~400 | ~0.5 h | ~10 min |
+| **Total** | | **~4–6 h** | **~1.5 h** |
+
+**Two agreed scope cuts, both defensible in the report:**
+1. **Run E3 on a stratified subset — 77 rows, 1 per intent.** E3 measures decoding behaviour and stability, not accuracy precision. It does not need 385 rows. Saves ~1.8 h.
+2. **Batch the generation.** This is the difference between 6 hours and 90 minutes on a T4.
+
+Keep E2 on the full 385 rows — that is the headline accuracy table.
+
+### 🟡 5.5 Kishore — remaining
 
 1. Merge PR #1 once fixed; decide the `to_row()` safety-metric question.
 2. Real **E7** run on Colab once `model_loader` lands — swap `FakeGenerator` for `HFGenerator`, nothing else changes.
 3. Report §2, §4b, §5, §9, §10, §12 — **already drafted in `ARCHITECTURE.md`**, needs formatting into the template.
 
-### 🔴 6.6 Bhavani — start now, do not wait for results
+### 🔴 5.6 Bhavani — start now, do not wait for results
 
 **§1 abstract, §5 architecture, §10 structured output and §12 responsible use are already written in `ARCHITECTURE.md`.** Formatting those into the BITS WILP template is a real chunk of the report that needs zero experiment results. Start today.
 
@@ -308,7 +277,7 @@ Then: §3 dataset description (from Vishruth's `preprocessing_record()`), §14 c
 
 ---
 
-## 7. FROZEN INTERFACES — do not change without telling Kishore
+## 6. FROZEN INTERFACES — do not change without telling Kishore
 
 195 tests and `pipeline.py` depend on these.
 
@@ -339,7 +308,7 @@ PipelineResult.to_row() -> dict
 
 ---
 
-## 8. How to verify your work
+## 7. How to verify your work
 
 ```powershell
 # from the GenAI_Project1 directory. No install step, no PYTHONPATH needed.
@@ -359,26 +328,28 @@ Byte-compile check: `python -m compileall -q src\safebank`
 ### Ground rules
 - **Branch per person**, PR into `main`. Don't commit straight to `main`.
 - Run the suite before every push. It takes 3 seconds.
+- **Tests use stdlib `unittest`, not pytest.**
+- **Keep `torch` / `transformers` / `datasets` imports inside function bodies**, never at module top level, so `import safebank` and the offline suite keep working.
 - No real customer or financial data, ever. IDs stay synthetic (`CARD_SIM_0001`, `ACC_SIM_0001`) — Section 8 of the brief.
 - Every prompt and decoding choice needs a written rationale. Section 8 forbids unexplained choices.
 
 ---
 
-## 9. Known traps
+## 8. Known traps
 
 | Trap | Consequence | Mitigation |
 |---|---|---|
 | `FOCUS_INTENTS` names unverified against real BANKING77 | E6 analysis describes intents never evaluated | `validate_label_space()` in `data_prep.py` — **mandatory** |
-| `HFGenerator` returning prompt + completion | Every metric silently wrong | Strip the prompt; see §6.2 gotcha 1 |
+| `HFGenerator` returning prompt + completion | Every metric silently wrong | Strip the prompt; see §5.2 gotcha 1 |
 | Model left in training mode | Greedy becomes non-deterministic, E3 stability meaningless | `model.eval()` |
 | Few-shot examples drawn from the eval sample | **Contaminates every E2 number** | Train split only; `build_example_bank` reads `train_split` |
 | `tool_routing` counting withheld destructive calls as misses | Safety control reported as a defect | PR #1 fix, section 4 |
-| Top-level `torch` import | Breaks `import safebank` and all 195 tests locally | Imports inside function bodies |
+| Top-level `torch` import | Breaks `import safebank` and all 195 tests | Imports inside function bodies |
 | Quoting `PROJECT_PLAN.md`'s old numbers in the report | Report contradicts the code | Use this file; plan corrected 25 Oct |
 
 ---
 
-## 10. Change log
+## 9. Change log
 
 | Date | Entry |
 |---|---|
@@ -391,7 +362,7 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 25 Oct | Kishore: this work log added; `PROJECT_PLAN.md` corrected (5 stale items) |
 
 ### Still open for the group
-1. 🔴 **Colab environment decision** — blocks E1/E2/E3 and the real E7. Proposal: Colab for all model work, local for app layer + tests.
+1. 🔴 **Colab environment decision** — blocks E1/E2/E3 and the real E7. Proposal: Colab for all model work, local for the application layer and tests.
 2. 🟡 **`to_row()` safety-metric plumbing** — extend it, or document manual pairing?
 3. 🟡 **BITS IDs for all 4 members** — needed for the report title page.
 4. 🟡 **Repo is currently public** — recommend making it private until after submission.
