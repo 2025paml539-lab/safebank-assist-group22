@@ -86,11 +86,13 @@ Every stage is captured in a `PipelineResult`, and `PipelineResult.to_row()` fla
 | `generator.py` | `TextGenerator` protocol, `DecodeConfig`, `FakeGenerator` | E3 surface | Kishore | **Done** |
 | `pipeline.py` | End-to-end orchestration | **E7** | Kishore | **Done** |
 | `__init__.py` | Curated public API, 44 exports | — | Kishore | **Done** |
-| `prompts.py` | 4 prompt strategies | **E2** | Kishore (seam + zero-shot) → Satya (3 variants) | **Done**, 4 of 4 implemented |
-| `decoding.py` | Decoding grid | **E3** | Satya | **Done** |
-| `evaluate.py` | 6 metrics, comparison, failure analysis | **E6** | Satya | **Done** |
-| `data_prep.py` | BANKING77 load, stratified sample | — | Vishruth | Not started |
-| `model_loader.py` | HF model + tokenizer loading | E1 | Vishruth | Not started |
+| `prompts.py` | 4 prompt strategies, shared formatters, written rationale per variant | **E2** | Kishore (seam + zero-shot) → Satya (3 variants) | **Done**, 4 of 4 |
+| `decoding.py` | 6-config decoding grid, seed variation, self-consistency sets | **E3** | Satya | **Done** |
+| `evaluate.py` | All 6 metrics, `EvalRecord`, failure analysis, comparison tables | **E6** | Satya | **Done** |
+| `data_prep.py` | BANKING77 load, stratified sample, train-split example bank | — | Vishruth | **Not started** |
+| `model_loader.py` | HF model + tokenizer loading, `HFGenerator` | E1 | Vishruth | **Not started** |
+
+**Every module is complete except the two Vishruth owns.** 276 tests pass offline. Because the application depends on the `TextGenerator` protocol rather than a model runtime, the absence of `data_prep.py` and `model_loader.py` blocks the *experiment runs* but not the code or its verification.
 
 ---
 
@@ -223,24 +225,28 @@ python -m unittest discover -s tests -t . -v
 ```
 
 ```
-Ran 274 tests in 3.1s
+Ran 276 tests in 3.0s
 OK
 ```
 
-Satya's E2/E3/E6 work took the suite from 195 to **274** — a net **+79**: the original 195 already included 42 prompt-seam tests in `test_prompts.py`, which grew to 59 (+17 as the three variants replaced the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (39). Running the full suite and the application now needs **pydantic, numpy, pandas and scikit-learn** — the E6 evaluation metrics (macro-F1, the results DataFrame) added the latter three. They stay out of module scope: the heavy imports in `evaluate.py` live inside the functions that use them, following the same pattern as `model_loader.py`'s torch imports, so `import safebank` never pulls them in at import time. The model stack (torch, transformers, datasets) is still needed only in Colab for the real E1/E7 runs; Vishruth pins the complete set in `requirements.txt`.
+The suite grew from 195 to **276**. Satya's E2/E3/E6 work accounts for +79: the original 195 already included 42 prompt-seam tests in `test_prompts.py`, which grew to 59 (+17 as the three variants replaced the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). The remaining +2 are `to_row()` tests added when the model reply was exposed for evaluation criterion 4.
+
+Running the full suite needs **pydantic**; `scikit-learn` is additionally required only for the macro-F1 assertions, and `numpy`/`pandas` for the results DataFrame. Those three stay out of module scope — the heavy imports in `evaluate.py` live inside the functions that use them, so `import safebank` never pulls them in at import time. The model stack (torch, transformers, datasets) is needed only in Colab for the real E1/E7 runs; Vishruth pins the complete set in `requirements.txt`.
 
 | Module | Tests | Covers |
 |---|---|---|
 | `test_schema.py` | 35 | E4: JSON extraction edge cases, all 4 failure kinds, repair prompt |
 | `test_tools.py` | 38 | E5: 3 tools, argument validation, determinism, routing, spec export |
-| `test_pipeline.py` | 37 | E7: happy path, repair-retry, confidence gate, destructive refusal, hallucination guards |
+| `test_pipeline.py` | 39 | E7: happy path, repair-retry, confidence gate, destructive refusal, hallucination guards, `to_row()` contract |
 | `test_generator.py` | 22 | seam: `DecodeConfig` per-strategy kwargs, protocol conformance, fake |
 | `test_intents.py` | 21 | label-space structure, confusable pairs, validation guard |
 | `test_prompts.py` | 59 | E2: all 4 variants, shared-block reuse across variants, dispatch |
 | `test_decoding.py` | 23 | E3: 6-config grid, per-strategy kwargs, seed self-consistency set |
 | `test_evaluate.py` | 39 | E6: 6 metrics, destructive-refusal routing credit, failure taxonomy, confusable pairs, pipeline rows |
 
-**Known verification gap.** The 20 `FOCUS_INTENTS` names are checked for structure (20 unique, 5 themes × 4, all confusable-pair members present) but **not** against the real BANKING77 label space, because `datasets` is not installed. `intents.validate_label_space` will raise `LabelSpaceError` naming any mismatch the first time `data_prep.py` supplies the real labels. That check must be run before any number is quoted in the report.
+**Known verification gap.** The 20 `FOCUS_INTENTS` names are checked for structure (20 unique, 5 themes × 4, all confusable-pair members present) but **not** against the real BANKING77 label space, because `datasets` is not part of the local environment. `intents.validate_label_space` will raise `LabelSpaceError` naming any mismatch the first time `data_prep.py` supplies the real labels. That check must be run before any number is quoted in the report.
+
+**Beyond the green bar.** Two checks were run because a passing suite proves little on its own. A *mutation check* flipped `block_card.destructive` to `False` in memory and confirmed four tests fail — the Requirement 13 control is genuinely guarded, not merely asserted. A *routing-metric check* confirmed an all-correct run now scores `routing_accuracy 1.0` with `n_correctly_withheld 3`, and that four adversarial cases (non-destructive withheld, destructive without escalation, destructive executed under opt-in, wrong tool) are all still classified correctly — so the destructive exemption cannot mask a genuinely dropped tool call.
 
 ---
 
@@ -280,14 +286,26 @@ class TextGenerator(Protocol):
 # prompts (E2)
 build_prompt(strategy, query, allowed_intents, **kwargs) -> str
 
+# decoding grid (E3)
+build_decoding_grid() -> tuple[GridPoint, ...]
+self_consistency_configs() -> dict[str, tuple[DecodeConfig, ...]]
+
+# evaluation (E6)
+records_from_rows(rows, gold_intents) -> list[EvalRecord]
+evaluate_run(records) -> dict
+
 # orchestration (E7)
 SafeBankPipeline(generator, allowed_intents, strategy=…).run(query, decode) -> PipelineResult
 PipelineResult.to_row() -> dict
 ```
 
-**→ Satya (E2, E3, E6).** `prompts.PromptStrategy` has four members; `ZERO_SHOT` is implemented as the reference. `FEW_SHOT`, `ROLE_CONTEXT` and `CONSTRAINT_BASED` raise `NotImplementedError` with the intended signature, design rationale and implementation notes in their docstrings. Reuse `format_intent_catalogue`, `format_tool_catalogue` and `format_schema_contract` — if each variant hand-writes its own schema text, an E2 accuracy delta becomes unattributable to the strategy. `decoding.py` should build the grid on top of the existing `DecodeConfig` rather than redefining it. `evaluate.py` can consume `PipelineResult.to_row()` directly; scikit-learn 1.9.0 is already available locally for macro-F1 and confusion matrices.
+`to_row()` keys: `query`, `ok`, `intent`, `confidence`, `response`, `attempts`, `needed_repair`, `first_failure`, `tool`, `tool_ok`, `escalated`, `latency_ms`. `response` is the model's own reply, deliberately not the composed `final_text` — evaluation criterion 4 screens what the model wrote, and `final_text` additionally carries the application-added system-lookup trace and disclaimer, which would be false positives.
 
-The three stub tests in `test_prompts.py::TestPendingVariantsAreHonestlyAbsent` are expected to fail once a variant is implemented — replace them with real content assertions at that point.
+**✅ Satya (E2, E3, E6) — delivered and merged.** All four `PromptStrategy` members are implemented, and all four render the intent catalogue, tool catalogue and schema contract through the shared formatters, so an E2 accuracy delta is attributable to the strategy rather than to wording drift. `decoding.py` builds the six-config grid on top of the existing `DecodeConfig` without redefining it, and `seed_variations()` returns a single config for greedy rather than implying variability that deterministic decoding cannot have. `evaluate.py` implements all six criteria over `PipelineResult.to_row()`, with numpy, pandas and scikit-learn imported inside the functions that need them.
+
+One review finding is worth recording here because it generalises: the first revision of `evaluate.tool_routing()` scored the pipeline's destructive-tool refusal as a routing *miss*, because it compared the expected tool against the tool actually invoked and the pipeline correctly invokes none. A run with 100% intent accuracy reported 25% routing accuracy. The fix adds an `n_correctly_withheld` category keyed off `TOOL_REGISTRY[tool].destructive`. **Any new metric must be checked against the destructive-refusal path**, or it will report a working safety control as a defect.
+
+Remaining follow-up: `flag_unsafe_responses` should read `record.row["response"]` now that `to_row()` carries the model reply.
 
 **→ Vishruth (E1, environment).** `model_loader.HFGenerator` must satisfy `TextGenerator` structurally and return the completion **only**, with the prompt stripped; the pipeline feeds the result straight into `parse_response`, and a prompt echo would be scored as a model failure. Seed from `decode.seed` before every sampled generation and pass `**decode.to_generate_kwargs()`. Keep `import torch` inside function bodies so the package still imports on a machine without it. `data_prep.py` must call `intents.validate_label_space(labels)` on the loaded label space.
 

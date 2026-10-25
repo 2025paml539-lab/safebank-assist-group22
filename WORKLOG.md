@@ -13,23 +13,22 @@ This is the single source of truth for project status. If this file and `PROJECT
 
 | | |
 |---|---|
-| **Overall completion** | **~45–50%** |
-| Estimated marks secured | ~9.9 / 20 |
-| Application code | ~90% done |
+| **Overall completion** | **~50–55%** |
+| Estimated marks secured | ~10.7 / 20 |
+| Application + experiment code | **~95% done** |
 | **Experiment results** | **0% — nothing has run on a real model yet** |
 | Report | ~5% (raw material written, nothing assembled) |
 | Demo | 0% |
-| Tests passing on `main` | **195** |
-| Tests passing including open PR #1 | **269** |
+| **Tests passing on `main`** | **276** |
 
-**One-line summary:** the code is nearly finished, but nothing that produces a *number* has run, because the model environment was never set up. That is now the critical path.
+**One-line summary:** all the code except the data and model-loading layer is written, reviewed and merged. Nothing that produces a *number* has run yet, because the model environment was never set up. That is the critical path and it is the only thing standing between us and a finishable report.
 
 ### Completion by workstream
 
 | Member | Area | Status |
 |---|---|---|
-| **Kishore** | Architecture + application code | ✅ **100% — merged to `main`** |
-| **Satya** | Prompts, decoding, evaluation code | 🟡 **~95% — PR #1 open, changes requested** |
+| **Kishore** | Architecture + application code | ✅ **100% — merged** |
+| **Satya** | Prompts, decoding, evaluation code | ✅ **100% code — merged (PR #1).** Experiment *runs* still pending the environment |
 | **Vishruth** | Data, model loading, environment, E1 | 🔴 **0% — not started. BLOCKS EVERYTHING.** |
 | **Bhavani** | Report assembly, submission | 🔴 **~5% — not started** |
 
@@ -39,13 +38,15 @@ This is the single source of truth for project status. If this file and `PROJECT
 |---|---|---|---|---|
 | 1 | Problem + dataset analysis | 2 | 0.8 | Problem done; no dataset analysis, no class distribution, no preprocessing log |
 | 2 | LLM / generative-model understanding | 3 | 0.9 | Architecture prose drafted; model-family comparison unwritten; needs real tokenizer output |
-| 3 | Prompt engineering | 3 | 1.5 | All 4 variants coded; **no accuracy comparison table** |
+| 3 | Prompt engineering | 3 | 1.8 | All 4 variants merged, tested, each with written rationale; **no accuracy comparison table** |
 | 4 | Adaptation strategy | 2 | 1.2 | Written in `ARCHITECTURE.md` §7; must be argued from measured numbers we don't have |
-| 5 | Structured output + tool calling | 3 | 2.4 | Complete and tested; validity-rate metric needs a real run |
-| 6 | Implementation | 3 | 2.1 | Code modular + tested + seeded; **no Colab notebook, no `requirements.txt`** |
-| 7 | Evaluation + failure analysis | 2 | 0.7 | Metrics coded; zero results, zero analysed failure cases |
+| 5 | Structured output + tool calling | 3 | 2.5 | Complete, tested, all six metrics wired; validity rate needs a real run |
+| 6 | Implementation | 3 | 2.3 | Modular, 276 tests, seeds frozen, reviewed; **no Colab notebook, no `requirements.txt`** |
+| 7 | Evaluation + failure analysis | 2 | 0.9 | All 6 metrics merged and verified; **zero results, zero analysed failure cases** |
 | 8 | Report + demo + contribution | 2 | 0.3 | Nothing assembled, no rehearsal, no signatures |
-| | | **20** | **~9.9** | |
+| | | **20** | **~10.7** | |
+
+**The pattern is clear:** every component is capped by the same missing thing — measured results. Components 3, 5, 6 and 7 are all code-complete and lose marks only for the absent numbers.
 
 ---
 
@@ -53,15 +54,17 @@ This is the single source of truth for project status. If this file and `PROJECT
 
 Only **one** buffer day. This is thin.
 
-| Day | Must land | Owner |
-|---|---|---|
-| **Sun 25 (today)** | Colab decision locked · `data_prep.py` + `model_loader.py` started · routing bug fixed · PR #1 merged · `PROJECT_PLAN.md` corrected · report §1/§5 drafted | all |
-| **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth |
-| **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore |
-| **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya |
-| **Thu 29** | All report sections drafted · figures generated | all |
-| **Fri 30** | Report assembled + formatted + proofread · demo rehearsal | Bhavani + all |
-| **Sat 31** | Contribution statement signed · **submit** | Bhavani |
+| Day | Must land | Owner | State |
+|---|---|---|---|
+| **Sun 25** | PR #1 reviewed and merged · `to_row()` extended for criterion 4 · `PROJECT_PLAN.md` corrected · work log published | Kishore | ✅ **done** |
+| **Sun 25** | Colab decision locked · `data_prep.py` + `model_loader.py` started | Vishruth | 🔴 **outstanding** |
+| **Sun 25** | Report §1/§5 drafted from `ARCHITECTURE.md` | Bhavani | 🔴 **outstanding** |
+| **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth | pending |
+| **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore | pending |
+| **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya | pending |
+| **Thu 29** | All report sections drafted · figures generated | all | pending |
+| **Fri 30** | Report assembled + formatted + proofread · demo rehearsal | Bhavani + all | pending |
+| **Sat 31** | Contribution statement signed · **submit** | Bhavani | pending |
 
 ### 🔴 Escalation trigger — agreed safeguard
 
@@ -69,64 +72,66 @@ Only **one** buffer day. This is thin.
 
 ---
 
-## 3. DONE — Kishore (merged to `main`)
+## 3. DONE — merged to `main`
 
-All verified. 195 tests pass with **only pydantic installed** — no torch, no GPU, no network.
+**276 tests pass with only pydantic installed** — no torch, no GPU, no network. The whole application and evaluation stack is verifiable offline.
+
+### Kishore — architecture and application
 
 | File | Lines | What it does | Experiment |
 |---|---|---|---|
-| `src/safebank/config.py` | 85 | Seeds, model ids, dataset id, thresholds, artifact paths, `ensure_dirs()` | — |
-| `src/safebank/intents.py` | 203 | `INTENT_THEMES` (5×4), `FOCUS_INTENTS` (20), `CONFUSABLE_PAIRS` (6), `validate_label_space()`, `theme_of()` | E6 input |
+| `src/safebank/config.py` | 85 | Seeds, model ids, dataset id, thresholds, artifact paths | — |
+| `src/safebank/intents.py` | 203 | `INTENT_THEMES` (5×4), `FOCUS_INTENTS` (20), `CONFUSABLE_PAIRS` (6), `validate_label_space()` | E6 input |
 | `src/safebank/schema.py` | 264 | `AssistantResponse`, `ToolCall`, `extract_json_block()`, `FailureKind` (4 kinds), `parse_response()`, `build_repair_prompt()` | **E4** |
-| `src/safebank/tools.py` | 302 | 3 simulated tools + pydantic I/O schemas, deterministic handlers, `TOOL_REGISTRY`, `INTENT_TO_TOOL` (10 intents), `execute_tool()`, `tool_specs_json()` | **E5** |
+| `src/safebank/tools.py` | 302 | 3 simulated tools + I/O schemas, deterministic handlers, `TOOL_REGISTRY`, `INTENT_TO_TOOL` (10 intents), `tool_specs_json()` | **E5** |
 | `src/safebank/generator.py` | 131 | `TextGenerator` Protocol, `DecodeConfig`, `DecodeStrategy`, `FakeGenerator` | E1/E3 seam |
-| `src/safebank/pipeline.py` | 295 | `SafeBankPipeline`, repair-retry loop, confidence gate, intent-authoritative routing, destructive-tool refusal, response composition | **E7** |
-| `src/safebank/prompts.py` | 519 | `PromptStrategy`, `build_prompt()` dispatch, shared formatters, `ZERO_SHOT` implemented | E2 seam |
+| `src/safebank/pipeline.py` | 308 | `SafeBankPipeline`, repair-retry, confidence gate, intent-authoritative routing, destructive-tool refusal, `to_row()` | **E7** |
 | `src/safebank/__init__.py` | 143 | Public API, 44 exports | — |
-| `tests/` (7 files) | ~1,350 | 195 tests | E4/E5/E7 evidence |
-| `ARCHITECTURE.md` | 290 | Report §5, §9, §10, §12 source material | — |
-| `HANDOFF.md` | 111 | Per-member next steps | — |
 
-**Verification evidence captured:**
-- Full suite: `Ran 195 tests ... OK`
+### Satya — prompts, decoding, evaluation (PR #1, merged)
+
+| File | Lines | What it does | Experiment |
+|---|---|---|---|
+| `src/safebank/prompts.py` | 786 | All 4 strategies — `ZERO_SHOT`, `FEW_SHOT`, `ROLE_CONTEXT`, `CONSTRAINT_BASED` — plus shared formatters and `STRATEGY_RATIONALE` | **E2** |
+| `src/safebank/decoding.py` | 288 | 6-config E3 grid on the existing `DecodeConfig`, `seed_variations()`, `self_consistency_configs()` | **E3** |
+| `src/safebank/evaluate.py` | 737 | All 6 evaluation criteria, `EvalRecord`, `analyse_failures()`, `evaluate_run()`, `results_dataframe()` | **E6** |
+
+### Test suite — 276 tests
+
+| Module | Tests | Covers |
+|---|---|---|
+| `tests/test_prompts.py` | 59 | All 4 variants, shared blocks, dispatch, preprocessing |
+| `tests/test_pipeline.py` | 39 | E7: repair-retry, confidence gate, destructive refusal, hallucination guards, `to_row()` |
+| `tests/test_evaluate.py` | 39 | All 6 metrics, failure analysis, routing regression tests |
+| `tests/test_tools.py` | 38 | 3 tools, arg validation, determinism, routing, spec export |
+| `tests/test_schema.py` | 35 | E4: extraction edge cases, all 4 `FailureKind` paths, repair prompt |
+| `tests/test_decoding.py` | 23 | E3 grid shape, labels, seed variation |
+| `tests/test_generator.py` | 22 | Per-strategy decode kwargs, protocol conformance |
+| `tests/test_intents.py` | 21 | Label-space structure, confusable pairs, validation guard |
+
+### Verification evidence captured
+
+- Full suite: `Ran 276 tests ... OK` (~3s warm)
 - `compileall` clean on all modules
-- Real E7 trace: prompt built (1,805 chars for 20 intents) → JSON validated → `card_arrival` → `check_card_delivery_status` → `{'status': 'in_transit', 'dispatched_on': '2026-10-12', 'eta_days': 5}` → disclaimer attached
+- Real E7 trace: prompt built → JSON validated → `card_arrival` → `check_card_delivery_status` → `{'status': 'in_transit', 'dispatched_on': '2026-10-12', 'eta_days': 5}` → disclaimer attached
 - **Mutation check:** flipping `block_card.destructive` to `False` in memory fails 4 tests — the safety control is genuinely guarded, not merely asserted
+- **Routing-metric check:** an all-correct run scores `routing_accuracy 1.0` with `n_correctly_withheld 3`; four anti-regression cases confirm the destructive exemption cannot hide a genuine dropped call
 
 ---
 
-## 4. IN REVIEW — Satya, PR #1
+## 4. Review history — PR #1 (merged)
 
-**PR:** https://github.com/2025paml539-lab/safebank-assist-group22/pull/1
-**Branch:** `2025paml561/e2-e3-e6` · **Review:** `CHANGES_REQUESTED` (id 5643407598)
-**Adds:** 2,065 lines · 269 tests total (+74) · 3.1s warm
+**PR:** https://github.com/2025paml539-lab/safebank-assist-group22/pull/1 · branch `2025paml561/e2-e3-e6` · merged 25 Oct
 
-| File | Status |
-|---|---|
-| `src/safebank/prompts.py` | 🟡 All 4 variants implemented. `ZERO_SHOT` untouched. All reuse the shared formatters ✅ |
-| `src/safebank/decoding.py` | ✅ 288 lines, 6-config E3 grid, `seed_variations()` handles greedy correctly |
-| `src/safebank/evaluate.py` | 🔴 687 lines, all 6 metrics — **one blocking bug** |
-| `tests/test_decoding.py` | ✅ 23 tests |
-| `tests/test_evaluate.py` | 🟡 34 tests — destructive-tool path untested |
-| `tests/test_prompts.py` | ✅ 59 tests, stub assertions properly replaced |
+Kept as a record because the bug it caught is worth writing up in the report's limitations section.
 
-### 🔴 Blocking bug — `evaluate.tool_routing()`
+**First revision** scored the pipeline's destructive-tool refusal as a routing miss. `evaluate.tool_routing()` compared `route_intent(gold)` against the tool actually invoked, but the pipeline deliberately refuses to auto-execute `block_card` and escalates instead, so `row['tool']` was `None` and the metric recorded `missed`. Measured impact: a run with **100% intent accuracy reported 25% routing accuracy**, and on the 385-row set 15 of 50 tool-expected rows were permanently wrong, capping routing accuracy at **70%**. A working Requirement 13 control was being reported as a defect.
 
-It compares `route_intent(gold_intent)` against the tool the pipeline actually ran. But the pipeline **deliberately refuses** to auto-execute `block_card` and escalates instead, so `row['tool']` is `None` and the metric scores it as `missed`.
+**Fixed** with an `n_correctly_withheld` category keyed off `TOOL_REGISTRY[tool].destructive`, so a future destructive tool is picked up automatically, and surfaced as its own column rather than folded into "correct" — the E6 table now actively evidences the control. Five regression tests confirm a withheld call is not a miss, an all-correct run scores 1.0, and both destructive-without-escalation and non-destructive-withheld still count as genuine misses.
 
-Measured on a run where every label is predicted **correctly**:
+**Also resolved:** `to_row()` now carries `response`, the model's own reply, so evaluation criterion 4 can be computed from an `EvalRecord` like every other metric.
 
-```
-{"n_should_call": 4, "n_routed_correctly": 1, "n_missed": 3, "routing_accuracy": 0.25}
-```
-
-100% intent accuracy reports **25% routing accuracy**. On the 385-row set, 3 intents × 5 rows = **15 of 50 tool-expected rows are permanently wrong**, capping routing accuracy at **70%**.
-
-**Required fix:** when `route_intent(gold)` returns a tool with `TOOL_REGISTRY[tool].destructive == True` and the row shows `escalated=True` with `tool is None`, that is correct behaviour. Add an `n_correctly_withheld` category and exclude it from misses — then the table actively evidences Requirement 13. Add a regression test.
-
-### 🟡 Minor
-- `flag_unsafe_responses(replies)` needs reply text, but `to_row()` doesn't carry it. Either extend `to_row()` (Kishore) or document the manual pairing. **Needs a decision.**
-- `tests/test_prompts.py` module docstring still describes the variants as deliberately raising `NotImplementedError`. Stale.
+**Outstanding follow-up (Satya, small, non-blocking):** switch `flag_unsafe_responses` to read `record.row["response"]` and drop the manual caller-side pairing.
 
 ---
 
@@ -178,6 +183,8 @@ validate_label_space(dataset_label_space(train_split))   # raises LabelSpaceErro
 ```
 
 The 20 `FOCUS_INTENTS` names in `intents.py` have **never been checked against the real dataset**, because `datasets` is not part of the local environment. This call is the check. If it raises, a name is misspelled: fix `intents.py` and tell Kishore. **Nothing may be reported until this passes.**
+
+**Also blocking Satya:** `build_example_bank()` is what makes E2's few-shot numbers defensible. `prompts.build_few_shot_prompt` has an offline fallback bank so the code is testable, but reported E2 results need real train-split examples.
 
 **Facts you need:** `config.DATASET_ID = "PolyAI/banking77"` · `config.EXPECTED_N_INTENTS = 77` · `config.EVAL_EXAMPLES_PER_INTENT = 5` · `config.SEED = 42`
 
@@ -238,13 +245,15 @@ assert isinstance(HFGenerator(model, tok), TextGenerator)   # runtime_checkable 
 
 ---
 
-### 🟡 5.4 Satya — after PR #1 is fixed
+### 🟡 5.4 Satya — experiment runs (code merged, runs pending)
 
-1. Fix `tool_routing` (section 4), add the regression test, drop the stale docstring.
-2. **E2** — 4 variants × 385 rows → accuracy comparison table + per-variant design rationale (already in `STRATEGY_RATIONALE`).
+Code is done and merged. These are the *runs*, all blocked on 5.1 and 5.2.
+
+1. Small follow-up: switch `flag_unsafe_responses` to read `record.row["response"]`.
+2. **E2** — 4 variants × 385 rows → accuracy comparison table. Rationale per variant is already in `STRATEGY_RATIONALE`. Needs `data_prep.build_example_bank()` for defensible few-shot numbers.
 3. **E3** — 6-config grid, 3 sample outputs each, variability analysis via `self_consistency_configs()`.
 4. **E6** — 6 metrics, baseline vs final comparison, **≥3 analysed failure cases** (plan targets 6) with root causes. `CONFUSABLE_PAIRS` gives you the predicted failure modes to test against.
-5. Report §4a (model families), §7 (prompts), §8 (decoding), §11 (results), §13 (limitations).
+5. Report §4a (model families), §7 (prompts), §8 (decoding), §11 (results), §13 (limitations). The PR #1 routing bug is worth a paragraph in §13 — it is a genuine example of a metric that penalised a correct safety behaviour.
 
 #### Inference budget — size this before you start
 
@@ -265,9 +274,9 @@ Keep E2 on the full 385 rows — that is the headline accuracy table.
 
 ### 🟡 5.5 Kishore — remaining
 
-1. Merge PR #1 once fixed; decide the `to_row()` safety-metric question.
-2. Real **E7** run on Colab once `model_loader` lands — swap `FakeGenerator` for `HFGenerator`, nothing else changes.
-3. Report §2, §4b, §5, §9, §10, §12 — **already drafted in `ARCHITECTURE.md`**, needs formatting into the template.
+1. Real **E7** run on Colab once `model_loader` lands — swap `FakeGenerator` for `HFGenerator`, nothing else changes.
+2. Report §2, §4b, §5, §9, §10, §12 — **already drafted in `ARCHITECTURE.md`**, needs formatting into the template.
+3. Monday escalation trigger: take over 5.1 and 5.2 if they have not started.
 
 ### 🔴 5.6 Bhavani — start now, do not wait for results
 
@@ -275,11 +284,13 @@ Keep E2 on the full 385 rows — that is the headline accuracy table.
 
 Then: §3 dataset description (from Vishruth's `preprocessing_record()`), §14 conclusion, references, appendix (prompts/schemas/output samples), assembly into 10–15 pages, **individual contribution statement signed by all 4**, Section 8 compliance proofread, portal upload.
 
+Git history is usable as supporting evidence for the contribution statement — commits are attributed per member.
+
 ---
 
 ## 6. FROZEN INTERFACES — do not change without telling Kishore
 
-195 tests and `pipeline.py` depend on these.
+276 tests and `pipeline.py` depend on these.
 
 ```python
 # structured output (E4)
@@ -296,6 +307,14 @@ class TextGenerator(Protocol):
 
 # prompts (E2)
 build_prompt(strategy, query, allowed_intents, **kwargs) -> str
+
+# decoding grid (E3)
+build_decoding_grid() -> tuple[GridPoint, ...]
+self_consistency_configs() -> dict[str, tuple[DecodeConfig, ...]]
+
+# evaluation (E6)
+records_from_rows(rows, gold_intents) -> list[EvalRecord]
+evaluate_run(records) -> dict
 
 # orchestration (E7)
 SafeBankPipeline(generator, allowed_intents, strategy=...).run(query, decode) -> PipelineResult
@@ -317,7 +336,7 @@ PipelineResult.to_row() -> dict
 python -m unittest discover -s tests -t . -v
 ```
 
-Expected on `main`: `Ran 195 tests ... OK`. With PR #1 merged: `269 ... OK`. Runs on **pydantic alone**.
+Expected: `Ran 276 tests ... OK`, about 3 seconds warm. Runs on **pydantic alone**; `scikit-learn` is needed only for the macro-F1 assertions.
 
 See the whole application run with no model:
 
@@ -345,9 +364,10 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | `HFGenerator` returning prompt + completion | Every metric silently wrong | Strip the prompt; see §5.2 gotcha 1 |
 | Model left in training mode | Greedy becomes non-deterministic, E3 stability meaningless | `model.eval()` |
 | Few-shot examples drawn from the eval sample | **Contaminates every E2 number** | Train split only; `build_example_bank` reads `train_split` |
-| `tool_routing` counting withheld destructive calls as misses | Safety control reported as a defect | PR #1 fix, section 4 |
-| Top-level `torch` import | Breaks `import safebank` and all 195 tests | Imports inside function bodies |
+| Screening `final_text` for invented account facts | False positives from the legitimate system-lookup trace | Screen `to_row()['response']`, the model's own reply |
+| Top-level `torch` import | Breaks `import safebank` and all 276 tests | Imports inside function bodies |
 | Quoting `PROJECT_PLAN.md`'s old numbers in the report | Report contradicts the code | Use this file; plan corrected 25 Oct |
+| A metric penalising correct safety behaviour | Reports a working control as a defect | The PR #1 routing bug. Check any new metric against the destructive-refusal path |
 
 ---
 
@@ -359,12 +379,14 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 23 Oct | Kishore: `__init__.py` + `prompts.py` seam with `ZERO_SHOT`; package imports for the first time |
 | 23 Oct | Kishore: 195-test suite; E7 verified end-to-end; mutation check confirms safety tests have teeth |
 | 23 Oct | Kishore: `ARCHITECTURE.md`, `HANDOFF.md`; repo initialised and pushed (`c921e0d`) |
-| 25 Oct | Satya: PR #1 — E2 prompts (4/4), E3 grid, E6 metrics. 269 tests |
-| 25 Oct | Kishore: PR #1 reviewed → `CHANGES_REQUESTED`, one blocking bug in `tool_routing` |
-| 25 Oct | Kishore: this work log added; `PROJECT_PLAN.md` corrected (5 stale items) |
+| 25 Oct | Kishore: work log published; `PROJECT_PLAN.md` corrected (5 stale items); machine-specific detail removed from all docs |
+| 25 Oct | Satya: PR #1 opened — E2 prompts (4/4), E3 grid, E6 metrics. 269 tests |
+| 25 Oct | Kishore: PR #1 reviewed → `CHANGES_REQUESTED`. Blocking bug: `tool_routing` scored the destructive-tool refusal as a miss |
+| 25 Oct | Satya: blocker fixed — `n_correctly_withheld` category + 5 regression tests. 274 tests |
+| 25 Oct | Kishore: `to_row()` extended with the model reply for evaluation criterion 4 |
+| 25 Oct | Kishore: **PR #1 approved and merged.** 276 tests on `main`. All code complete except `data_prep.py` and `model_loader.py` |
 
 ### Still open for the group
 1. 🔴 **Colab environment decision** — blocks E1/E2/E3 and the real E7. Proposal: Colab for all model work, local for the application layer and tests.
-2. 🟡 **`to_row()` safety-metric plumbing** — extend it, or document manual pairing?
-3. 🟡 **BITS IDs for all 4 members** — needed for the report title page.
-4. 🟡 **Repo is currently public** — recommend making it private until after submission.
+2. 🟡 **BITS IDs for all 4 members** — needed for the report title page.
+3. 🟡 **Repo is currently public** — recommend making it private until after submission.

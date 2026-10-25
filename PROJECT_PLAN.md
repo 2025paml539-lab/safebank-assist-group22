@@ -151,11 +151,11 @@ customer query
 - [ ] Technical report, 10–15 pages excl. appendix — *Bhavani assembles, all write* — **not started.** §1/§5/§10/§12 source material is already written in `ARCHITECTURE.md` and needs only formatting; start there without waiting for results
 - [ ] Working Colab notebook — *Vishruth packages* — **not started**
 - [ ] Dataset description + preprocessing record — *Vishruth → Bhavani* — **not started**, blocked on `data_prep.py`
-- [ ] Prompt experiment log (baseline + improved) — *Satya* — **code done (4/4 variants, PR #1), no results yet**
-- [ ] Decoding comparison table — *Satya* — **grid coded (`decoding.py`, PR #1), no results yet**
+- [ ] Prompt experiment log (baseline + improved) — *Satya* — **code merged (4/4 variants, 59 tests), no results yet**
+- [ ] Decoding comparison table — *Satya* — **6-config grid merged (`decoding.py`, 23 tests), no results yet**
 - [x] Structured-output schema + validated samples — *Kishore* — **DONE.** `schema.py` merged, 35 tests, `response_json_schema()` exports for the appendix
 - [x] Tool/function spec + demonstration — *Kishore* — **DONE.** `tools.py` merged, 38 tests, `tool_specs_json()` exports all 3 contracts
-- [ ] Evaluation + failure-analysis table — *Satya* — **metrics coded (`evaluate.py`, PR #1, 1 blocking bug), no results yet**
+- [ ] Evaluation + failure-analysis table — *Satya* — **all 6 metrics merged (`evaluate.py`, 39 tests, review blocker fixed), no results yet**
 - [ ] 8–10 min group demonstration — *all 4 speak* — **not started, not rehearsed**
 - [ ] Individual contribution statement, signed by every member — *Bhavani collects* — **not started.** Git commit history is usable as supporting evidence
 

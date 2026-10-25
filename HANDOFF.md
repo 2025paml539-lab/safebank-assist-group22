@@ -19,19 +19,21 @@ Last updated: 23 Oct 2026 by Kishore (Solution Architect).
 | **E4** structured output + repair | `schema.py` | ✅ Done, 35 tests | Kishore |
 | **E5** 3 simulated tools + router | `tools.py` | ✅ Done, 38 tests | Kishore |
 | Generation seam, decode config | `generator.py` | ✅ Done, 22 tests | Kishore |
-| **E7** end-to-end pipeline | `pipeline.py` | ✅ Done, 37 tests | Kishore |
+| **E7** end-to-end pipeline | `pipeline.py` | ✅ Done, 39 tests | Kishore |
 | Package API | `__init__.py` | ✅ Done | Kishore |
 | **E2** prompt strategies | `prompts.py` | ✅ Done, 59 tests (4 of 4) | Kishore (seam) → **Satya** |
 | **E3** decoding grid | `decoding.py` | ✅ Done, 23 tests | **Satya** |
-| **E6** metrics + failure analysis | `evaluate.py` | ✅ Done, 34 tests | **Satya** |
+| **E6** metrics + failure analysis | `evaluate.py` | ✅ Done, 39 tests | **Satya** |
 | Dataset load + sampling | `data_prep.py` | ⬜ Not started | **Vishruth** |
 | **E1** model/tokenizer loading | `model_loader.py` | ⬜ Not started | **Vishruth** |
 | Pinned dependencies | `requirements.txt` | ⬜ Not started | **Vishruth** |
 | Report assembly | — | ⬜ Not started | **Bhavani** |
 
-**Kishore's share is complete.** 195 tests pass with only pydantic installed.
+**Kishore's and Satya's shares are both complete and merged.** **276 tests pass**, about 3 seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
 
-**Satya's share (E2/E3/E6) is complete.** That original 195 already includes the 42 prompt-seam tests in `test_prompts.py`; Satya's work added **79 more, taking the suite to 274**. Breakdown: `test_prompts.py` grew 42 → 59 (+17, the three new variants replacing the stub tests), plus a new `test_decoding.py` (23) and `test_evaluate.py` (39). The E6 evaluation metrics (macro-F1, the results DataFrame) brought numpy, pandas and scikit-learn into the dependency set — see the install list below.
+**Satya's share (E2/E3/E6) is merged** (PR #1, 25 Oct). It added **+79** tests: `test_prompts.py` grew 42 → 59 as the three new variants replaced the stub tests, plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). A further **+2** came from exposing the model reply in `to_row()` for evaluation criterion 4, giving **276**.
+
+**All code is now complete except `data_prep.py` and `model_loader.py`.** The experiment *runs* are blocked on those two — see item 1 under the open items below.
 
 ---
 
@@ -44,7 +46,7 @@ python -m pip install pydantic numpy pandas scikit-learn
 python -m unittest discover -s tests -t . -v
 ```
 
-Expected: `Ran 274 tests ... OK`. No `PYTHONPATH` — the suite puts `src` on the path itself; no torch, no GPU, no network.
+Expected: `Ran 276 tests ... OK`, about 3 seconds. No `PYTHONPATH` — the suite puts `src` on the path itself; no torch, no GPU, no network.
 
 To see the whole application actually run:
 
@@ -80,7 +82,7 @@ class TextGenerator(Protocol):
     def generate(self, prompt: str, decode: DecodeConfig) -> str: ...
 ```
 
-If you think one of these needs to change, message me first — `pipeline.py` and 195 tests depend on them.
+If you think one of these needs to change, message me first — `pipeline.py` and 276 tests depend on them.
 
 ---
 
@@ -112,7 +114,7 @@ They are structurally tested (20 unique, 5 themes × 4) but not checked against 
 ## Ground rules
 
 - **Branch per person**, PR into `main`. Don't commit straight to `main`.
-- Nobody edits `schema.py`, `tools.py`, `pipeline.py` or `generator.py` without telling Kishore — 195 tests depend on them.
-- Run the suite before every push. It takes 0.01s; there's no excuse.
+- Nobody edits `schema.py`, `tools.py`, `pipeline.py` or `generator.py` without telling Kishore — 276 tests depend on them.
+- Run the suite before every push. It takes 3 seconds; there's no excuse.
 - No real customer or financial data, ever. All IDs stay synthetic (`CARD_SIM_0001`, `ACC_SIM_0001`). Section 8 of the brief.
 - Keep heavy imports (`torch`, `transformers`, `datasets`) inside function bodies so the package imports anywhere.
