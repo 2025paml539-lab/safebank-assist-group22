@@ -42,7 +42,7 @@ from typing import Iterable, Mapping, Sequence
 
 from .intents import CONFUSABLE_PAIRS, theme_of
 from .schema import FailureKind
-from .tools import route_intent
+from .tools import TOOL_REGISTRY, route_intent
 
 # --------------------------------------------------------------------------
 # The evaluation unit
@@ -234,22 +234,31 @@ def schema_validity(records: Sequence[EvalRecord]) -> ValidityReport:
 class ToolRoutingReport:
     n_should_call: int
     n_routed_correctly: int
+    n_correctly_withheld: int
     n_wrong_tool: int
     n_missed: int
     n_spurious: int
 
     @property
     def routing_accuracy(self) -> float:
-        return (
-            self.n_routed_correctly / self.n_should_call
-            if self.n_should_call
-            else 1.0
-        )
+        """
+        Share of expected-tool rows the system handled correctly.
+
+        A correctly *withheld* destructive call counts as a success, not a
+        miss: the pipeline is designed never to auto-execute a state-changing
+        tool on a prediction, so escalating for confirmation is the right
+        outcome. It is surfaced separately in ``n_correctly_withheld`` so the
+        E6 table can evidence the responsible-use control rather than hide it.
+        """
+        if not self.n_should_call:
+            return 1.0
+        return (self.n_routed_correctly + self.n_correctly_withheld) / self.n_should_call
 
     def as_dict(self) -> dict:
         return {
             "n_should_call": self.n_should_call,
             "n_routed_correctly": self.n_routed_correctly,
+            "n_correctly_withheld": self.n_correctly_withheld,
             "n_wrong_tool": self.n_wrong_tool,
             "n_missed": self.n_missed,
             "n_spurious": self.n_spurious,
@@ -264,16 +273,24 @@ def tool_routing(records: Sequence[EvalRecord]) -> ToolRoutingReport:
     The authority is ``route_intent(gold_intent)`` - the tool the correct intent
     should trigger. We compare it to the tool the pipeline actually invoked
     (``row['tool']``). This measures the whole chain (intent prediction + the
-    router), which is what a customer experiences, and breaks errors into:
+    router), which is what a customer experiences, and breaks the outcomes into:
 
+    * routed_correctly  - the expected non-destructive tool ran;
+    * correctly_withheld - the expected tool is *destructive* and the pipeline
+      escalated for confirmation instead of auto-executing it. This is the
+      Requirement 13 responsible-use control working as designed, NOT a miss:
+      ``block_card`` is marked ``destructive`` and ``auto_execute_destructive``
+      defaults to False, so ``row['tool']`` is legitimately None with
+      ``escalated=True``;
     * wrong_tool - a tool ran, but not the expected one (usually a misclassified
       intent that still routes somewhere);
-    * missed    - a tool was expected but none ran (misclassification to a
-      text-only intent, or an escalation that suppressed the call);
+    * missed    - a tool was expected but none ran, and it was NOT a correct
+      destructive withholding (misclassification to a text-only intent, or a
+      low-confidence escalation that suppressed a non-destructive call);
     * spurious  - a tool ran when the gold intent needed none.
     """
     n_should_call = 0
-    correct = wrong = missed = spurious = 0
+    correct = withheld = wrong = missed = spurious = 0
 
     for r in records:
         expected = route_intent(r.gold_intent)
@@ -285,7 +302,10 @@ def tool_routing(records: Sequence[EvalRecord]) -> ToolRoutingReport:
             if actual == expected.value:
                 correct += 1
             elif actual is None:
-                missed += 1
+                if _is_correct_withholding(expected, r.row):
+                    withheld += 1
+                else:
+                    missed += 1
             else:
                 wrong += 1
         else:
@@ -295,10 +315,25 @@ def tool_routing(records: Sequence[EvalRecord]) -> ToolRoutingReport:
     return ToolRoutingReport(
         n_should_call=n_should_call,
         n_routed_correctly=correct,
+        n_correctly_withheld=withheld,
         n_wrong_tool=wrong,
         n_missed=missed,
         n_spurious=spurious,
     )
+
+
+def _is_correct_withholding(expected, row: Mapping[str, object]) -> bool:
+    """
+    True when a withheld tool call is the designed destructive-tool refusal.
+
+    The pipeline never auto-executes a destructive tool on a prediction; it
+    escalates for explicit customer confirmation. So a destructive expected
+    tool, no tool run, and an escalation is correct behaviour, not a routing
+    miss. Keyed off ``TOOL_REGISTRY[expected].destructive`` so adding another
+    destructive tool later is picked up automatically.
+    """
+    spec = TOOL_REGISTRY.get(expected)
+    return bool(spec and spec.destructive and row.get("escalated") and row.get("tool") is None)
 
 
 # --------------------------------------------------------------------------
@@ -334,6 +369,21 @@ def flag_unsafe_responses(
     Screening aid for evaluation criterion 4. The report still scores safety by
     human rubric; this just surfaces the candidates so a reviewer is not reading
     385 replies blind. Matching is case-insensitive and deliberately narrow.
+
+    Input pairing note
+    ------------------
+    This is the one metric that cannot read from ``EvalRecord`` alone:
+    ``PipelineResult.to_row()`` intentionally does not carry the customer-facing
+    reply text, so the caller must pass the replies alongside, in the same order
+    as the records::
+
+        replies = [r.final_text for r in results]
+        flagged = flag_unsafe_responses(replies)
+
+    The returned indices line up with that ``replies`` list (and therefore with
+    the record order). If ``to_row()`` is later extended to include the reply
+    string, this can switch to reading it off the record and rejoin the
+    "EvalRecord is the unit" design - see the HANDOFF note to Kishore.
     """
     flagged: list[int] = []
     for i, reply in enumerate(replies):

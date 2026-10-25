@@ -1,22 +1,13 @@
 """
-The prompt seam, and the zero-shot reference template.
+The four prompt strategies and the shared seam.
 
-Ownership note
---------------
-``prompts.py`` is Satya's deliverable (Requirement 11, Experiment E2). What is
-tested here is the part Kishore owns and is handing over: the strategy enum,
-the ``build_prompt`` dispatch contract that ``pipeline.py`` already calls, the
-shared rendering blocks, and the fully worked ZERO_SHOT reference
-implementation.
-
-The three unimplemented variants are tested for *raising*
-``NotImplementedError``. That is deliberate, and it is the point of the
-handover: it pins the interface so Satya can fill in FEW_SHOT, ROLE_CONTEXT
-and CONSTRAINT_BASED without guessing at signatures, and it guarantees the
-suite reports honestly that they are absent rather than quietly passing.
-
-When Satya implements a variant, the matching test below is expected to fail
-and should be replaced with real content assertions.
+What is tested here: the strategy enum, the ``build_prompt`` dispatch contract
+that ``pipeline.py`` calls, the shared rendering blocks, the ZERO_SHOT
+reference template (Kishore), and all three implemented variants - FEW_SHOT,
+ROLE_CONTEXT and CONSTRAINT_BASED (Satya, E2). The variant tests assert the
+rendered content and, crucially, that every variant reuses the shared
+catalogue/schema blocks byte-identically, so an E2 accuracy delta is
+attributable to the prompting strategy rather than to wording drift.
 
 Owner: Kishore (seam + reference) / Satya Prakash (the three variants)
 """
