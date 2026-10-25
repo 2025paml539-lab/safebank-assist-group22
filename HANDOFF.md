@@ -3,7 +3,10 @@
 **SafeBank Assist** · PCAM ZG516 Group Major Project · Group 22 · due **31 Oct 2026**
 
 Last updated: 23 Oct 2026 by Kishore (Solution Architect).
-Full detail in [`ARCHITECTURE.md`](ARCHITECTURE.md). This page is the 2-minute version.
+
+- **[`WORKLOG.md`](WORKLOG.md)** — live status, what's done, what's pending, and **complete specifications for every unwritten file**. Start here if you are picking up a task.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — full technical detail and report source material.
+- This page is the 2-minute version.
 
 ---
 

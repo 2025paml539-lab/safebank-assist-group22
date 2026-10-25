@@ -1,0 +1,397 @@
+# Work Log — SafeBank Assist
+
+**PCAM ZG516 Applied Generative AI · Group Major Project / Assignment-1 · Group 22**
+**Deadline: 31 October 2026** (extended from 25 Oct) · Log updated: **25 October 2026**
+
+This is the single source of truth for project status. If this file and `PROJECT_PLAN.md` disagree, **this file wins** — the plan was written before the code existed.
+
+> **Picking this up in your own AI IDE?** Read sections 1, 6, 7 and 8. Section 6 contains complete specifications for every unwritten file: exact paths, signatures, contracts, gotchas and verification commands. You should not need to ask anyone a question to start.
+
+---
+
+## 1. Where we are
+
+| | |
+|---|---|
+| **Overall completion** | **~45–50%** |
+| Estimated marks secured | ~9.9 / 20 |
+| Application code | ~90% done |
+| **Experiment results** | **0% — nothing has run on a real model yet** |
+| Report | ~5% (raw material written, nothing assembled) |
+| Demo | 0% |
+| Tests passing on `main` | **195** |
+| Tests passing including open PR #1 | **269** |
+
+**One-line summary:** the code is nearly finished, but nothing that produces a *number* has run, because the model environment was never set up. That is now the critical path.
+
+### Completion by workstream
+
+| Member | Area | Status |
+|---|---|---|
+| **Kishore** | Architecture + application code | ✅ **100% — merged to `main`** |
+| **Satya** | Prompts, decoding, evaluation code | 🟡 **~95% — PR #1 open, changes requested** |
+| **Vishruth** | Data, model loading, environment, E1 | 🔴 **0% — not started. BLOCKS EVERYTHING.** |
+| **Bhavani** | Report assembly, submission | 🔴 **~5% — not started** |
+
+### Rubric estimate (20 marks)
+
+| # | Component | Marks | Est. | Why not full |
+|---|---|---|---|---|
+| 1 | Problem + dataset analysis | 2 | 0.8 | Problem done; no dataset analysis, no class distribution, no preprocessing log |
+| 2 | LLM / generative-model understanding | 3 | 0.9 | Architecture prose drafted; model-family comparison unwritten; needs real tokenizer output |
+| 3 | Prompt engineering | 3 | 1.5 | All 4 variants coded; **no accuracy comparison table** |
+| 4 | Adaptation strategy | 2 | 1.2 | Written in `ARCHITECTURE.md` §7; must be argued from measured numbers we don't have |
+| 5 | Structured output + tool calling | 3 | 2.4 | Complete and tested; validity-rate metric needs a real run |
+| 6 | Implementation | 3 | 2.1 | Code modular + tested + seeded; **no Colab notebook, no `requirements.txt`** |
+| 7 | Evaluation + failure analysis | 2 | 0.7 | Metrics coded; zero results, zero analysed failure cases |
+| 8 | Report + demo + contribution | 2 | 0.3 | Nothing assembled, no rehearsal, no signatures |
+| | | **20** | **~9.9** | |
+
+---
+
+## 2. Day-by-day plan to 31 Oct
+
+Only **one** buffer day. This is thin.
+
+| Day | Must land | Owner |
+|---|---|---|
+| **Sun 25 (today)** | Colab decision locked · `data_prep.py` + `model_loader.py` started · routing bug fixed · PR #1 merged · `PROJECT_PLAN.md` corrected · report §1/§5 drafted | all |
+| **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth |
+| **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore |
+| **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya |
+| **Thu 29** | All report sections drafted · figures generated | all |
+| **Fri 30** | Report assembled + formatted + proofread · demo rehearsal | Bhavani + all |
+| **Sat 31** | Contribution statement signed · **submit** | Bhavani |
+
+### 🔴 Escalation trigger — agreed safeguard
+
+**If `data_prep.py` and `model_loader.py` are not running by Monday 26 Oct evening, Kishore takes them over.** They are ~150 lines each, both contracts are fully specified in section 6 below, and Tue–Wed collapse without them. The contribution statement will record who actually did what.
+
+---
+
+## 3. DONE — Kishore (merged to `main`)
+
+All verified. 195 tests pass with **only pydantic installed** — no torch, no GPU, no network.
+
+| File | Lines | What it does | Experiment |
+|---|---|---|---|
+| `src/safebank/config.py` | 85 | Seeds, model ids, dataset id, thresholds, artifact paths, `ensure_dirs()` | — |
+| `src/safebank/intents.py` | 203 | `INTENT_THEMES` (5×4), `FOCUS_INTENTS` (20), `CONFUSABLE_PAIRS` (6), `validate_label_space()`, `theme_of()` | E6 input |
+| `src/safebank/schema.py` | 264 | `AssistantResponse`, `ToolCall`, `extract_json_block()`, `FailureKind` (4 kinds), `parse_response()`, `build_repair_prompt()` | **E4** |
+| `src/safebank/tools.py` | 302 | 3 simulated tools + pydantic I/O schemas, deterministic handlers, `TOOL_REGISTRY`, `INTENT_TO_TOOL` (10 intents), `execute_tool()`, `tool_specs_json()` | **E5** |
+| `src/safebank/generator.py` | 131 | `TextGenerator` Protocol, `DecodeConfig`, `DecodeStrategy`, `FakeGenerator` | E1/E3 seam |
+| `src/safebank/pipeline.py` | 295 | `SafeBankPipeline`, repair-retry loop, confidence gate, intent-authoritative routing, destructive-tool refusal, response composition | **E7** |
+| `src/safebank/prompts.py` | 519 | `PromptStrategy`, `build_prompt()` dispatch, shared formatters, `ZERO_SHOT` implemented | E2 seam |
+| `src/safebank/__init__.py` | 143 | Public API, 44 exports | — |
+| `tests/` (7 files) | ~1,350 | 195 tests | E4/E5/E7 evidence |
+| `ARCHITECTURE.md` | 290 | Report §5, §9, §10, §12 source material | — |
+| `HANDOFF.md` | 111 | Per-member next steps | — |
+
+**Verification evidence captured:**
+- Full suite: `Ran 195 tests ... OK`
+- `compileall` clean on all modules
+- Real E7 trace: prompt built (1,805 chars for 20 intents) → JSON validated → `card_arrival` → `check_card_delivery_status` → `{'status': 'in_transit', 'dispatched_on': '2026-10-12', 'eta_days': 5}` → disclaimer attached
+- **Mutation check:** flipping `block_card.destructive` to `False` in memory fails 4 tests — the safety control is genuinely guarded, not merely asserted
+
+---
+
+## 4. IN REVIEW — Satya, PR #1
+
+**PR:** https://github.com/2025paml539-lab/safebank-assist-group22/pull/1
+**Branch:** `2025paml561/e2-e3-e6` · **Review:** `CHANGES_REQUESTED` (id 5643407598)
+**Adds:** 2,065 lines · 269 tests total (+74) · 3.1s warm
+
+| File | Status |
+|---|---|
+| `src/safebank/prompts.py` | 🟡 All 4 variants implemented. `ZERO_SHOT` untouched. All reuse the shared formatters ✅ |
+| `src/safebank/decoding.py` | ✅ 288 lines, 6-config E3 grid, `seed_variations()` handles greedy correctly |
+| `src/safebank/evaluate.py` | 🔴 687 lines, all 6 metrics — **one blocking bug** |
+| `tests/test_decoding.py` | ✅ 23 tests |
+| `tests/test_evaluate.py` | 🟡 34 tests — destructive-tool path untested |
+| `tests/test_prompts.py` | ✅ 59 tests, stub assertions properly replaced |
+
+### 🔴 Blocking bug — `evaluate.tool_routing()`
+
+It compares `route_intent(gold_intent)` against the tool the pipeline actually ran. But the pipeline **deliberately refuses** to auto-execute `block_card` and escalates instead, so `row['tool']` is `None` and the metric scores it as `missed`.
+
+Measured on a run where every label is predicted **correctly**:
+
+```
+{"n_should_call": 4, "n_routed_correctly": 1, "n_missed": 3, "routing_accuracy": 0.25}
+```
+
+100% intent accuracy reports **25% routing accuracy**. On the 385-row set, 3 intents × 5 rows = **15 of 50 tool-expected rows are permanently wrong**, capping routing accuracy at **70%**.
+
+**Required fix:** when `route_intent(gold)` returns a tool with `TOOL_REGISTRY[tool].destructive == True` and the row shows `escalated=True` with `tool is None`, that is correct behaviour. Add an `n_correctly_withheld` category and exclude it from misses — then the table actively evidences Requirement 13. Add a regression test.
+
+### 🟡 Minor
+- `flag_unsafe_responses(replies)` needs reply text, but `to_row()` doesn't carry it. Either extend `to_row()` (Kishore) or document the manual pairing. **Needs a decision.**
+- `tests/test_prompts.py` module docstring still describes the variants as deliberately raising `NotImplementedError`. Stale.
+
+---
+
+## 5. Environment — VERIFIED FACTS (do not re-investigate)
+
+Measured on Kishore's machine, **25 Oct 2026**.
+
+```
+Python 3.14.5  @ C:\Users\vl543f\AppData\Local\Programs\Python\Python314\python.exe
+```
+
+| Package | Status |
+|---|---|
+| pydantic | **2.13.4** ✅ |
+| pydantic-core | 2.46.4 ✅ |
+| numpy | 2.5.2 ✅ |
+| pandas | 2.3.3 ✅ |
+| scikit-learn | **1.9.0** ✅ |
+| matplotlib / seaborn / scipy | 3.11.1 / 0.13.2 / 1.18.1 ✅ |
+| **torch** | ❌ **MISSING** |
+| **transformers** | ❌ **MISSING** |
+| **datasets** | ❌ **MISSING** |
+| **tokenizers** | ❌ **MISSING** |
+| pytest | ❌ MISSING → **use stdlib `unittest`** |
+| jupyter / nbformat | ❌ MISSING |
+
+### 🔴 Hard constraints
+
+1. **Nothing may be installed on Kishore's machine.** It is a company laptop. Not negotiable.
+2. **Python 3.14.5 predates stable `torch` wheels.** Even if installing were allowed, the model stack would likely not build.
+3. **Therefore: all model work runs in Google Colab.** The application layer and the test suite stay local. This is the resolution of `PROJECT_PLAN.md` Open Item 2.
+4. **Tests must use stdlib `unittest`.** pytest is unavailable and must not be added.
+5. **Keep `torch` / `transformers` / `datasets` imports inside function bodies**, never at module top level, so `import safebank` and the offline suite keep working.
+
+### Inference budget (free Colab T4, Qwen2.5-1.5B fp16)
+
+Prompt carries all 77 labels ≈ 800 tokens (few-shot ≈ 1,600).
+
+| Run | Generations | Unbatched | Batched |
+|---|---|---|---|
+| E2 — 4 variants × 385 rows | 1,540 | ~1.5 h | ~25 min |
+| E3 — 6 configs × 385 rows | 2,310 | ~2.2 h | ~40 min |
+| E1 + repair retries | ~400 | ~0.5 h | ~10 min |
+| **Total** | | **~4–6 h** | **~1.5 h** |
+
+**Two agreed scope cuts, both defensible in the report:**
+1. **Run E3 on a stratified subset — 77 rows, 1 per intent.** E3 measures decoding behaviour and stability, not accuracy precision. Saves ~1.8 h.
+2. **Batch the generation.** This is the difference between 6 hours and 90 minutes on a T4.
+
+Keep E2 on the full 385 rows — that is the headline accuracy table.
+
+---
+
+## 6. PENDING — full specifications
+
+### 🔴 6.1 Vishruth — `src/safebank/data_prep.py` (NOT STARTED, blocks everything)
+
+Load BANKING77, freeze a reproducible stratified evaluation sample, and supply a train-split example bank for few-shot.
+
+```python
+# Required public functions. Keep datasets/pandas imports INSIDE the bodies.
+
+def load_banking77(cache_dir: str | None = None) -> tuple[object, object]:
+    """Return (train_split, test_split) from config.DATASET_ID."""
+
+def dataset_label_space(split) -> list[str]:
+    """
+    Authoritative intent names, read from the dataset itself:
+        split.features["label"].names
+    NEVER hardcode these. Must return exactly 77 names.
+    """
+
+def build_eval_sample(split, labels, seed: int = config.SEED) -> list[dict]:
+    """
+    Stratified sample: config.EVAL_EXAMPLES_PER_INTENT (=5) rows per intent.
+    5 x 77 = 385 rows. Deterministic under `seed`.
+    Each row: {"query": str, "gold_intent": str}
+    """
+
+def build_example_bank(train_split, labels, n: int = 4, seed: int = config.SEED) -> list[tuple[str, str]]:
+    """
+    (customer_message, expected_json_string) pairs for few-shot prompting.
+    MUST come from the TRAIN split only. Feeds prompts.build_few_shot_prompt(examples=...).
+    """
+
+def preprocessing_record() -> dict:
+    """
+    Written record for the report: dataset id, split sizes, n_intents, seed,
+    rows per intent, total eval rows, and what preprocessing was applied.
+    Deliverable 3 ("dataset description + preprocessing record").
+    """
+```
+
+**Mandatory — do not skip:**
+
+```python
+from .intents import validate_label_space
+validate_label_space(dataset_label_space(train_split))   # raises LabelSpaceError on mismatch
+```
+
+The 20 `FOCUS_INTENTS` names in `intents.py` have **never been checked against the real dataset** — `datasets` isn't installed locally. This call is the check. If it raises, a name is misspelled: fix `intents.py` and tell Kishore. **Nothing may be reported until this passes.**
+
+**Facts you need:** `config.DATASET_ID = "PolyAI/banking77"` · `config.EXPECTED_N_INTENTS = 77` · `config.EVAL_EXAMPLES_PER_INTENT = 5` · `config.SEED = 42`
+
+---
+
+### 🔴 6.2 Vishruth — `src/safebank/model_loader.py` (NOT STARTED, blocks everything)
+
+```python
+def device_report() -> DeviceReport:
+    """
+    Hardware + version facts for the reproducibility appendix:
+    device, device_name, torch.cuda.get_device_capability(), VRAM,
+    torch/transformers versions, dtype.
+    """
+
+def load_model_and_tokenizer(
+    model_id: str = config.MODEL_ID,
+    *, device: str | None = None, dtype: str = "float16", cache_dir: str | None = None,
+) -> tuple[object, object]:
+    """Load a pretrained causal LM + tokenizer. Returns (model, tokenizer)."""
+
+class HFGenerator:
+    """Real TextGenerator. Must satisfy generator.TextGenerator structurally."""
+    def __init__(self, model, tokenizer, *, device: str | None = None): ...
+    def generate(self, prompt: str, decode: DecodeConfig) -> str: ...
+```
+
+**Six gotchas that will cost you hours if missed:**
+
+1. **Return the completion ONLY**, with the prompt stripped. The pipeline feeds your return value straight into `schema.parse_response`. A prompt echo is scored as a model failure and silently ruins every metric.
+2. **Set `tokenizer.pad_token = tokenizer.eos_token` when it is `None`.** GPT-2 has no pad token and batched generation fails without it.
+3. **Call `model.eval()`.** Training mode leaves dropout on, which makes greedy decoding non-deterministic and corrupts the E3 stability measurement.
+4. **Pass `**decode.to_generate_kwargs()`.** Do not hand-build sampling arguments — that method already emits only the knobs relevant to each strategy, so a greedy run cannot leak a temperature.
+5. **Seed with `transformers.set_seed(decode.seed)` immediately before every sampled generation**, or the E3 self-consistency study is not reproducible.
+6. **Use `tokenizer.apply_chat_template` for Qwen2.5-Instruct.** It is markedly worse at instruction-following without it. GPT-2 has no chat template, so branch on `tokenizer.chat_template is None`. That asymmetry is part of why GPT-2 is the weak E1 baseline.
+
+Also: cache the loaded pair at module level (reloading 3 GB per experiment makes the notebook unusable on a T4), and record prompt/completion token counts for evaluation criterion 5.
+
+**Models:** `config.MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"` · `config.BASELINE_MODEL_ID = "gpt2"` · `config.MAX_NEW_TOKENS = 192`
+
+**Self-check once written:**
+
+```python
+from safebank.generator import TextGenerator
+assert isinstance(HFGenerator(model, tok), TextGenerator)   # runtime_checkable Protocol
+```
+
+---
+
+### 🔴 6.3 Vishruth — `requirements.txt` + Colab notebook + E1
+
+- **`requirements.txt`** at the project root, pinned. Comment which packages are already available locally vs needed only in Colab. Writing the file installs nothing.
+- **Colab notebook** — pip-install cell, clean top-to-bottom run on a free T4, `%cd` into the repo, `sys.path.insert(0, "src")`.
+- **E1 baseline** — one simple prompt, **≥3 outputs** (plan says 5), GPT-2 vs Qwen side by side. This is what makes the E1→E2 improvement visible.
+- **Reproducibility appendix** — versions, seeds, hardware from `device_report()`.
+
+---
+
+### 🟡 6.4 Satya — after PR #1 is fixed
+
+1. Fix `tool_routing` (section 4), add the regression test, drop the stale docstring.
+2. **E2** — 4 variants × 385 rows → accuracy comparison table + per-variant design rationale (already in `STRATEGY_RATIONALE`).
+3. **E3** — 6-config grid on a 77-row subset, 3 sample outputs each, variability analysis via `self_consistency_configs()`.
+4. **E6** — 6 metrics, baseline vs final comparison, **≥3 analysed failure cases** (plan targets 6) with root causes. `CONFUSABLE_PAIRS` gives you the predicted failure modes to test against.
+5. Report §4a (model families), §7 (prompts), §8 (decoding), §11 (results), §13 (limitations).
+
+### 🟡 6.5 Kishore — remaining
+
+1. Merge PR #1 once fixed; decide the `to_row()` safety-metric question.
+2. Real **E7** run on Colab once `model_loader` lands — swap `FakeGenerator` for `HFGenerator`, nothing else changes.
+3. Report §2, §4b, §5, §9, §10, §12 — **already drafted in `ARCHITECTURE.md`**, needs formatting into the template.
+
+### 🔴 6.6 Bhavani — start now, do not wait for results
+
+**§1 abstract, §5 architecture, §10 structured output and §12 responsible use are already written in `ARCHITECTURE.md`.** Formatting those into the BITS WILP template is a real chunk of the report that needs zero experiment results. Start today.
+
+Then: §3 dataset description (from Vishruth's `preprocessing_record()`), §14 conclusion, references, appendix (prompts/schemas/output samples), assembly into 10–15 pages, **individual contribution statement signed by all 4**, Section 8 compliance proofread, portal upload.
+
+---
+
+## 7. FROZEN INTERFACES — do not change without telling Kishore
+
+195 tests and `pipeline.py` depend on these.
+
+```python
+# structured output (E4)
+parse_response(raw, allowed_intents) -> ValidationOutcome
+build_repair_prompt(raw, outcome) -> str
+
+# tools (E5)
+route_intent(intent) -> ToolName | None
+execute_tool(name, args) -> ToolResult
+
+# generation seam (E1, E3)
+class TextGenerator(Protocol):
+    def generate(self, prompt: str, decode: DecodeConfig) -> str: ...
+
+# prompts (E2)
+build_prompt(strategy, query, allowed_intents, **kwargs) -> str
+
+# orchestration (E7)
+SafeBankPipeline(generator, allowed_intents, strategy=...).run(query, decode) -> PipelineResult
+PipelineResult.to_row() -> dict
+```
+
+`PipelineResult.to_row()` keys: `query`, `ok`, `intent`, `confidence`, `attempts`, `needed_repair`, `first_failure`, `tool`, `tool_ok`, `escalated`, `latency_ms`.
+
+**Nobody edits `schema.py`, `tools.py`, `pipeline.py`, `generator.py`, `config.py`, `intents.py` or `__init__.py` without telling Kishore first.**
+
+---
+
+## 8. How to verify your work
+
+```powershell
+# from the GenAI_Project1 directory. No install step, no PYTHONPATH needed.
+python -m unittest discover -s tests -t . -v
+```
+
+Expected on `main`: `Ran 195 tests ... OK`. With PR #1 merged: `269 ... OK`. Runs on **pydantic alone**.
+
+See the whole application run with no model:
+
+```powershell
+python -c "import sys; sys.path.insert(0,'src'); from safebank import *; p=SafeBankPipeline(FakeGenerator(), list(FOCUS_INTENTS)); r=p.run('my card has not arrived'); print(r.final_text)"
+```
+
+Byte-compile check: `python -m compileall -q src\safebank`
+
+### Ground rules
+- **Branch per person**, PR into `main`. Don't commit straight to `main`.
+- Run the suite before every push. It takes 3 seconds.
+- No real customer or financial data, ever. IDs stay synthetic (`CARD_SIM_0001`, `ACC_SIM_0001`) — Section 8 of the brief.
+- Every prompt and decoding choice needs a written rationale. Section 8 forbids unexplained choices.
+
+---
+
+## 9. Known traps
+
+| Trap | Consequence | Mitigation |
+|---|---|---|
+| `FOCUS_INTENTS` names unverified against real BANKING77 | E6 analysis describes intents never evaluated | `validate_label_space()` in `data_prep.py` — **mandatory** |
+| `HFGenerator` returning prompt + completion | Every metric silently wrong | Strip the prompt; see §6.2 gotcha 1 |
+| Model left in training mode | Greedy becomes non-deterministic, E3 stability meaningless | `model.eval()` |
+| Few-shot examples drawn from the eval sample | **Contaminates every E2 number** | Train split only; `build_example_bank` reads `train_split` |
+| `tool_routing` counting withheld destructive calls as misses | Safety control reported as a defect | PR #1 fix, section 4 |
+| Top-level `torch` import | Breaks `import safebank` and all 195 tests locally | Imports inside function bodies |
+| Quoting `PROJECT_PLAN.md`'s old numbers in the report | Report contradicts the code | Use this file; plan corrected 25 Oct |
+
+---
+
+## 10. Change log
+
+| Date | Entry |
+|---|---|
+| 23 Oct | Kishore: `config`, `intents`, `schema`, `tools`, `generator`, `pipeline` written |
+| 23 Oct | Kishore: `__init__.py` + `prompts.py` seam with `ZERO_SHOT`; package imports for the first time |
+| 23 Oct | Kishore: 195-test suite; E7 verified end-to-end; mutation check confirms safety tests have teeth |
+| 23 Oct | Kishore: `ARCHITECTURE.md`, `HANDOFF.md`; repo initialised and pushed (`c921e0d`) |
+| 25 Oct | Satya: PR #1 — E2 prompts (4/4), E3 grid, E6 metrics. 269 tests |
+| 25 Oct | Kishore: PR #1 reviewed → `CHANGES_REQUESTED`, one blocking bug in `tool_routing` |
+| 25 Oct | Kishore: this work log added; `PROJECT_PLAN.md` corrected (5 stale items) |
+
+### Still open for the group
+1. 🔴 **Colab environment decision** — blocks E1/E2/E3 and the real E7. Proposal: Colab for all model work, local for app layer + tests.
+2. 🟡 **`to_row()` safety-metric plumbing** — extend it, or document manual pairing?
+3. 🟡 **BITS IDs for all 4 members** — needed for the report title page.
+4. 🟡 **Repo is currently public** — recommend making it private until after submission.

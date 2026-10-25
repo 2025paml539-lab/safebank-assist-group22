@@ -9,8 +9,18 @@
 | **Members** | Nandhaluru Kishore, Vishruth M, Satya Prakash, Takkars Bhavani |
 | **Dataset** | D1 – BANKING77 *(confirmed by instructor)* |
 | **Maximum Marks** | 20 |
-| **Due** | Sunday, 25 October 2026, 11:59 PM |
+| **Due** | Saturday, 31 October 2026, 11:59 PM *(extended from 25 Oct)* |
 | **Submission** | Portal → Assignment 1 → Add submission |
+
+---
+
+> ## ⚠️ Read `WORKLOG.md` first
+>
+> **This plan was written on 15 Oct, before any code existed. [`WORKLOG.md`](WORKLOG.md) is the live status document and wins wherever the two disagree.**
+>
+> Corrected in this file on 25 Oct to match the implementation: the eval set is **385 rows across all 77 intents** (not 200 rows across 20), the intent name is `lost_or_stolen_card` (not `card_lost_or_stolen`), `block_card` returns `replacement_eta_days`, and **10** intents route to a tool (not 6).
+>
+> Current state: application code ~90% done, **experiment results 0%**, report ~5%. See `WORKLOG.md` §1.
 
 ---
 
@@ -52,8 +62,8 @@ customer query
 | Model | `Qwen2.5-1.5B-Instruct` | Causal LM, instruction-tuned, ~3 GB fp16, fits 8 GB VRAM and Colab T4 |
 | Naive baseline | `gpt-2` | Deliberately weak, makes E1→E2 improvement visible |
 | Schema validation | `pydantic` v2 | Already installed locally |
-| Intent scope | Curated **20 of 77** intents across 5 themes | Keeps few-shot prompts tractable; deliberately includes confusable pairs for failure analysis. Scope decision documented in the report. |
-| Eval set | 200 rows, stratified, `seed=42` | Reproducible; large enough for meaningful accuracy |
+| Intent scope | **All 77 intents** kept in the label space (`config.EXPECTED_N_INTENTS = 77`) | *Corrected 25 Oct.* Fine-grained 77-way classification is the defining characteristic of BANKING77; narrowing it would weaken the dataset analysis. The curated 20 survive as `intents.FOCUS_INTENTS`, used only for the E6 failure analysis. |
+| Eval set | **385 rows** = 5 per intent × 77, stratified, `seed=42` (`config.EVAL_EXAMPLES_PER_INTENT = 5`) | *Corrected 25 Oct (was 200).* Every intent represented. Note the inference cost: see `WORKLOG.md` §5 for the budget and the agreed scope cut for E3. |
 | Tools | 3 simulated functions | No real banking data or credentials (Section 8 compliance) |
 
 ### Output schema
@@ -73,9 +83,11 @@ customer query
 
 | Tool | Input schema | Output schema | Triggering intents |
 |---|---|---|---|
-| `check_card_delivery_status` | `{card_id: str}` | `{status, dispatched_on, eta_days}` | card_arrival, card_delivery_estimate |
-| `block_card` | `{account_id: str, reason: enum}` | `{blocked: bool, ref_id, replacement_eta}` | card_lost_or_stolen, compromised_card |
-| `find_branch` | `{pincode: str, service: enum}` | `{branch_name, address, distance_km}` | atm_support, cash_withdrawal_charge |
+| `check_card_delivery_status` | `{card_id: str}` | `{status, dispatched_on, eta_days}` | `card_arrival`, `card_delivery_estimate`, `order_physical_card`, `getting_spare_card` |
+| `block_card` **(destructive)** | `{account_id: str, reason: enum}` | `{blocked: bool, ref_id, replacement_eta_days}` | `lost_or_stolen_card`, `compromised_card`, `card_swallowed` |
+| `find_branch` | `{pincode: str, service: enum}` | `{branch_name, address, distance_km}` | `atm_support`, `cash_withdrawal_charge`, `declined_cash_withdrawal` |
+
+*Corrected 25 Oct:* **10** intents route to a tool, not 6. The intent name is `lost_or_stolen_card` (the plan's original `card_lost_or_stolen` is not a real BANKING77 label), and `block_card` returns `replacement_eta_days`. `block_card` is flagged `destructive` and is **never auto-executed** — the pipeline escalates for explicit customer confirmation. The other 67 intents are answered with text only. See `tools.INTENT_TO_TOOL`.
 
 ---
 
@@ -134,16 +146,18 @@ customer query
 
 ## 5. Deliverables Checklist (Section 9 — all 10)
 
-- [ ] Technical report, 10–15 pages excl. appendix — *Bhavani assembles, all write*
-- [ ] Working Colab notebook — *Vishruth packages*
-- [ ] Dataset description + preprocessing record — *Vishruth → Bhavani*
-- [ ] Prompt experiment log (baseline + improved) — *Satya*
-- [ ] Decoding comparison table — *Satya*
-- [ ] Structured-output schema + validated samples — *Kishore*
-- [ ] Tool/function spec + demonstration — *Kishore*
-- [ ] Evaluation + failure-analysis table — *Satya*
-- [ ] 8–10 min group demonstration — *all 4 speak*
-- [ ] Individual contribution statement, signed by every member — *Bhavani collects*
+*Status as of 25 Oct. Live version in `WORKLOG.md` §1.*
+
+- [ ] Technical report, 10–15 pages excl. appendix — *Bhavani assembles, all write* — **not started.** §1/§5/§10/§12 source material is already written in `ARCHITECTURE.md` and needs only formatting; start there without waiting for results
+- [ ] Working Colab notebook — *Vishruth packages* — **not started**
+- [ ] Dataset description + preprocessing record — *Vishruth → Bhavani* — **not started**, blocked on `data_prep.py`
+- [ ] Prompt experiment log (baseline + improved) — *Satya* — **code done (4/4 variants, PR #1), no results yet**
+- [ ] Decoding comparison table — *Satya* — **grid coded (`decoding.py`, PR #1), no results yet**
+- [x] Structured-output schema + validated samples — *Kishore* — **DONE.** `schema.py` merged, 35 tests, `response_json_schema()` exports for the appendix
+- [x] Tool/function spec + demonstration — *Kishore* — **DONE.** `tools.py` merged, 38 tests, `tool_specs_json()` exports all 3 contracts
+- [ ] Evaluation + failure-analysis table — *Satya* — **metrics coded (`evaluate.py`, PR #1, 1 blocking bug), no results yet**
+- [ ] 8–10 min group demonstration — *all 4 speak* — **not started, not rehearsed**
+- [ ] Individual contribution statement, signed by every member — *Bhavani collects* — **not started.** Git commit history is usable as supporting evidence
 
 ---
 
@@ -228,7 +242,13 @@ Rubric ownership: component 8 (assembly half) → **~1 mark**
 
 ---
 
-## 7. Timeline (today = 15 Oct, due 25 Oct)
+## 7. Timeline
+
+> **Superseded.** The table below is the original 15 Oct plan and is kept only as a record of intent. The deadline moved to **31 Oct** and the actual schedule is in **`WORKLOG.md` §2**, which also carries the Monday 26 Oct escalation trigger for the environment work.
+>
+> What actually happened versus this plan: the environment and dataset work (rows 2–4 below) **did not start**, so E1 never ran. The architecture, schema, tools and pipeline work landed on 23 Oct, and E2/E3/E6 code landed 25 Oct in PR #1. Nothing has run against a real model yet.
+
+### Original plan (15 Oct, superseded)
 
 | Dates | Milestone | Owner |
 |---|---|---|
@@ -264,6 +284,6 @@ Rubric ownership: component 8 (assembly half) → **~1 mark**
 ## 9. Open Items
 
 1. ~~**Dataset confirmation**~~ — **CLOSED.** D1 BANKING77 confirmed by the instructor. Group membership correction (Takkars Bhavani in place of Shruti Dubey) also acknowledged. SQuAD fallback no longer needed.
-2. **Environment decision** — local venv (faster iteration, 8 GB Blackwell GPU) vs Colab-only (zero local installs, matches grading environment). *Awaiting Kishore's approval; nothing installed yet.*
+2. 🔴 **Environment decision — STILL OPEN, and now the critical path.** Verified 25 Oct on Kishore's machine (Python 3.14.5): `pydantic 2.13.4`, `numpy 2.5.2`, `pandas 2.3.3`, `scikit-learn 1.9.0`, `matplotlib`, `seaborn`, `scipy` are all present, but **`torch`, `transformers`, `datasets` and `tokenizers` are absent and cannot be installed** — it is a company laptop, and Python 3.14.5 predates stable torch wheels regardless. Local venv is therefore **not available**. *Proposal: all model work in Colab, application layer and tests stay local.* This blocks E1, E2, E3 and the real E7 run. See `WORKLOG.md` §5.
 3. **BITS IDs** for all 4 members, needed for the report title page.
 4. **Lecture alignment** — Kishore/Satya to confirm the concept sections match the depth covered in CS1–CS3.
