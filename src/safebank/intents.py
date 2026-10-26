@@ -123,6 +123,31 @@ CONFUSABLE_PAIRS: tuple[ConfusablePair, ...] = (
 )
 
 
+#: Confusions actually OBSERVED in a real model run, as opposed to the
+#: predicted ones above.
+#:
+#: Kept separate on purpose. ``CONFUSABLE_PAIRS`` is a prediction made before
+#: any results existed, and the report's claim that we anticipated those
+#: failure modes is only honest if the list stays untouched by hindsight.
+#: Silently appending observed confusions would convert a prediction into a
+#: retrodiction and quietly overstate the analysis.
+#:
+#: Unlike ``CONFUSABLE_PAIRS``, members here need not be in ``FOCUS_INTENTS``:
+#: a real model confuses whatever it likes across all 77 labels.
+OBSERVED_CONFUSIONS: tuple[ConfusablePair, ...] = (
+    ConfusablePair(
+        "card_arrival",
+        "card_not_working",
+        "Observed on the first real Qwen2.5-1.5B query: 'my card hasn't "
+        "arrived' was labelled card_not_working. An undelivered card and a "
+        "faulty card are different intents, but both are phrased as the card "
+        "not working for the customer. Not in the predicted set because the "
+        "prediction focused on delivery-vs-timing rather than "
+        "delivery-vs-fault.",
+    ),
+)
+
+
 class LabelSpaceError(ValueError):
     """Raised when the loaded intent label space is not what we expect."""
 

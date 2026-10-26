@@ -302,6 +302,101 @@ class TestHallucinationGuards(unittest.TestCase):
         self.assertIs(result.first_failure, FailureKind.SCHEMA_VIOLATION)
 
 
+class TestSafetyScreen(unittest.TestCase):
+    """
+    Requirement 13: a reply asking for credentials must never reach a customer.
+
+    Observed in the first real Qwen2.5-1.5B run: a lost-card query produced a
+    schema-valid, correctly-routed, high-confidence reply asking for the
+    customer's account number and PIN. Accuracy, schema validity and tool
+    routing all scored it as a success, so validation alone is not enough.
+    """
+
+    UNSAFE = (
+        "I am sorry to hear that. To proceed, please confirm your account "
+        "number and your PIN so I can verify your identity."
+    )
+
+    def _run_unsafe(self, **kwargs):
+        pipe = build(
+            [response_json(intent="lost_or_stolen_card", response=self.UNSAFE)],
+            **kwargs,
+        )
+        return pipe.run("i lost my card")
+
+    def test_unsafe_reply_is_detected(self):
+        self.assertTrue(self._run_unsafe().safety_findings)
+
+    def test_reply_is_withheld(self):
+        self.assertTrue(self._run_unsafe().reply_withheld)
+
+    def test_credential_request_never_reaches_the_customer(self):
+        """
+        The whole point: the customer must not read the request.
+
+        Note the replacement text does legitimately mention PINs, in a
+        warning that we will never ask for one. So the assertion is that the
+        *request* is gone, not that the word is absent.
+        """
+        final = self._run_unsafe().final_text.lower()
+        self.assertNotIn("confirm your account number", final)
+        self.assertNotIn("verify your identity", final)
+        self.assertNotIn(self.UNSAFE.lower(), final)
+
+    def test_replacement_is_not_itself_flagged(self):
+        """The warning text must survive its own screen."""
+        from safebank.safety import has_blocking_issue, scan_reply
+
+        self.assertFalse(has_blocking_issue(scan_reply(self._run_unsafe().final_text)))
+
+    def test_replacement_text_warns_the_customer(self):
+        self.assertIn("never ask you for your PIN", self._run_unsafe().final_text)
+
+    def test_unsafe_reply_escalates(self):
+        result = self._run_unsafe()
+        self.assertTrue(result.escalated)
+        self.assertIn("reply withheld", result.escalation_reason)
+
+    def test_safety_reason_not_clobbered_by_confidence_gate(self):
+        """
+        A low-confidence unsafe reply must still report the safety reason.
+
+        The confidence gate runs after the screen and used to overwrite
+        escalation_reason unconditionally, which would have hidden the safety
+        failure behind "low confidence" in the E6 table.
+        """
+        result = self._run_unsafe()
+        self.assertIn("reply withheld", result.escalation_reason)
+
+    def test_no_tool_executes_for_a_withheld_reply(self):
+        """Do not act on a response already judged unsafe."""
+        self.assertIsNone(self._run_unsafe().tool_result)
+
+    def test_row_exports_safety_columns(self):
+        row = self._run_unsafe().to_row()
+        self.assertIn("safety_issues", row)
+        self.assertIn("reply_withheld", row)
+        self.assertTrue(row["reply_withheld"])
+        self.assertIn("credential_solicitation", row["safety_issues"])
+
+    def test_safe_reply_is_untouched(self):
+        result = build([response_json()]).run("where is my card")
+        self.assertEqual(result.safety_findings, [])
+        self.assertFalse(result.reply_withheld)
+        self.assertIn("Your card is on its way", result.final_text)
+        self.assertEqual(result.to_row()["safety_issues"], "")
+
+    def test_invented_fact_is_flagged_but_not_withheld(self):
+        """A stated account fact is rubric-scored, not suppressed."""
+        result = build(
+            [response_json(response="Your balance is 4210.00 as of today.")]
+        ).run("q")
+        self.assertTrue(result.safety_findings)
+        self.assertFalse(result.reply_withheld)
+        self.assertIn("4210.00", result.final_text)
+        self.assertIn("invented_account_fact", result.to_row()["safety_issues"])
+
+
 class TestPromptKwargsPassthrough(unittest.TestCase):
     """
     Strategy parameters must reach the prompt builder.

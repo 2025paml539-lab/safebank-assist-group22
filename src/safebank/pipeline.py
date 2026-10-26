@@ -18,8 +18,9 @@ import time
 import warnings
 from dataclasses import dataclass, field
 
-from . import config, prompts, tools
+from . import config, prompts, safety, tools
 from .generator import DecodeConfig, TextGenerator
+from .safety import SafetyFinding
 from .schema import (
     AssistantResponse,
     FailureKind,
@@ -57,6 +58,12 @@ class PipelineResult:
     escalated: bool = False
     escalation_reason: str | None = None
     latency_ms: float = 0.0
+    safety_findings: list[SafetyFinding] = field(default_factory=list)
+
+    @property
+    def reply_withheld(self) -> bool:
+        """True when the model's reply was suppressed as unsafe to show."""
+        return safety.has_blocking_issue(self.safety_findings)
 
     @property
     def ok(self) -> bool:
@@ -103,6 +110,8 @@ class PipelineResult:
             "tool": self.tool_result.tool.value if self.tool_result else None,
             "tool_ok": self.tool_result.ok if self.tool_result else None,
             "escalated": self.escalated,
+            "safety_issues": safety.summarise(self.safety_findings),
+            "reply_withheld": self.reply_withheld,
             "latency_ms": round(self.latency_ms, 1),
         }
 
@@ -199,6 +208,7 @@ class SafeBankPipeline:
         assert outcome.response is not None
         result.response = outcome.response
 
+        self._apply_safety_screen(result)
         self._apply_confidence_gate(result)
         self._handle_tool(result)
 
@@ -235,21 +245,72 @@ class SafeBankPipeline:
 
         return outcome
 
+    @staticmethod
+    def _escalate(result: PipelineResult, reason: str) -> None:
+        """
+        Mark the run escalated, preserving the most serious reason.
+
+        Several stages can escalate the same run: the safety screen, the
+        confidence gate and the destructive-tool refusal. Each used to assign
+        ``escalation_reason`` unconditionally, so whichever ran last won. That
+        meant a reply which asked the customer for their PIN could be recorded
+        as "block_card changes account state", and the safety failure would
+        disappear from the E6 table entirely.
+
+        A withheld reply is the most serious outcome the pipeline can reach,
+        so its reason is never overwritten. One rule in one place, rather than
+        a guard at each call site that the next stage would forget to add.
+        """
+        result.escalated = True
+        if result.reply_withheld and result.escalation_reason:
+            return
+        result.escalation_reason = reason
+
+    def _apply_safety_screen(self, result: PipelineResult) -> None:
+        """
+        Screen the model's reply before it can reach a customer.
+
+        Added after the real Qwen2.5-1.5B run replied to a lost-card query by
+        asking for the customer's account number and PIN. A schema-valid,
+        correctly-routed, high-confidence response can still be dangerous
+        text, so validation alone is not sufficient.
+
+        A credential solicitation is *blocking*: the reply is withheld in
+        ``_compose`` and the request is escalated. An invented account fact is
+        recorded for the human rubric score but not blocked, because the same
+        wording is legitimate when a tool actually supplied the value.
+        """
+        response = result.response
+        assert response is not None
+
+        result.safety_findings = safety.scan_reply(response.response)
+
+        if result.reply_withheld:
+            issues = ", ".join(
+                sorted({f.matched for f in result.safety_findings if f.blocking})
+            )
+            result.escalated = True
+            result.escalation_reason = (
+                f"reply withheld: asked the customer to disclose {issues}"
+            )
+            # Set directly rather than via _escalate: this is the reason that
+            # takes precedence, so it must be in place before any later stage
+            # calls _escalate and finds it.
+
     def _apply_confidence_gate(self, result: PipelineResult) -> None:
         """Escalate low-confidence predictions rather than acting on them."""
         response = result.response
         assert response is not None
 
         if response.requires_human:
-            result.escalated = True
-            result.escalation_reason = "model requested human handling"
+            self._escalate(result, "model requested human handling")
             return
 
         if response.confidence < self.confidence_threshold:
-            result.escalated = True
-            result.escalation_reason = (
+            self._escalate(
+                result,
                 f"confidence {response.confidence:.2f} below threshold "
-                f"{self.confidence_threshold:.2f}"
+                f"{self.confidence_threshold:.2f}",
             )
 
     def _handle_tool(self, result: PipelineResult) -> None:
@@ -271,10 +332,10 @@ class SafeBankPipeline:
         spec = tools.TOOL_REGISTRY[expected]
 
         if spec.destructive and not self.auto_execute_destructive:
-            result.escalated = True
-            result.escalation_reason = (
+            self._escalate(
+                result,
                 f"'{expected.value}' changes account state and requires "
-                "explicit customer confirmation before execution"
+                "explicit customer confirmation before execution",
             )
             return
 
@@ -316,7 +377,12 @@ class SafeBankPipeline:
         response = result.response
         assert response is not None
 
-        parts = [response.response.strip()]
+        # A reply that solicited credentials is never shown, not even
+        # alongside a warning: the customer must not read the request at all.
+        if result.reply_withheld:
+            parts = [safety.WITHHELD_REPLY]
+        else:
+            parts = [response.response.strip()]
 
         if result.tool_result and result.tool_result.ok:
             parts.append(f"[system lookup: {result.tool_result.output}]")

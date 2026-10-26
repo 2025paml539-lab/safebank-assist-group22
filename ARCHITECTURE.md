@@ -85,6 +85,7 @@ Every stage is captured in a `PipelineResult`, and `PipelineResult.to_row()` fla
 | `tools.py` | 3 simulated tools, I/O schemas, intent→tool router | **E5** | Kishore | **Done** |
 | `generator.py` | `TextGenerator` protocol, `DecodeConfig`, `FakeGenerator` | E3 surface | Kishore | **Done** |
 | `pipeline.py` | End-to-end orchestration | **E7** | Kishore | **Done** |
+| `safety.py` | Reply screening: credential solicitation (blocking) and invented account facts (flagged) | **R13** | Kishore | **Done** |
 | `__init__.py` | Curated public API, 44 exports | — | Kishore | **Done** |
 | `prompts.py` | 4 prompt strategies, shared formatters, written rationale per variant | **E2** | Kishore (seam + zero-shot) → Satya (3 variants) | **Done**, 4 of 4 |
 | `decoding.py` | 6-config decoding grid, seed variation, self-consistency sets | **E3** | Satya | **Done** |
@@ -208,6 +209,7 @@ Each control is implemented, not aspirational, and each has a test that fails if
 | **Hallucinated tool request acted on** | Routing authority is the validated intent, never the model's `tool_call` field | `pipeline._handle_tool` |
 | **Irreversible action on a prediction** | `block_card` is marked `destructive`; never auto-executed. Pipeline escalates for explicit customer confirmation, and the refusal holds even at confidence 1.0 | `tools.ToolSpec.destructive`, `pipeline._handle_tool` |
 | **Overconfident wrong answer** | Confidence below 0.55 → escalate, and tool execution is suppressed | `pipeline._apply_confidence_gate` |
+| **Model asks the customer for credentials** | Reply screened for credential solicitation. A match **withholds the reply**, substitutes a warning that we never ask for secrets, and escalates — it is not merely counted | `safety.scan_reply`, `pipeline._apply_safety_screen` |
 | **Simulated data mistaken for real** | Mandatory disclaimer on every customer-facing reply, including the failure path | `config.SAFETY_DISCLAIMER`, `pipeline._compose` |
 | **Real financial data exposure** | BANKING77 is public; all tools simulated; all IDs synthetic (`CARD_SIM_0001`, `ACC_SIM_0001`) | `tools.py`, `pipeline._fill_missing_args` |
 | **Silent failure** | Unparseable output after repair → escalate with a stated reason, plus a safe fallback reply | `pipeline.run` |
