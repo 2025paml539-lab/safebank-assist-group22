@@ -302,6 +302,70 @@ class TestHallucinationGuards(unittest.TestCase):
         self.assertIs(result.first_failure, FailureKind.SCHEMA_VIOLATION)
 
 
+class TestPromptKwargsPassthrough(unittest.TestCase):
+    """
+    Strategy parameters must reach the prompt builder.
+
+    Found during the PR #2 review: the pipeline called ``build_prompt`` with
+    no keyword arguments, so ``examples=`` could never reach
+    ``build_few_shot_prompt`` and every few-shot run silently used the small
+    illustrative fallback bank. The E2 few-shot column would not have been
+    few-shot on real data at all, and nothing in the output would have said so.
+    """
+
+    EXAMPLES = [
+        ("my card has not turned up", '{"intent": "card_arrival"}'),
+        ("where is the nearest atm", '{"intent": "atm_support"}'),
+    ]
+
+    def test_examples_reach_the_few_shot_builder(self):
+        pipe = SafeBankPipeline(
+            FakeGenerator([response_json()]),
+            list(ALLOWED),
+            strategy=PromptStrategy.FEW_SHOT,
+            prompt_kwargs={"examples": self.EXAMPLES},
+        )
+        prompt = pipe.run("q").attempts[0].prompt
+        for example_query, _ in self.EXAMPLES:
+            self.assertIn(example_query, prompt)
+
+    def test_zero_shot_unaffected_by_empty_kwargs(self):
+        pipe = build([response_json()])
+        self.assertEqual(pipe.prompt_kwargs, {})
+        self.assertTrue(pipe.run("q").ok)
+
+    def test_few_shot_without_examples_warns(self):
+        """The silent fallback must become visible."""
+        with self.assertWarns(UserWarning) as ctx:
+            SafeBankPipeline(
+                FakeGenerator([response_json()]),
+                list(ALLOWED),
+                strategy=PromptStrategy.FEW_SHOT,
+            )
+        self.assertIn("examples", str(ctx.warning))
+
+    def test_few_shot_with_examples_does_not_warn(self):
+        import warnings as _w
+
+        with _w.catch_warnings():
+            _w.simplefilter("error")  # any warning becomes a test failure
+            SafeBankPipeline(
+                FakeGenerator([response_json()]),
+                list(ALLOWED),
+                strategy=PromptStrategy.FEW_SHOT,
+                prompt_kwargs={"examples": self.EXAMPLES},
+            )
+
+    def test_unknown_prompt_kwarg_surfaces_as_type_error(self):
+        pipe = SafeBankPipeline(
+            FakeGenerator([response_json()]),
+            list(ALLOWED),
+            prompt_kwargs={"not_a_real_kwarg": 1},
+        )
+        with self.assertRaises(TypeError):
+            pipe.run("q")
+
+
 class TestDecodeConfigPlumbing(unittest.TestCase):
     """E3 must be able to vary decoding without touching the pipeline."""
 

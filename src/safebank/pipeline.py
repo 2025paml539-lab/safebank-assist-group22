@@ -15,6 +15,7 @@ Owner: Kishore (application lead)
 from __future__ import annotations
 
 import time
+import warnings
 from dataclasses import dataclass, field
 
 from . import config, prompts, tools
@@ -120,6 +121,19 @@ class SafeBankPipeline:
     strategy:
         Which prompt variant to use. The E2 comparison simply runs the same
         pipeline four times with different strategies.
+    prompt_kwargs:
+        Extra keyword arguments forwarded verbatim to
+        ``prompts.build_prompt``. This is how a strategy's own parameters
+        reach it - most importantly ``examples=`` for ``FEW_SHOT``, which
+        must carry real BANKING77 *train*-split pairs from
+        ``data_prep.build_example_bank()`` for any reported E2 number.
+
+        Without this, ``build_few_shot_prompt`` receives ``examples=None``
+        and quietly falls back to its small illustrative bank, so a
+        "few-shot" row in the E2 table would not be few-shot on real data at
+        all. A ``UserWarning`` is raised when ``FEW_SHOT`` is selected with
+        no ``examples``, because that failure is otherwise invisible in the
+        results.
     auto_execute_destructive:
         When False (the default) a state-changing tool such as ``block_card``
         is never executed automatically. The pipeline escalates and returns a
@@ -134,6 +148,7 @@ class SafeBankPipeline:
         allowed_intents: list[str],
         strategy: prompts.PromptStrategy = prompts.PromptStrategy.ZERO_SHOT,
         *,
+        prompt_kwargs: dict | None = None,
         auto_execute_destructive: bool = False,
         confidence_threshold: float = config.ESCALATION_CONFIDENCE_THRESHOLD,
         max_repair_attempts: int = config.REPAIR_MAX_ATTEMPTS,
@@ -141,9 +156,23 @@ class SafeBankPipeline:
         self.generator = generator
         self.allowed_intents = list(allowed_intents)
         self.strategy = strategy
+        self.prompt_kwargs = dict(prompt_kwargs or {})
         self.auto_execute_destructive = auto_execute_destructive
         self.confidence_threshold = confidence_threshold
         self.max_repair_attempts = max_repair_attempts
+
+        if (
+            strategy is prompts.PromptStrategy.FEW_SHOT
+            and not self.prompt_kwargs.get("examples")
+        ):
+            warnings.warn(
+                "FEW_SHOT selected with no examples=; build_few_shot_prompt will "
+                "fall back to its illustrative bank. Pass "
+                "prompt_kwargs={'examples': data_prep.build_example_bank(...)} "
+                "with real train-split pairs before reporting any E2 number.",
+                UserWarning,
+                stacklevel=2,
+            )
 
     # ------------------------------------------------------------------
     # Public API
@@ -185,7 +214,9 @@ class SafeBankPipeline:
         self, query: str, decode: DecodeConfig, result: PipelineResult
     ) -> ValidationOutcome:
         """Generate, validate, and retry with a repair prompt on failure."""
-        prompt = prompts.build_prompt(self.strategy, query, self.allowed_intents)
+        prompt = prompts.build_prompt(
+            self.strategy, query, self.allowed_intents, **self.prompt_kwargs
+        )
         raw = self.generator.generate(prompt, decode)
         outcome = parse_response(raw, self.allowed_intents)
         result.attempts.append(Attempt(prompt=prompt, raw=raw, outcome=outcome))
