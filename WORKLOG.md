@@ -13,15 +13,16 @@ This is the single source of truth for project status. If this file and `PROJECT
 
 | | |
 |---|---|
-| **Overall completion** | **~50–55%** |
-| Estimated marks secured | ~10.7 / 20 |
-| Application + experiment code | **~95% done** |
+| **Overall completion** | **~60–65%** |
+| Estimated marks secured | ~12.6 / 20 |
+| Application + experiment code | **100% — all 13 modules merged** |
 | **Experiment results** | **0% — nothing has run on a real model yet** |
 | Report | ~5% (raw material written, nothing assembled) |
 | Demo | 0% |
-| **Tests passing on `main`** | **276** |
+| **Tests passing on `main`** | **353** (6 skipped — real-model, gated on `SAFEBANK_MODEL_TESTS=1`) |
+| **All 13 modules** | ✅ implemented |
 
-**One-line summary:** all the code except the data and model-loading layer is written, reviewed and merged. Nothing that produces a *number* has run yet, because the model environment was never set up. That is the critical path and it is the only thing standing between us and a finishable report.
+**One-line summary:** **all 13 modules are now written, reviewed and merged.** Zero experiment results exist. The project has stopped being a coding problem and is now two things: one Colab run, and a report nobody has started.
 
 ### Completion by workstream
 
@@ -29,24 +30,64 @@ This is the single source of truth for project status. If this file and `PROJECT
 |---|---|---|
 | **Kishore** | Architecture + application code | ✅ **100% — merged** |
 | **Satya** | Prompts, decoding, evaluation code | ✅ **100% code — merged (PR #1).** Experiment *runs* still pending the environment |
-| **Vishruth** | Data, model loading, environment, E1 | 🟡 **Code done on branch `vishruth/data-prep-model-loader` (PR pending).** E1 + clean Colab T4 run still to execute |
-| **Bhavani** | Report assembly, submission | 🔴 **~5% — not started** |
+| **Vishruth** | Data, model loading, environment, E1 | ✅ **Code 100% — merged (PR #2).** Notebook must be re-run with stored outputs |
+| **Bhavani** | Report assembly, submission | 🔴 **~5% — NOT STARTED. Now the longest pole in the project.** See §2.1 |
 
 ### Rubric estimate (20 marks)
 
 | # | Component | Marks | Est. | Why not full |
 |---|---|---|---|---|
-| 1 | Problem + dataset analysis | 2 | 0.8 | Problem done; no dataset analysis, no class distribution, no preprocessing log |
-| 2 | LLM / generative-model understanding | 3 | 0.9 | Architecture prose drafted; model-family comparison unwritten; needs real tokenizer output |
-| 3 | Prompt engineering | 3 | 1.8 | All 4 variants merged, tested, each with written rationale; **no accuracy comparison table** |
+| 1 | Problem + dataset analysis | 2 | 1.5 | Dataset loaded, label space validated, class distribution + preprocessing record exist. Needs the §3 **write-up** |
+| 2 | LLM / generative-model understanding | 3 | 1.4 | Architecture prose drafted, tokenizer walkthrough in the notebook; model-family comparison (§4a) unwritten |
+| 3 | Prompt engineering | 3 | 1.8 | All 4 variants merged + tested, written rationale each; **no accuracy comparison table** |
 | 4 | Adaptation strategy | 2 | 1.2 | Written in `ARCHITECTURE.md` §7; must be argued from measured numbers we don't have |
-| 5 | Structured output + tool calling | 3 | 2.5 | Complete, tested, all six metrics wired; validity rate needs a real run |
-| 6 | Implementation | 3 | 2.3 | Modular, 276 tests, seeds frozen, reviewed; **no Colab notebook, no `requirements.txt`** |
-| 7 | Evaluation + failure analysis | 2 | 0.9 | All 6 metrics merged and verified; **zero results, zero analysed failure cases** |
+| 5 | Structured output + tool calling | 3 | 2.7 | Complete and tested, plus the new credential-solicitation control strengthening R13 |
+| 6 | Implementation | 3 | 2.7 | 353 tests, seeds frozen, notebook + pinned requirements, two reviewed PRs; **notebook has no stored outputs** |
+| 7 | Evaluation + failure analysis | 2 | 1.0 | All 6 metrics + safety metric merged, one real failure already recorded; **zero results** |
 | 8 | Report + demo + contribution | 2 | 0.3 | Nothing assembled, no rehearsal, no signatures |
-| | | **20** | **~10.7** | |
+| | | **20** | **~12.6** | |
 
-**The pattern is clear:** every component is capped by the same missing thing — measured results. Components 3, 5, 6 and 7 are all code-complete and lose marks only for the absent numbers.
+**The pattern:** every component is now capped by the same two things — **measured results** and **the written report**. No component is still blocked on code.
+
+---
+
+## 2.1 🔴 BHAVANI — START TODAY, NOTHING BLOCKS YOU
+
+**This is now the single largest piece of remaining work in the project, and it has not started.** The report is worth 2 marks directly, but it is also *how components 1, 2, 3, 4 and 7 get assessed — around 8 further marks*. Good results in a badly assembled report score poorly.
+
+**You do not need to wait for experiment results.** Roughly a third of the report can be written right now, because the source material is already written and merged. Do not wait for Tuesday.
+
+### Write these four sections today — source material already exists
+
+| Report section | Source | What to do |
+|---|---|---|
+| **§1 Abstract** | `ARCHITECTURE.md` §1 | Condense "The application" + "Why a generative LM" into ~200 words |
+| **§5 Proposed architecture** | `ARCHITECTURE.md` §2 + §3 + §4 | The pipeline diagram is already drawn in §2 — redraw it in the template. §4 explains the `TextGenerator` seam |
+| **§10 Structured output + tool calling** | `ARCHITECTURE.md` §5 + §6 | Schema table, the JSON example, the failure taxonomy, the 3 tool I/O schemas. All written, needs formatting |
+| **§12 Responsible-use controls** | `ARCHITECTURE.md` §8 | A 9-row control table, each row implemented and test-backed. One of the strongest parts of the project — give it room |
+
+### Then these, as inputs arrive
+
+| Section | Waiting on | From |
+|---|---|---|
+| §3 Dataset description | `data_prep.preprocessing_record()` + class-distribution plot | Vishruth's notebook run |
+| §6 Baseline implementation | E1 output | Vishruth |
+| §4a Model families · §7 Prompts · §8 Decoding · §11 Results · §13 Limitations | Experiment results | Satya (on leave — may fall to Kishore) |
+| §2 Problem · §4b LLM architecture · §9 Adaptation | Already drafted in `ARCHITECTURE.md` §1, §4, §7 | Kishore — ask him for the final text |
+| §14 Conclusion + future work | Everything else | You, last |
+
+### Also yours, and none of it needs results
+
+- **Appendix** — prompts, schemas, output samples. `tools.tool_specs_json()` and `schema.response_json_schema()` both emit report-ready JSON today.
+- **References.**
+- **Individual contribution statement, signed by all four.** Start collecting now, don't leave it to the 31st. The git history is usable as supporting evidence — every commit is attributed.
+- **BITS IDs for all four members** for the title page. Still missing. Chase them today.
+- **Section 8 compliance proofread** — no ChatGPT screenshots, no unexplained prompts, no accuracy claims without procedure, no real financial data.
+- **Keep it inside 10–15 pages** excluding appendix.
+
+### Why the urgency is real
+
+Six days left, one buffer day. If the report is started only when results land mid-week, it gets written in two days and it will show. Four sections are sitting there ready to be formatted. **Starting them today is the difference between a report that reads as considered and one that reads as rushed.**
 
 ---
 
@@ -57,8 +98,10 @@ Only **one** buffer day. This is thin.
 | Day | Must land | Owner | State |
 |---|---|---|---|
 | **Sun 25** | PR #1 reviewed and merged · `to_row()` extended for criterion 4 · `PROJECT_PLAN.md` corrected · work log published | Kishore | ✅ **done** |
-| **Sun 25** | Colab decision locked · `data_prep.py` + `model_loader.py` started | Vishruth | ✅ **written + verified on real data / GPT-2 / Qwen (CPU); PR pending** |
-| **Sun 25** | Report §1/§5 drafted from `ARCHITECTURE.md` | Bhavani | 🔴 **outstanding** |
+| **Sun 25** | `data_prep.py` + `model_loader.py` + notebook + requirements | Vishruth | ✅ **merged (PR #2), verified against real data, GPT-2 and Qwen** |
+| **Sun 25** | Review fixes: `examples=` passthrough · credential-solicitation control | Kishore | ✅ **done, 353 tests** |
+| **Sun 25** | Report §1/§5/§10/§12 drafted from `ARCHITECTURE.md` | Bhavani | 🔴 **OUTSTANDING — see §2.1** |
+| **Mon 26** | **Notebook re-run on Colab T4 with stored outputs** → delivers E1, Colab packaging, reproducibility appendix | Vishruth | 🔴 **most time-critical item** |
 | **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth | pending |
 | **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore | pending |
 | **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya | pending |
@@ -66,9 +109,11 @@ Only **one** buffer day. This is thin.
 | **Fri 30** | Report assembled + formatted + proofread · demo rehearsal | Bhavani + all | pending |
 | **Sat 31** | Contribution statement signed · **submit** | Bhavani | pending |
 
-### 🔴 Escalation trigger — agreed safeguard
+### Escalation triggers
 
-**If `data_prep.py` and `model_loader.py` are not running by Monday 26 Oct evening, Kishore takes them over.** They are ~150 lines each, both contracts are fully specified in section 5 below, and Tue–Wed collapse without them. The contribution statement will record who actually did what.
+~~**If `data_prep.py` and `model_loader.py` are not running by Monday 26 Oct evening, Kishore takes them over.**~~ ✅ **Not needed — Vishruth delivered both on 25 Oct, verified against real data and models.**
+
+🔴 **New trigger: Satya is on leave.** E2, E3 and E6 are his and they are the largest remaining technical block. **If he is not back by Tuesday 27 Oct, Kishore runs them.** All three are code-complete and merged, so this is execution and write-up, not development — but it cannot wait, because §7, §8, §11 and §13 of the report all depend on the output.
 
 ---
 
@@ -360,7 +405,11 @@ Byte-compile check: `python -m compileall -q src\safebank`
 
 | Trap | Consequence | Mitigation |
 |---|---|---|
-| `FOCUS_INTENTS` names unverified against real BANKING77 | E6 analysis describes intents never evaluated | `validate_label_space()` in `data_prep.py` — **mandatory** |
+| ~~`FOCUS_INTENTS` unverified against real BANKING77~~ | — | ✅ **CLOSED 25 Oct.** `validate_label_space()` passes: 77 intents, splits 10,003 / 3,080, all 20 focus names correct |
+| **Qwen ships its own sampling defaults** (`top_k=20, top_p=0.8, repetition_penalty=1.05`) | A "temperature only" E3 run is silently all four knobs at once — the entire decoding comparison becomes meaningless | `model_loader` starts every run from neutral settings. **Check this before trusting any E3 row** |
+| **GPT-2's 1024-token context < few-shot prompt (~1,600 tokens)** | A GPT-2 few-shot number measures truncation, not capability; reported as a clean comparison it is a confound | Truncation keeps the customer query and is recorded. State the limitation in report §13 |
+| **6 texts appear in both train and test** | Few-shot examples could leak eval text | `build_example_bank(exclude=...)` removes them |
+| Model reply asks the customer for credentials | Phishing-shaped output reaching a customer; invisible to accuracy, validity and routing | `safety.scan_reply` blocks it, `pipeline` withholds the reply and escalates |
 | `HFGenerator` returning prompt + completion | Every metric silently wrong | Strip the prompt; see §5.2 gotcha 1 |
 | Model left in training mode | Greedy becomes non-deterministic, E3 stability meaningless | `model.eval()` |
 | Few-shot examples drawn from the eval sample | **Contaminates every E2 number** | Train split only; `build_example_bank` reads `train_split` |
@@ -384,7 +433,13 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 25 Oct | Kishore: PR #1 reviewed → `CHANGES_REQUESTED`. Blocking bug: `tool_routing` scored the destructive-tool refusal as a miss |
 | 25 Oct | Satya: blocker fixed — `n_correctly_withheld` category + 5 regression tests. 274 tests |
 | 25 Oct | Kishore: `to_row()` extended with the model reply for evaluation criterion 4 |
-| 25 Oct | Kishore: **PR #1 approved and merged.** 276 tests on `main`. All code complete except `data_prep.py` and `model_loader.py` |
+| 25 Oct | Kishore: **PR #1 approved and merged.** 276 tests on `main` |
+| 25 Oct | Vishruth: PR #2 — `data_prep.py`, `model_loader.py`, requirements, Colab notebook. 313 tests |
+| 25 Oct | Vishruth: ran it for real. **`validate_label_space()` passes** against the real 77 labels (splits 10,003 / 3,080) — closes the project's longest-standing verification gap. GPT-2 and Qwen2.5-1.5B both verified through the pipeline |
+| 25 Oct | Vishruth found 4 problems, all real. Most valuable: **Qwen ships `top_k=20, top_p=0.8, repetition_penalty=1.05`**, so a "temperature only" E3 run would silently have been all four knobs. That would have invalidated the entire decoding comparison and nothing in the output would have shown it |
+| 25 Oct | Kishore: fixed his own bug from that review — `SafeBankPipeline` never forwarded `examples=`, so every few-shot run used the illustrative fallback bank. Added `prompt_kwargs` plus a warning on the silent case |
+| 25 Oct | Kishore: **PR #2 approved and merged.** All 13 modules now implemented |
+| 25 Oct | Kishore: new `safety.py` — blocks credential solicitation after the real Qwen run asked a customer for their account number and PIN. Taken over from Satya, who is on leave. Also fixed a latent bug where three escalation sites overwrote each other's reason, which was erasing the safety failure from the E6 table. 353 tests |
 | 25 Oct | Vishruth: `data_prep.py`, `model_loader.py`, `requirements*.txt`, `notebooks/safebank_colab.ipynb` on `vishruth/data-prep-model-loader`. 313 tests (+37; 6 real-GPT-2 tests gated by `SAFEBANK_MODEL_TESTS=1`, all pass). `validate_label_space()` **passes on the real 77 labels**. Findings: Hub dataset is script-based so `datasets` ≥4 cannot load it (loader reads the official CSVs instead); Qwen's shipped `top_k=20/top_p=0.8/rep_penalty=1.05` neutralised so E3 configs are clean; GPT-2's 1024-token window needs left-truncation for few-shot; 6 texts appear in both splits (excluded from the few-shot bank); **`SafeBankPipeline` does not forward `examples=` to `build_prompt`**, so few-shot via the pipeline uses the fallback bank (Kishore to fix) |
 
 ### Still open for the group

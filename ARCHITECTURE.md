@@ -246,7 +246,11 @@ Running the full suite needs **pydantic**; `scikit-learn` is additionally requir
 | `test_decoding.py` | 23 | E3: 6-config grid, per-strategy kwargs, seed self-consistency set |
 | `test_evaluate.py` | 39 | E6: 6 metrics, destructive-refusal routing credit, failure taxonomy, confusable pairs, pipeline rows |
 
-**Known verification gap.** The 20 `FOCUS_INTENTS` names are checked for structure (20 unique, 5 themes × 4, all confusable-pair members present) but **not** against the real BANKING77 label space, because `datasets` is not part of the local environment. `intents.validate_label_space` will raise `LabelSpaceError` naming any mismatch the first time `data_prep.py` supplies the real labels. That check must be run before any number is quoted in the report.
+**Label-space check — CLOSED.** The 20 `FOCUS_INTENTS` names were, for most of the project, verified only for structure (20 unique, 5 themes × 4, all confusable-pair members present) and not against the real dataset, because the model stack is Colab-only. `intents.validate_label_space()` has now been run against the real label space and **passes**: 77 intents, train/test splits of 10,003 / 3,080, the 385-row eval sample covering every intent, and 35–187 train rows per intent. No name was misspelled, so the E6 analysis describes intents that were actually evaluated.
+
+**Verified against real models.** GPT-2: no prompt echo, greedy decoding deterministic, seeded sampling reproducible, batched output identical to single, overlong prompts truncated rather than crashing. Qwen2.5-1.5B through the full pipeline: valid JSON on the first attempt, ~750 prompt tokens, `block_card` correctly escalated instead of executing.
+
+**Remaining verification gap.** The notebook is committed without stored outputs, so E1, the reproducibility appendix and the Colab packaging are not yet evidenced. One clean Colab run closes all three.
 
 **Beyond the green bar.** Two checks were run because a passing suite proves little on its own. A *mutation check* flipped `block_card.destructive` to `False` in memory and confirmed four tests fail — the Requirement 13 control is genuinely guarded, not merely asserted. A *routing-metric check* confirmed an all-correct run now scores `routing_accuracy 1.0` with `n_correctly_withheld 3`, and that four adversarial cases (non-destructive withheld, destructive without escalation, destructive executed under opt-in, wrong tool) are all still classified correctly — so the destructive exemption cannot mask a genuinely dropped tool call.
 

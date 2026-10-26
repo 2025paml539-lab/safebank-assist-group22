@@ -60,7 +60,7 @@ customer query
 | Item | Choice | Reason |
 |---|---|---|
 | Model | `Qwen2.5-1.5B-Instruct` | Causal LM, instruction-tuned, ~3 GB fp16, fits a free Colab T4 |
-| Naive baseline | `gpt-2` | Deliberately weak, makes E1→E2 improvement visible |
+| Naive baseline | `gpt-2` | Deliberately weak, makes E1→E2 improvement visible. **Note:** its 1024-token context is smaller than the few-shot prompt (~1,600 tokens), so GPT-2 cannot receive a full few-shot prompt and long prompts are truncated. Any GPT-2 few-shot number is therefore partly a measure of truncation, not capability — state this in §13 rather than reporting it as a clean comparison. |
 | Schema validation | `pydantic` v2 | Only dependency of the application layer; no model runtime needed to test it |
 | Intent scope | **All 77 intents** kept in the label space (`config.EXPECTED_N_INTENTS = 77`) | *Corrected 25 Oct.* Fine-grained 77-way classification is the defining characteristic of BANKING77; narrowing it would weaken the dataset analysis. The curated 20 survive as `intents.FOCUS_INTENTS`, used only for the E6 failure analysis. |
 | Eval set | **385 rows** = 5 per intent × 77, stratified, `seed=42` (`config.EVAL_EXAMPLES_PER_INTENT = 5`) | *Corrected 25 Oct (was 200).* Every intent represented. Note the inference cost: see `WORKLOG.md` §5 for the budget and the agreed scope cut for E3. |
