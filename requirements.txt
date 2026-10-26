@@ -1,0 +1,27 @@
+# SafeBank Assist - pinned dependencies (Group 22)
+#
+# Two layers, deliberately separate:
+#
+#   1. Application + evaluation layer. Everything in src/safebank except
+#      data_prep.load_banking77 and model_loader. The whole offline test suite
+#      (python -m unittest discover -s tests -t .) needs only this layer, and
+#      only pydantic is strictly required; numpy/pandas/scikit-learn are used by
+#      evaluate.py, matplotlib by the notebook figures.
+#
+#   2. Model stack. torch, transformers, datasets, tokenizers. Runs in Colab
+#      only. Colab ships torch preinstalled; we keep its build rather than
+#      reinstalling 2 GB, and device_report() records the exact version used.
+#      The Colab notebook installs requirements-colab.txt, not this file.
+#
+# Install everything locally (CPU) with:  pip install -r requirements.txt
+
+# --- 1. application + evaluation -------------------------------------------
+pydantic==2.13.4
+numpy==2.5.2
+pandas==2.3.3
+scikit-learn==1.9.0
+matplotlib==3.11.1
+
+# --- 2. model stack (Colab) ------------------------------------------------
+-r requirements-colab.txt
+torch==2.14.0

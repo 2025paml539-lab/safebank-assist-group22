@@ -1,0 +1,5 @@
+# Model stack installed on top of a stock Colab runtime (see requirements.txt).
+# torch is deliberately absent: Colab's preinstalled CUDA build is used as-is.
+transformers==5.19.0
+tokenizers==0.23.3
+datasets==5.1.0
