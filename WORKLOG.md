@@ -476,4 +476,5 @@ Byte-compile check: `python -m compileall -q src\safebank`
 1. 🔴 **The Colab run.** The environment question is settled (model work in Colab, everything else local). What is missing is the run itself: E1, E2, E3, E6 and the real E7 all wait on it.
 2. 🔴 **Satya's experiments** — the trigger has fired (§2); who runs E2/E3/E6 is to be decided today.
 3. 🟡 **BITS IDs for all 4 members** — needed for the report title page.
-4. 🟡 **The repo is public.** Making it private now would not hide the code: both teammates' forks are public copies, and GitHub keeps public forks public when the original goes private. If privacy matters, the fork owners must delete their forks too, and teammates must be added as collaborators first or they lose access.
+
+The repo is **public on purpose**: the professor reviews and validates the project from GitHub.
