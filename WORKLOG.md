@@ -9,21 +9,80 @@ This is the single source of truth for project status. If this file and `PROJECT
 
 ---
 
+## Update 28 Oct — pending work by person, and what this push adds
+
+### Pending work, in order
+
+#### 1. Vishruth — first; everything else depends on V1 and V2
+
+| # | When | Task | Output |
+|---|---|---|---|
+| V1 | Today | Fix the dataset link in `data_prep.py` (the label file was removed from the Hugging Face Hub on 28 Oct), run the tests, update the notebook's handover note | PR |
+| V2 | Today | Run the notebook top to bottom on a Colab T4, push it with outputs | E1 outputs, tokenizer output, E7 trace, device report |
+| V3 | Thu | Report §6 baseline: E1 table plus 2–3 sentences | report §6 |
+| V4 | Thu | Confirm own contribution row (name + date) | Appendix I |
+| — | optional | Warning on the few-shot exclusion setting, checksums on the dataset files | skip if short on time |
+
+For V1: `DATASET_INFOS_URL` points at `raw/main/dataset_infos.json`, which now returns 404 because the Hub dataset was converted to Parquet on 28 Oct. Pin it to revision `90d4e2ee5521c04fc1488f065b8b083658768c57`, whose 77 label names match the current dataset card in order; `report/build_report.py` already reads that revision. The notebook's handover note about `examples=` is stale too — the pipeline now forwards it through `prompt_kwargs`.
+
+#### 2. Satya — S1 and S2 start today; S3 onwards waits for V1 and V2
+
+| # | When | Task | Output |
+|---|---|---|---|
+| S1 | Today | Report §4.1 model-family comparison (no results needed) | report §4.1 |
+| S2 | Today | Write the E2/E3/E6 experiment code | notebook cells |
+| S3 | Thu AM | Run E2: 4 prompt strategies × 385 queries | results files |
+| S4 | Thu AM | Run E3: 6 decoding configs × 77 queries, plus 5 seeds | results files |
+| S5 | Thu AM | E6: score the six criteria, ≥3 failure cases, push results | results files |
+| S6 | Thu PM | §7, §8, §11, §12.1, §13; §10.1 validity numbers; Appendix E samples; confirm the §3 subset | report |
+| S7 | Thu | Confirm own contribution row | Appendix I |
+
+#### 3. Kishore — after V2 and S5
+
+| # | When | Task | Output |
+|---|---|---|---|
+| K1 | Thu PM | Paste the tokenizer output (§4.2), E7 trace (§10.2), device report (Appendix F) | report |
+| K2 | Thu PM | §9 sentence with the E2 numbers; check numbers match across sections | report |
+| K3 | Thu | Confirm own contribution row | Appendix I |
+
+#### 4. Bhavani — last, once all sections are in
+
+| # | When | Task | Output |
+|---|---|---|---|
+| B1 | Thu eve | Results sentences in §1 and §14 | report |
+| B2 | Thu eve | Collect name + date confirmations from all four | Appendix I |
+| B3 | Thu eve | Run `python report/build_report.py --final` until it says READY | final PDF |
+| B4 | Thu eve | Re-check Section 8 | `report/section8_compliance.md` |
+| B5 | Fri/Sat | Upload the PDF, notebook or repo link, and contribution statement (deadline Sat 31) | portal |
+
+**Everyone, Thu evening:** demo deck and an 8–10 minute rehearsal; every member able to explain the whole workflow.
+
+### What this push adds — the technical report draft (`report/`)
+
+- One command builds the PDF: `python report/build_report.py`. It produces A4 pages with page numbers and a DRAFT stamp, and `--final` refuses to build while anything is pending. It uses only installed tools. Each report section is a file in `report/sections/`, and every pending item is marked `[[PENDING …]]` or `[[CONFIRM …]]` in the file it belongs to; see `report/README.md`.
+- Written: §1, §2, §3, §4.2, §5, §9, §10, §12, §14; 22 references; Appendix A–I generated from the code.
+- §3 uses the real BANKING77 files: 10,003 / 3,080 rows, 35–187 training rows per intent, 6 texts in both splits. It includes a class-distribution figure and an examples table.
+- Contribution statement with all four BITS IDs, Section 8 compliance check, demo opening-segment script.
+- Draft: 22 pages (title + 9 body + 12 references/appendix), with 19 items pending, all listed above.
+- Marks estimate: about 11/20 for what is in git after this push, about 16/20 achievable by 31 Oct.
+
+---
+
 ## 1. Where we are
 
 | | |
 |---|---|
 | **Overall completion** | **~60–65%** |
-| **Marks — what is in git today** | **~8.5 / 20** |
+| **Marks — what is in git today** | **~11 / 20** (after the 28 Oct report push) |
 | **Marks — achievable by 31 Oct** | **~16 / 20** (range 15–17) if the Colab run, E2/E3/E6 and the report all land |
 | Application + experiment code | **100% — all 13 modules merged** |
 | **Experiment results** | **0% — no E1/E2/E3/E6 output in git.** Vishruth's smoke runs verified the stack on real GPT-2 and Qwen but produced no reported numbers |
-| Report | ~10% — drafts for §1, §2, §4b, §5, §9, §10, §12 exist in `ARCHITECTURE.md`; nothing assembled in the template |
+| Report | **Draft assembled in `report/`** — 22 pages, builds with one command; 19 items pending (results, §4.1, confirmations) |
 | Demo | 0% |
 | **Tests passing on `main`** | **353** (6 skipped — real-model, gated on `SAFEBANK_MODEL_TESTS=1`) |
 | **All 13 modules** | ✅ implemented |
 
-**One-line summary:** **all 13 modules are now written, reviewed and merged.** Zero experiment results exist. The project has stopped being a coding problem and is now two things: one Colab run, and a report nobody has started.
+**One-line summary:** **all 13 modules are now written, reviewed and merged.** Zero experiment results exist. The project has stopped being a coding problem and is now two things: the Colab runs (the notebook, then E2/E3/E6), and filling the report's 19 pending items.
 
 ### Completion by workstream
 
@@ -32,27 +91,29 @@ This is the single source of truth for project status. If this file and `PROJECT
 | **Kishore** | Architecture + application code | ✅ **100% — merged** |
 | **Satya** | Prompts, decoding, evaluation code | ✅ **100% code — merged (PR #1).** Experiment *runs* still pending the environment |
 | **Vishruth** | Data, model loading, environment, E1 | ✅ **Code 100% — merged (PR #2).** Notebook must be re-run with stored outputs |
-| **Bhavani** | Report assembly, submission | 🔴 **~5% — NOT STARTED. Now the longest pole in the project.** See §2.1 |
+| **Bhavani** | Report assembly, submission | 🟡 **Report draft assembled in `report/`.** Remaining: B1–B5 (top of this log) |
 
 ### Rubric estimate (20 marks)
 
 | # | Component | Marks | In git today | By 31 Oct | What closes the gap |
 |---|---|---|---|---|---|
-| 1 | Problem + dataset analysis | 2 | 0.7 | 1.7 | §3 write-up from `preprocessing_record()` and the class-distribution plot (notebook run) |
-| 2 | LLM / generative-model understanding | 3 | 1.1 | 2.4 | §4b drafted (`ARCHITECTURE.md` §12) — paste in the notebook's tokenizer output. §4a model-family comparison unwritten |
+| 1 | Problem + dataset analysis | 2 | 1.3 | 1.7 | §3 written from the real data; confirm the E3 subset |
+| 2 | LLM / generative-model understanding | 3 | 1.5 | 2.4 | §4.2 written in the report — paste the notebook's tokenizer output. §4.1 model-family comparison unwritten |
 | 3 | Prompt engineering | 3 | 1.2 | 2.4 | 4 variants merged with written rationale; **E2 accuracy table** |
-| 4 | Adaptation strategy | 2 | 0.9 | 1.5 | Argued in `ARCHITECTURE.md` §7; needs measured E2 numbers to argue from |
-| 5 | Structured output + tool calling | 3 | 2.2 | 2.7 | Complete and tested; E4 validity rate before/after repair from a real run |
-| 6 | Implementation | 3 | 2.1 | 2.7 | 353 tests, pinned requirements, reviewed PRs; **notebook with stored outputs** |
-| 7 | Evaluation + failure analysis | 2 | 0.3 | 1.5 | Metrics merged, 2 real failures recorded; **E6 run + ≥3 analysed failure cases** |
-| 8 | Report + demo + contribution | 2 | 0.0 | 1.4 | Assembled report, 8–10 min demo, signed contribution statement |
-| | | **20** | **~8.5** | **~16** | |
+| 4 | Adaptation strategy | 2 | 1.1 | 1.5 | §9 written; needs the measured E2 numbers |
+| 5 | Structured output + tool calling | 3 | 2.4 | 2.7 | §10 written; E4 validity rate before/after repair from a real run |
+| 6 | Implementation | 3 | 2.2 | 2.7 | 353 tests, pinned requirements, reviewed PRs, reproducible report build; **notebook with stored outputs** |
+| 7 | Evaluation + failure analysis | 2 | 0.5 | 1.5 | 2 real failures analysed in §12.1; **E6 run + ≥3 analysed failure cases** |
+| 8 | Report + demo + contribution | 2 | 0.6 | 1.4 | Report draft assembled, contribution statement drafted; final report, demo, confirmations |
+| | | **20** | **~11** | **~16** | |
 
 "In git today" is what a grader could award for what is committed now. "By 31 Oct" assumes the plan lands. The gap is almost entirely results and writing — no component is still blocked on code. The earlier single figure of ~12.6 counted finished work as if it were already written up; these two columns replace it.
 
 ---
 
-## 2.1 🔴 BHAVANI — START TODAY, NOTHING BLOCKS YOU
+## 2.1 Report assembly — source map
+
+> **Superseded on 28 Oct.** The report draft is assembled in `report/` and the six sections below are written. What remains is B1–B5 in the plan at the top of this log. This section is kept as the record of where each report section's material came from.
 
 **This is now the single largest piece of remaining work in the project, and it has not started.** The report is worth 2 marks directly, but it is also *how components 1, 2, 3, 4 and 7 get assessed — around 8 further marks*. Good results in a badly assembled report score poorly.
 
@@ -75,7 +136,7 @@ This is the single source of truth for project status. If this file and `PROJECT
 |---|---|---|
 | §3 Dataset description | `data_prep.preprocessing_record()` + class-distribution plot | Vishruth's notebook run |
 | §6 Baseline implementation | E1 output | Vishruth |
-| §4a Model families · §7 Prompts · §8 Decoding · §11 Results · §13 Limitations | Experiment results | Satya (on leave — may fall to Kishore) |
+| §4a Model families · §7 Prompts · §8 Decoding · §11 Results · §13 Limitations | Experiment results | Satya |
 | §9 Adaptation strategy | Argued in `ARCHITECTURE.md` §7; quote the E2 numbers once they exist | Kishore |
 | §14 Conclusion + future work | Everything else | You, last |
 
@@ -95,6 +156,8 @@ Three days left (Wed 28 → Sat 31), and no buffer any more. If the report waits
 ---
 
 ## 2. Day-by-day plan to 31 Oct
+
+> **Superseded on 28 Oct** by the person-wise plan at the top of this log; kept as a record.
 
 **No buffer left** — the Tuesday and Wednesday items have slipped.
 
@@ -117,7 +180,7 @@ Three days left (Wed 28 → Sat 31), and no buffer any more. If the report waits
 
 ~~**If `data_prep.py` and `model_loader.py` are not running by Monday 26 Oct evening, Kishore takes them over.**~~ ✅ **Not needed — Vishruth delivered both on 25 Oct, verified against real data and models.**
 
-🔴 **New trigger: Satya is on leave.** E2, E3 and E6 are his and they are the largest remaining technical block. **If he is not back by Tuesday 27 Oct, Kishore runs them.** All three are code-complete and merged, so this is execution and write-up, not development — but it cannot wait, because §7, §8, §11 and §13 of the report all depend on the output. ⚠️ **Tuesday has passed with no E2/E3/E6 output in git, so this trigger has fired.** Kishore decides today whether he runs them.
+✅ **Satya is back.** E2, E3 and E6 stay with him — see the person-wise plan at the top of this log.
 
 ---
 
@@ -315,7 +378,7 @@ assert isinstance(HFGenerator(model, tok), TextGenerator)   # runtime_checkable 
 
 ### 🟡 5.4 Satya — experiment runs (code merged, runs pending)
 
-Code is done and merged. These are the *runs*. They no longer wait on any code, only on a Colab session. ⚠️ Satya is on leave and the Tuesday trigger has passed — see §2.
+Code is done and merged. These are the *runs*. They no longer wait on any code, only on a Colab session.
 
 1. ~~Switch `flag_unsafe_responses` to read `record.row["response"]`~~ ✅ done by Kishore: use `evaluate.response_safety(records)`.
 2. **E2** — 4 variants × 385 rows → accuracy comparison table. Rationale per variant is already in `STRATEGY_RATIONALE`. For FEW_SHOT pass real examples: `SafeBankPipeline(gen, labels, strategy=PromptStrategy.FEW_SHOT, prompt_kwargs={"examples": build_example_bank(train, labels, exclude={r["query"] for r in eval_rows})})`. Qwen's chat template adds a default system prompt to every variant — note it in report §7 (see §8).
@@ -344,7 +407,6 @@ Keep E2 on the full 385 rows — that is the headline accuracy table.
 
 1. Real **E7** run on Colab — `model_loader` has landed, so swap `FakeGenerator` for `HFGenerator(*load_model_and_tokenizer())`; nothing else changes.
 2. Report text. Drafts in `ARCHITECTURE.md`: §2 ← §1 · **§4b ← §12** (drafted 28 Oct; figures verified against the published model configs; the §12.8 tokenizer example waits on the notebook run) · §5 ← §2–§4 · §9 ← §7 · §10 ← §5–§6 · §12 ← §8. Hand final text to Bhavani. *Correction: until 28 Oct this item said §4b was already drafted. It was not — the document only had a one-line pipeline mention.*
-3. ⚠️ The Satya trigger has fired (§2): decide today whether to run E2/E3/E6.
 
 ### 🔴 5.6 Bhavani — start now, do not wait for results
 
@@ -471,10 +533,10 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 28 Oct | Kishore: **report §4b drafted** as `ARCHITECTURE.md` §12. Every figure checked against the published `config.json` / `generation_config.json` / `tokenizer_config.json` of both models; Qwen's parameter counts match its model card (1.54 B, 1.31 B non-embedding). Corrects this log's earlier claim that §4b was already drafted |
 | 28 Oct | Kishore: found while verifying — Qwen's published `repetition_penalty` is **1.1**, not the 1.05 quoted on 25 Oct (the neutral reset covers it either way); Qwen's chat template injects a default system prompt into every prompt; `ARCHITECTURE.md` §7 claimed "constrained decoding", which we do not implement — corrected to post-generation validation |
 | 28 Oct | Kishore: stale figures swept across all four docs — 276 → 353 tests, Vishruth's modules marked merged, marks estimate split into "in git today" (~8.5) and "by 31 Oct" (~16) |
+| 28 Oct | Report draft assembled in `report/`: builds to PDF with `python report/build_report.py`; sections 1, 2, 3, 4.2, 5, 9, 10, 12 and 14, 22 references and Appendix A–I written; 19 items pending. Pending work regrouped by person at the top of this log |
 
 ### Still open for the group
 1. 🔴 **The Colab run.** The environment question is settled (model work in Colab, everything else local). What is missing is the run itself: E1, E2, E3, E6 and the real E7 all wait on it.
-2. 🔴 **Satya's experiments** — the trigger has fired (§2); who runs E2/E3/E6 is to be decided today.
-3. 🟡 **BITS IDs for all 4 members** — needed for the report title page.
+2. ✅ **BITS IDs for all 4 members** — on the report title page and in the contribution statement (28 Oct).
 
 The repo is **public on purpose**: the professor reviews and validates the project from GitHub.

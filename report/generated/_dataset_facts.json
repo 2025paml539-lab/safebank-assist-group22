@@ -1,0 +1,28 @@
+{
+  "train": 10003,
+  "test": 3080,
+  "intents": 77,
+  "label_check": true,
+  "train_min": [
+    "contactless_not_working",
+    35
+  ],
+  "train_max": [
+    "card_payment_fee_charged",
+    187
+  ],
+  "train_mean": 129.9090909090909,
+  "train_median": 127,
+  "test_min": 40,
+  "test_max": 40,
+  "words_mean": 11.949415175447365,
+  "words_median": 10,
+  "words_p95": 29,
+  "words_max": 79,
+  "chars_median": 47,
+  "cross_split": 6,
+  "within_train_dupes": 4,
+  "eval_rows": 385,
+  "eval_intents": 77,
+  "tool_intents": 10
+}

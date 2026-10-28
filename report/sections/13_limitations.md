@@ -1,0 +1,3 @@
+# 13. Limitations
+
+[[PENDING §13 — limitations, backed by the results. Known so far: `confidence` is self-reported and not calibrated (§4.2); GPT-2's 1,024-token window truncates the few-shot prompt, so its few-shot result partly measures truncation; Qwen's chat template adds a default system prompt to every variant; output is validated after generation rather than constrained during it; the safety screen is rule-based and will miss reworded requests; the tools are simulated and conversations are single-turn; five queries per intent makes per-intent results noisy; a first version of the routing metric scored the correct refusal to block a card as a miss, a reminder that metrics need checking against intended behaviour.]]

@@ -1,0 +1,48 @@
+# 4. Generative-model and LLM architecture analysis
+
+## 4.1 Generative-model families
+
+[[PENDING §4.1 (Requirement 3) — compare at least three generative-model families covered in CS1, for example GANs [19], VAEs [20] and diffusion models [21] against autoregressive language models [3]: what each learns, how it produces a sample, whether it handles discrete text, and how it is conditioned. Close with why a causal LM fits this application: discrete token output, conditioning on an arbitrary text prompt, instruction following and structured output. About half a page.]]
+
+## 4.2 LLM architecture and autoregressive generation
+
+Both models we use are decoder-only causal language models [2, 3, 4]. Given the tokens so far, the model outputs a probability distribution over the next token, and the probability of a whole sequence factorises into those conditionals:
+
+<p class="eq"><img src="../assets/eq_factorisation.svg" alt="p(x1..xT) = product over t of p(x_t | x_<t)"></p>
+
+Pretraining fits this by minimising next-token cross-entropy; instruction tuning [10] continues with the same objective on prompt–response pairs. We use the published checkpoints as they are. Everything SafeBank Assist does — classify, reply, request a tool, emit JSON — is this one prediction applied repeatedly. Table 1 compares the two checkpoints; every figure was checked against their published configuration files [22], and the Qwen parameter counts match its model card.
+
+<p class="caption">Table 1. The two checkpoints.</p>
+
+| | GPT-2 (E1 baseline) | Qwen2.5-1.5B-Instruct (final system) |
+|---|---|---|
+| Parameters | 124.4 M | 1.54 B (1.31 B excluding embeddings) |
+| Decoder blocks · hidden size | 12 · 768 | 28 · 1,536 |
+| Attention heads | 12, each with its own keys and values | 12 query heads sharing 2 key/value heads (GQA [7]) |
+| Feed-forward | 768 → 3,072 → 768, GELU | 1,536 → 8,960 → 1,536, SwiGLU [8] |
+| Normalisation · positions | LayerNorm · learned, 1,024 slots | RMSNorm [9] · rotary (RoPE [6]), 32,768 positions |
+| Tokenizer | byte-level BPE [5], 50,257 tokens | byte-level BPE, 151,643 tokens + 22 special |
+| Instruction-tuned · chat format | no · none | yes · ChatML role markers |
+| Weights in fp16 | ≈ 0.25 GB | ≈ 3.1 GB |
+
+**Tokenization.** Both tokenizers use byte-level byte-pair encoding [5]: text is split into UTF-8 bytes and frequent byte sequences are merged into single tokens. Every byte has a token, so a misspelt query never fails as out-of-vocabulary; a rare word just becomes more pieces. Token count sets three practical limits. Each request re-processes the whole prompt, about 750 tokens for Qwen and mostly the 77-label catalogue, against at most 192 generated tokens. GPT-2 has exactly 1,024 position slots while the few-shot prompt is about 1,600 tokens, so GPT-2 only ever sees a truncated version of it. And Qwen wraps the prompt in ChatML role markers; when no system message is given its template inserts a default one (*"You are Qwen, created by Alibaba Cloud. You are a helpful assistant."*), so every Qwen prompt carries that hidden turn. It is the same for all four prompt variants, so comparisons between them stay fair.
+
+[[PENDING §4.2 — paste the tokenizer walkthrough from notebook §4: one evaluation query with its token ids and vocabulary pieces. Expected values: hidden size 1536, layers 28, heads 12, context 32768, vocabulary 151,643.]]
+
+**Embeddings and positions.** Each token id selects a row of the embedding matrix *E* (vocabulary × *d*): 1,536 numbers per token for Qwen, 768 for GPT-2. GPT-2 adds a learned vector for each absolute position; Qwen rotates every query and key vector by an angle proportional to its position (RoPE [6]), so attention depends on the *relative* distance between tokens.
+
+**Masked self-attention.** Each decoder block normalises its input, applies masked multi-head self-attention, adds the result back (a residual connection), then applies a feed-forward network, again with a residual [2]. For one head:
+
+<p class="eq"><img src="../assets/eq_attention.svg" alt="Attention(Q,K,V) = softmax(QK^T / sqrt(d_k) + M) V"></p>
+
+Dividing by √*d*<sub>k</sub> keeps the softmax from saturating. *M* makes the model causal: it is 0 on and below the diagonal and −∞ above it, so each position attends only to earlier ones, which is why generation can run left to right. Qwen's 12 query heads share 2 key/value heads (GQA [7]). During generation the keys and values of earlier tokens are cached, and GQA shrinks that cache six-fold, to 28,672 bytes per token in fp16 instead of 172,032 — smaller than GPT-2's 36,864 even though Qwen is twelve times larger. The feed-forward layers hold most of the weights: 41.3 M of each Qwen block's 46.8 M parameters.
+
+**Language-modelling head.** The final hidden state at the last position, *h*<sub>t</sub>, is mapped to one score per vocabulary entry and normalised into probabilities:
+
+<p class="eq"><img src="../assets/eq_lmhead.svg" alt="z = W h_t, p(x_t+1 = i | x_<=t) = softmax(z)_i"></p>
+
+Both models tie *W* to the embedding matrix, so the matrix that reads tokens in also writes them out.
+
+**Autoregressive generation.** The prompt is processed once (the *prefill*); one token is chosen from *p*, appended and fed back, and the loop repeats until an end-of-sequence token or 192 new tokens. *How* the token is chosen is the decoding rule (§8), and it sits outside the model. Qwen's published generation configuration ships `do_sample=True, temperature=0.7, top_k=20, top_p=0.8, repetition_penalty=1.1`; left in place, every "temperature only" run would also apply top-k, top-p and a repetition penalty. Our generator resets all of them before applying a decoding configuration.
+
+**What this explains about our design.** (1) The model writes JSON one token at a time with no notion of validity, so structure is enforced after generation by extraction, schema validation and repair (§10). (2) An intent label is just a token sequence, so the model can produce a plausible label that does not exist; every label is checked against the 77 real names. (3) The `confidence` the model writes is generated digits, not its softmax probability, so we use it only as an escalation signal and do not treat it as calibrated (§13). (4) Prefill cost grows with prompt length, and the label catalogue dominates the prompt: the strongest practical argument for fine-tuning (§9). (5) Under any sampling rule the same query can receive a different label on a different seed, which is why §8 measures self-consistency.

@@ -1,0 +1,3 @@
+# Build output (HTML, PDF, page previews, the temporary browser profile).
+# Regenerate with: python report/build_report.py
+build/

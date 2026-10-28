@@ -1,0 +1,3 @@
+# 7. Prompt-engineering experiments
+
+[[PENDING §7 (Requirements 6 and 11, E2) — the four strategies (zero-shot, few-shot [13], role/context, constraint-based) on the 385-row sample: one comparison table with accuracy, macro-F1, first-attempt schema validity, validity after repair and escalation rate; one short paragraph of design rationale per strategy (the rationale and the full prompts are in Appendix A.2); show `build_prompt(strategy, query, labels, **kwargs)` as the reusable parameterised template; the few-shot runs must use the train-split bank from §3; mention the default system prompt Qwen adds to every variant (§4.2).]]
