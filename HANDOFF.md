@@ -2,7 +2,7 @@
 
 **SafeBank Assist** · PCAM ZG516 Group Major Project · Group 22 · due **31 Oct 2026**
 
-Last updated: 23 Oct 2026 by Kishore (Solution Architect).
+Last updated: 28 Oct 2026 by Kishore (Solution Architect).
 
 - **[`WORKLOG.md`](WORKLOG.md)** — live status, what's done, what's pending, and **complete specifications for every unwritten file**. Start here if you are picking up a task.
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — full technical detail and report source material.
@@ -19,21 +19,23 @@ Last updated: 23 Oct 2026 by Kishore (Solution Architect).
 | **E4** structured output + repair | `schema.py` | ✅ Done, 35 tests | Kishore |
 | **E5** 3 simulated tools + router | `tools.py` | ✅ Done, 38 tests | Kishore |
 | Generation seam, decode config | `generator.py` | ✅ Done, 22 tests | Kishore |
-| **E7** end-to-end pipeline | `pipeline.py` | ✅ Done, 39 tests | Kishore |
+| **E7** end-to-end pipeline | `pipeline.py` | ✅ Done, 55 tests | Kishore |
+| **R13** reply safety screen | `safety.py` | ✅ Done, 24 tests | Kishore |
 | Package API | `__init__.py` | ✅ Done | Kishore |
 | **E2** prompt strategies | `prompts.py` | ✅ Done, 59 tests (4 of 4) | Kishore (seam) → **Satya** |
 | **E3** decoding grid | `decoding.py` | ✅ Done, 23 tests | **Satya** |
 | **E6** metrics + failure analysis | `evaluate.py` | ✅ Done, 39 tests | **Satya** |
-| Dataset load + sampling | `data_prep.py` | 🟡 Written, PR pending | **Vishruth** |
-| **E1** model/tokenizer loading | `model_loader.py` | 🟡 Written, PR pending | **Vishruth** |
-| Pinned dependencies | `requirements.txt` | 🟡 Written, PR pending | **Vishruth** |
-| Report assembly | — | ⬜ Not started | **Bhavani** |
+| Dataset load + sampling | `data_prep.py` | ✅ Done, 24 tests | **Vishruth** |
+| **E1** model/tokenizer loading | `model_loader.py` | ✅ Done, 13 tests (6 gated on real GPT-2) | **Vishruth** |
+| Pinned dependencies | `requirements.txt`, `requirements-colab.txt` | ✅ Done | **Vishruth** |
+| Colab notebook | `notebooks/safebank_colab.ipynb` | 🔴 Written; **not yet run — no stored outputs** | **Vishruth** |
+| Report assembly | — | 🔴 Not started — drafts ready, see `WORKLOG.md` §2.1 | **Bhavani** |
 
-**Kishore's and Satya's shares are both complete and merged.** **276 tests pass**, about 3 seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
+**All code is complete and merged — Kishore, Satya and Vishruth.** **353 tests** (347 run offline and pass, 6 gated on real GPT-2), a few seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
 
-**Satya's share (E2/E3/E6) is merged** (PR #1, 25 Oct). It added **+79** tests: `test_prompts.py` grew 42 → 59 as the three new variants replaced the stub tests, plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). A further **+2** came from exposing the model reply in `to_row()` for evaluation criterion 4, giving **276**.
+**Satya's share (E2/E3/E6) is merged** (PR #1, 25 Oct). It added **+79** tests: `test_prompts.py` grew 42 → 59 as the three new variants replaced the stub tests, plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). A further **+2** came from exposing the model reply in `to_row()` for evaluation criterion 4, giving 276. Vishruth's PR #2 then added +37, and the review fixes plus the safety screen +40, for **353**.
 
-**All code is now complete except `data_prep.py` and `model_loader.py`.** The experiment *runs* are blocked on those two — see item 1 under the open items below.
+**All code is now complete.** The experiment *runs* are what remains, and they wait only on a Colab session — see item 1 below.
 
 ---
 
@@ -46,7 +48,7 @@ python -m pip install pydantic numpy pandas scikit-learn
 python -m unittest discover -s tests -t . -v
 ```
 
-Expected: `Ran 276 tests ... OK`, about 3 seconds. No `PYTHONPATH` — the suite puts `src` on the path itself; no torch, no GPU, no network.
+Expected: `Ran 353 tests ... OK (skipped=6)`, a few seconds. No `PYTHONPATH` — the suite puts `src` on the path itself; no torch, no GPU, no network.
 
 To see the whole application actually run:
 
@@ -64,7 +66,7 @@ All three modules are implemented and tested through the real pipeline control f
 
 **2. `decoding.py` — E3 grid done.** Built on top of `DecodeConfig`/`DecodeStrategy` (not redefined), via `to_generate_kwargs()` and `.with_seed(n)`. `build_decoding_grid()` returns the 6-config grid (greedy, two temperatures, top-k, two top-p); `self_consistency_configs()` returns the seed-varied run set for criterion 6. 23 tests.
 
-**3. `evaluate.py` — 6 metrics + E6 failure analysis done.** Consumes `PipelineResult.to_row()` via `EvalRecord` (which pairs a row with its gold intent). All six metrics plus `analyse_failures()` and the `evaluate_run()`/`results_dataframe()` helpers. 34 tests.
+**3. `evaluate.py` — 6 metrics + E6 failure analysis done.** Consumes `PipelineResult.to_row()` via `EvalRecord` (which pairs a row with its gold intent). All six metrics plus `analyse_failures()` and the `evaluate_run()`/`results_dataframe()` helpers. 39 tests.
 
 **Dependencies this adds (for Vishruth's `requirements.txt`).** The E6 evaluation metrics bring **numpy, pandas and scikit-learn** into the application-layer dependency set (macro-F1 and the results DataFrame). Please pin all three alongside pydantic and the model stack. They are imported inside the functions that use them rather than at module top, following `model_loader.py`'s torch pattern, so `import safebank` stays lightweight — but to run the suite or the evaluation they do need to be installed.
 
@@ -82,39 +84,37 @@ class TextGenerator(Protocol):
     def generate(self, prompt: str, decode: DecodeConfig) -> str: ...
 ```
 
-If you think one of these needs to change, message me first — `pipeline.py` and 276 tests depend on them.
+If you think one of these needs to change, message me first — `pipeline.py` and 353 tests depend on them.
 
 ---
 
-## Vishruth — start here
+## Vishruth — merged; next is the Colab run
 
-`model_loader.HFGenerator` must match `TextGenerator` structurally and return **the completion only**, with the prompt stripped. The pipeline feeds your return value straight into `parse_response`, so a prompt echo gets scored as a model failure.
+`data_prep.py`, `model_loader.py`, both requirements files and the notebook are merged (PR #2), and `validate_label_space()` passes on the real 77 labels. Still owed:
 
-- Seed from `decode.seed` before every sampled generation, and pass `**decode.to_generate_kwargs()`.
-- Keep `import torch` / `import transformers` **inside function bodies**. The package must still import on a machine without them, or the whole test suite breaks.
-- `data_prep.py` must call `intents.validate_label_space(labels)` on the loaded label space — see blocker 3 below.
+1. 🔴 **Run `notebooks/safebank_colab.ipynb` on a Colab T4 and commit it with stored outputs.** That one run delivers E1, the Colab packaging and the reproducibility appendix.
+2. 🟡 Warn when `build_example_bank` gets no `exclude=` — today the train/test-overlap protection is opt-in.
+3. 🟡 Record a SHA-256 of each downloaded CSV in `preprocessing_record()`, so the frozen-eval-set claim can be checked.
 
 ---
 
-## 3 open items that need a group decision
+## Open items
 
-**1. 🔴 Environment — this blocks E1, E2, E3 and the real E7 run.**
-The model stack — `torch`, `transformers`, `datasets`, `tokenizers` — is **not** part of the local development environment and runs in Colab only. Available locally: pydantic 2.13.4, numpy 2.5.2, pandas 2.3.3, scikit-learn 1.9.0, matplotlib, seaborn, scipy — so the evaluation code can be written and unit-tested locally before any model exists.
-**Proposal:** all model work runs in Colab; the application layer and tests stay local. This is Open Item 2 in `PROJECT_PLAN.md` and it is now the critical path.
+**1. 🔴 The Colab run — this blocks E1, E2, E3, E6 and the real E7.**
+Decided: the model stack (`torch`, `transformers`, `datasets`, `tokenizers`) runs in Colab only; the application layer and tests run locally on pydantic, numpy, pandas and scikit-learn. What is missing is the run itself.
 
 **2. 🟠 `PROJECT_PLAN.md` is stale — Bhavani must not quote it yet.**
 Most important: the plan says *20 intents / 200 eval rows*; the code uses the **full 77 intents / 385 rows** (`EVAL_EXAMPLES_PER_INTENT = 5`). Full list of deviations in `ARCHITECTURE.md` §10.
 Note the workload: 385 rows × 4 prompt variants × 6 decoding configs is far more inference than the plan assumed. **Satya should size this against Colab T4 time before starting E2.**
 
-**3. 🟠 The 20 `FOCUS_INTENTS` names are unverified against the real dataset.**
-They are structurally tested (20 unique, 5 themes × 4) but not checked against BANKING77, because `datasets` isn't installed. `intents.validate_label_space()` will raise `LabelSpaceError` naming any typo the first time `data_prep.py` supplies real labels. **This must run clean before any number goes in the report.**
+**3. ✅ CLOSED — the 20 `FOCUS_INTENTS` names are verified.** `validate_label_space()` passed on the real 77 labels on 25 Oct.
 
 ---
 
 ## Ground rules
 
 - **Branch per person**, PR into `main`. Don't commit straight to `main`.
-- Nobody edits `schema.py`, `tools.py`, `pipeline.py` or `generator.py` without telling Kishore — 276 tests depend on them.
+- Nobody edits `schema.py`, `tools.py`, `pipeline.py` or `generator.py` without telling Kishore — 353 tests depend on them.
 - Run the suite before every push. It takes 3 seconds; there's no excuse.
 - No real customer or financial data, ever. All IDs stay synthetic (`CARD_SIM_0001`, `ACC_SIM_0001`). Section 8 of the brief.
 - Keep heavy imports (`torch`, `transformers`, `datasets`) inside function bodies so the package imports anywhere.
