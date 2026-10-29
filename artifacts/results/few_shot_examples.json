@@ -1,0 +1,18 @@
+[
+  [
+    "why hasnt my card come in yet?",
+    "{\"intent\": \"card_arrival\", \"confidence\": 0.9, \"response\": \"Thanks for getting in touch. Let me check the delivery status of your card.\", \"tool_call\": {\"name\": \"check_card_delivery_status\", \"args\": {\"card_id\": \"CARD_SIM_0001\"}}, \"requires_human\": false}"
+  ],
+  [
+    "What ATM accepts Mastercard?",
+    "{\"intent\": \"atm_support\", \"confidence\": 0.9, \"response\": \"I can help with that. Let me find the nearest branch or ATM for you.\", \"tool_call\": {\"name\": \"find_branch\", \"args\": {\"pincode\": \"560001\", \"service\": \"atm\"}}, \"requires_human\": false}"
+  ],
+  [
+    "The ATM sucked my card in.",
+    "{\"intent\": \"card_swallowed\", \"confidence\": 0.9, \"response\": \"Thanks for telling us. Blocking a card changes your account, so a colleague will confirm this with you before anything is done.\", \"tool_call\": null, \"requires_human\": true}"
+  ],
+  [
+    "I tried to purchase airline tickets online this morning and my card information isn't working. Is there something going on with my account?",
+    "{\"intent\": \"card_not_working\", \"confidence\": 0.9, \"response\": \"Thanks for your message. I can help with that and will explain the next steps for your request.\", \"tool_call\": null, \"requires_human\": false}"
+  ]
+]

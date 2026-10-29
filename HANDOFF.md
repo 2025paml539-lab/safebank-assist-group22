@@ -28,7 +28,7 @@ Last updated: 29 Oct 2026 by Vishruth (data, environment).
 | Dataset load + sampling | `data_prep.py` | ✅ Done, 24 tests | **Vishruth** |
 | **E1** model/tokenizer loading | `model_loader.py` | ✅ Done, 13 tests (6 gated on real GPT-2) | **Vishruth** |
 | Pinned dependencies | `requirements.txt`, `requirements-colab.txt` | ✅ Done | **Vishruth** |
-| Colab notebook | `notebooks/safebank_colab.ipynb` | 🟡 Runs clean on local CPU (29 Oct); **T4 run with stored outputs still owed** | **Vishruth** |
+| Colab notebook | `notebooks/safebank_colab.ipynb` | 🟡 Runs clean on local CPU (29 Oct); **Colab blocked until the fix is in the group repo; T4 run with stored outputs still owed** | **Vishruth** |
 | Report assembly | — | 🔴 Not started — drafts ready, see `WORKLOG.md` §2.1 | **Bhavani** |
 
 **All code is complete and merged — Kishore, Satya and Vishruth.** **353 tests** (347 run offline and pass, 6 gated on real GPT-2), a few seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
@@ -90,18 +90,20 @@ If you think one of these needs to change, message me first — `pipeline.py` an
 
 ## Vishruth — merged; next is the Colab run
 
-`data_prep.py`, `model_loader.py`, both requirements files and the notebook are merged (PR #2), and `validate_label_space()` passes on the real 77 labels. On 29 Oct the dataset-link fix (V1) landed, the notebook ran top to bottom with no errors on a local CPU, and report §6 was drafted from that run. Still owed:
+`data_prep.py`, `model_loader.py`, both requirements files and the notebook are merged (PR #2), and `validate_label_space()` passes on the real 77 labels. On 29 Oct the dataset-link fix (V1) landed on Vishruth's fork, the notebook ran top to bottom with no errors on a local CPU (nbconvert and VS Code), and report §6 was drafted from that run. Still owed:
 
-1. 🔴 **Run `notebooks/safebank_colab.ipynb` on a Colab T4 and commit it with stored outputs.** That one run delivers E1, the Colab packaging and the reproducibility appendix. Then check the §6 table against it and remove `[[CONFIRM §6]]`.
-2. 🟡 Warn when `build_example_bank` gets no `exclude=` — today the train/test-overlap protection is opt-in.
-3. 🟡 Record a SHA-256 of each downloaded CSV in `preprocessing_record()`, so the frozen-eval-set claim can be checked.
+1. 🔴 **Get the fix into the group repo (V1b).** The group repo's `main` is still `a4a1e5f`, without the fix, and the Colab notebook clones it, so Colab still fails with a 404 on `dataset_infos.json`. Push the fork's `main` and open a PR into `2025paml539-lab/safebank-assist-group22`; Kishore to review and merge.
+2. 🔴 **Then run `notebooks/safebank_colab.ipynb` on a Colab T4 and commit it with stored outputs.** That one run delivers E1, the Colab packaging and the reproducibility appendix. Then check the §6 table against it and remove `[[CONFIRM §6]]`.
+3. 🔴 Confirm the contribution row in Appendix I (V4) once the E1 run is in.
+4. 🟡 Warn when `build_example_bank` gets no `exclude=` — today the train/test-overlap protection is opt-in.
+5. 🟡 Record a SHA-256 of each downloaded CSV in `preprocessing_record()`, so the frozen-eval-set claim can be checked.
 
 ---
 
 ## Open items
 
 **1. 🔴 The Colab run — this blocks E1, E2, E3, E6 and the real E7.**
-Decided: the model stack (`torch`, `transformers`, `datasets`, `tokenizers`) runs in Colab only; the application layer and tests run locally on pydantic, numpy, pandas and scikit-learn. What is missing is the run itself.
+Decided: the model stack (`torch`, `transformers`, `datasets`, `tokenizers`) runs in Colab only; the application layer and tests run locally on pydantic, numpy, pandas and scikit-learn. What is missing is the run itself, and before it the dataset fix reaching the group repo (see Vishruth, item 1).
 
 **2. 🟠 `PROJECT_PLAN.md` is stale — Bhavani must not quote it yet.**
 Most important: the plan says *20 intents / 200 eval rows*; the code uses the **full 77 intents / 385 rows** (`EVAL_EXAMPLES_PER_INTENT = 5`). Full list of deviations in `ARCHITECTURE.md` §10.

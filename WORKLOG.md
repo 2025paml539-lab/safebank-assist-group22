@@ -18,12 +18,15 @@ This is the single source of truth for project status. If this file and `PROJECT
 | # | When | Task | Output |
 |---|---|---|---|
 | V1 | ✅ 29 Oct | Fix the dataset link in `data_prep.py` (the label file was removed from the Hugging Face Hub on 28 Oct), run the tests, update the notebook's handover note | PR |
-| V2 | Today | Run the notebook top to bottom on a Colab T4, push it with outputs | E1 outputs, tokenizer output, E7 trace, device report |
+| V1b | 🔴 Today — **blocks V2** | Get the fix into the group repo: push `main` to the fork, PR it into `2025paml539-lab/safebank-assist-group22`, merge. The group repo's `main` is still `a4a1e5f` (pre-fix), and that is what the notebook clones in Colab | PR |
+| V2 | Today, after V1b | Run the notebook top to bottom on a Colab T4, push it with outputs | E1 outputs, tokenizer output, E7 trace, device report |
 | V3 | 🟡 drafted 29 Oct | Report §6 baseline: E1 table plus 2–3 sentences. Drafted from a local CPU run; `[[CONFIRM §6]]` stays until the table is checked against the T4 run | report §6 |
 | V4 | Thu | Confirm own contribution row (name + date) | Appendix I |
 | — | optional | Warning on the few-shot exclusion setting, checksums on the dataset files | skip if short on time |
 
 V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `data_prep.py` now reads the label order from the `dataset_info` front matter of the Hub's `README.md` (`DATASET_CARD_URL`), which is the current source and has the same 77 names in the same order. `report/build_report.py` reads the same file, so the report's preprocessing record matches the notebook's. The notebook's handover note now shows `prompt_kwargs={"examples": EXAMPLES}`, and its clone cell updates an existing Colab clone instead of skipping it (a stale clone caused the 404 on the first Colab attempt).
+
+**Why Colab still fails (29 Oct):** the fix is on the fork only — `mvishruth-bits/safebank-assist-group22` `main` is at `3a3047a`, plus the local commit `b2ecbfe` (report build fix, notebook clone cell, §6 draft), not yet pushed. The notebook clones `2025paml539-lab/safebank-assist-group22`, whose `main` is still `a4a1e5f`, so Colab gets the old loader and hits the same 404 on `dataset_infos.json`. Nothing is wrong with the code: the notebook runs top to bottom with no errors locally, both through `nbconvert` and in VS Code. V1b is the whole remaining blocker for V2.
 
 #### 2. Satya — S1 and S2 start today; S3 onwards waits for V1 and V2
 
@@ -167,7 +170,7 @@ Three days left (Wed 28 → Sat 31), and no buffer any more. If the report waits
 | **Sun 25** | `data_prep.py` + `model_loader.py` + notebook + requirements | Vishruth | ✅ **merged (PR #2), verified against real data, GPT-2 and Qwen** |
 | **Sun 25** | Review fixes: `examples=` passthrough · credential-solicitation control | Kishore | ✅ **done, 353 tests** |
 | **Sun 25** | Report §1/§5/§10/§12 drafted from `ARCHITECTURE.md` | Bhavani | 🔴 **OUTSTANDING — see §2.1** |
-| **Mon 26** | **Notebook re-run on Colab T4 with stored outputs** → delivers E1, Colab packaging, reproducibility appendix | Vishruth | 🔴 **not in git as of Wed 28 — still the most time-critical item** |
+| **Mon 26** | **Notebook re-run on Colab T4 with stored outputs** → delivers E1, Colab packaging, reproducibility appendix | Vishruth | 🔴 **not in git as of Thu 29 — runs clean locally; Colab blocked until the dataset fix is merged into the group repo (V1b)** |
 | **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth | ✅ first three verified 25 Oct · 🔴 E1 output not in git |
 | **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore | 🔴 **overdue** — nothing in git |
 | **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya | 🔴 **due today** — waits on the notebook run |
@@ -536,6 +539,7 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 28 Oct | Report draft assembled in `report/`: builds to PDF with `python report/build_report.py`; sections 1, 2, 3, 4.2, 5, 9, 10, 12 and 14, 22 references and Appendix A–I written; 19 items pending. Pending work regrouped by person at the top of this log |
 | 29 Oct | Vishruth: **V1 done.** Label order now read from the Hub dataset card (`README.md`); `report/build_report.py` switched to the same source (it had broken: it still fetched `dataset_infos.json` but parsed it with the new card reader and found 0 labels). Notebook clone cell now updates an existing clone; it runs locally too (detects Colab, skips the pip cell). Handover note fixed. 353 tests pass offline, 6 real-GPT-2 tests pass |
 | 29 Oct | Vishruth: notebook verified **top to bottom with no errors on a local CPU run** (Apple M4 Pro, float32). Not report evidence: its `artifacts/` output is not committed and the T4 run (V2) is still owed. **V3 drafted**: §6 E1 table and findings from that run — GPT-2 echoes the prompt or loops in 5 of 5, Qwen summarises all 5 correctly but never as a routable label — with `[[CONFIRM §6]]` until checked against the T4 output |
+| 29 Oct | Vishruth: notebook re-run interactively in VS Code — all 11 code cells pass. Colab attempt still 404s: the group repo's `main` (`a4a1e5f`) does not have the fix yet, so the fork → group PR (V1b) is now what blocks V2 |
 
 ### Still open for the group
 1. 🔴 **The Colab run.** The environment question is settled (model work in Colab, everything else local). What is missing is the run itself: E1, E2, E3, E6 and the real E7 all wait on it.
