@@ -2,7 +2,7 @@
 
 **SafeBank Assist** · PCAM ZG516 Group Major Project · Group 22 · due **31 Oct 2026**
 
-Last updated: 28 Oct 2026 by Kishore (Solution Architect).
+Last updated: 29 Oct 2026 by Vishruth (data, environment).
 
 - **[`WORKLOG.md`](WORKLOG.md)** — live status, what's done, what's pending, and **complete specifications for every unwritten file**. Start here if you are picking up a task.
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — full technical detail and report source material.
@@ -28,7 +28,7 @@ Last updated: 28 Oct 2026 by Kishore (Solution Architect).
 | Dataset load + sampling | `data_prep.py` | ✅ Done, 24 tests | **Vishruth** |
 | **E1** model/tokenizer loading | `model_loader.py` | ✅ Done, 13 tests (6 gated on real GPT-2) | **Vishruth** |
 | Pinned dependencies | `requirements.txt`, `requirements-colab.txt` | ✅ Done | **Vishruth** |
-| Colab notebook | `notebooks/safebank_colab.ipynb` | 🔴 Written; **not yet run — no stored outputs** | **Vishruth** |
+| Colab notebook | `notebooks/safebank_colab.ipynb` | 🟡 Runs clean on local CPU (29 Oct); **T4 run with stored outputs still owed** | **Vishruth** |
 | Report assembly | — | 🔴 Not started — drafts ready, see `WORKLOG.md` §2.1 | **Bhavani** |
 
 **All code is complete and merged — Kishore, Satya and Vishruth.** **353 tests** (347 run offline and pass, 6 gated on real GPT-2), a few seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
@@ -90,9 +90,9 @@ If you think one of these needs to change, message me first — `pipeline.py` an
 
 ## Vishruth — merged; next is the Colab run
 
-`data_prep.py`, `model_loader.py`, both requirements files and the notebook are merged (PR #2), and `validate_label_space()` passes on the real 77 labels. Still owed:
+`data_prep.py`, `model_loader.py`, both requirements files and the notebook are merged (PR #2), and `validate_label_space()` passes on the real 77 labels. On 29 Oct the dataset-link fix (V1) landed, the notebook ran top to bottom with no errors on a local CPU, and report §6 was drafted from that run. Still owed:
 
-1. 🔴 **Run `notebooks/safebank_colab.ipynb` on a Colab T4 and commit it with stored outputs.** That one run delivers E1, the Colab packaging and the reproducibility appendix.
+1. 🔴 **Run `notebooks/safebank_colab.ipynb` on a Colab T4 and commit it with stored outputs.** That one run delivers E1, the Colab packaging and the reproducibility appendix. Then check the §6 table against it and remove `[[CONFIRM §6]]`.
 2. 🟡 Warn when `build_example_bank` gets no `exclude=` — today the train/test-overlap protection is opt-in.
 3. 🟡 Record a SHA-256 of each downloaded CSV in `preprocessing_record()`, so the frozen-eval-set claim can be checked.
 

@@ -1,11 +1,11 @@
 ```json
 {
   "dataset_id": "PolyAI/banking77",
-  "loader": "official PolyAI CSVs + Hub dataset_infos.json label order",
+  "loader": "official PolyAI CSVs + Hub dataset card (README.md) label order",
   "source_urls": [
     "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/train.csv",
     "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/test.csv",
-    "https://huggingface.co/datasets/PolyAI/banking77/raw/90d4e2ee5521c04fc1488f065b8b083658768c57/dataset_infos.json"
+    "https://huggingface.co/datasets/PolyAI/banking77/resolve/main/README.md"
   ],
   "n_intents_expected": 77,
   "seed": 42,
@@ -34,7 +34,6 @@
   },
   "texts_in_both_splits": 6,
   "eval_rows_actual": 385,
-  "eval_intents_covered": 77,
-  "label_order_note": "dataset_infos.json read from Hub revision 90d4e2e; the file was removed from the Hub's main branch on 28 Oct 2026 when the dataset was converted to Parquet. Its 77 names match the current dataset card, in order."
+  "eval_intents_covered": 77
 }
 ```

@@ -1,7 +1,7 @@
 # Work Log — SafeBank Assist
 
 **PCAM ZG516 Applied Generative AI · Group Major Project / Assignment-1 · Group 22**
-**Deadline: 31 October 2026** (extended from 25 Oct) · Log updated: **28 October 2026**
+**Deadline: 31 October 2026** (extended from 25 Oct) · Log updated: **29 October 2026**
 
 This is the single source of truth for project status. If this file and `PROJECT_PLAN.md` disagree, **this file wins** — the plan was written before the code existed.
 
@@ -17,13 +17,13 @@ This is the single source of truth for project status. If this file and `PROJECT
 
 | # | When | Task | Output |
 |---|---|---|---|
-| V1 | Today | Fix the dataset link in `data_prep.py` (the label file was removed from the Hugging Face Hub on 28 Oct), run the tests, update the notebook's handover note | PR |
+| V1 | ✅ 29 Oct | Fix the dataset link in `data_prep.py` (the label file was removed from the Hugging Face Hub on 28 Oct), run the tests, update the notebook's handover note | PR |
 | V2 | Today | Run the notebook top to bottom on a Colab T4, push it with outputs | E1 outputs, tokenizer output, E7 trace, device report |
-| V3 | Thu | Report §6 baseline: E1 table plus 2–3 sentences | report §6 |
+| V3 | 🟡 drafted 29 Oct | Report §6 baseline: E1 table plus 2–3 sentences. Drafted from a local CPU run; `[[CONFIRM §6]]` stays until the table is checked against the T4 run | report §6 |
 | V4 | Thu | Confirm own contribution row (name + date) | Appendix I |
 | — | optional | Warning on the few-shot exclusion setting, checksums on the dataset files | skip if short on time |
 
-For V1: `DATASET_INFOS_URL` points at `raw/main/dataset_infos.json`, which now returns 404 because the Hub dataset was converted to Parquet on 28 Oct. Pin it to revision `90d4e2ee5521c04fc1488f065b8b083658768c57`, whose 77 label names match the current dataset card in order; `report/build_report.py` already reads that revision. The notebook's handover note about `examples=` is stale too — the pipeline now forwards it through `prompt_kwargs`.
+V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `data_prep.py` now reads the label order from the `dataset_info` front matter of the Hub's `README.md` (`DATASET_CARD_URL`), which is the current source and has the same 77 names in the same order. `report/build_report.py` reads the same file, so the report's preprocessing record matches the notebook's. The notebook's handover note now shows `prompt_kwargs={"examples": EXAMPLES}`, and its clone cell updates an existing Colab clone instead of skipping it (a stale clone caused the 404 on the first Colab attempt).
 
 #### 2. Satya — S1 and S2 start today; S3 onwards waits for V1 and V2
 
@@ -534,6 +534,8 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 28 Oct | Kishore: found while verifying — Qwen's published `repetition_penalty` is **1.1**, not the 1.05 quoted on 25 Oct (the neutral reset covers it either way); Qwen's chat template injects a default system prompt into every prompt; `ARCHITECTURE.md` §7 claimed "constrained decoding", which we do not implement — corrected to post-generation validation |
 | 28 Oct | Kishore: stale figures swept across all four docs — 276 → 353 tests, Vishruth's modules marked merged, marks estimate split into "in git today" (~8.5) and "by 31 Oct" (~16) |
 | 28 Oct | Report draft assembled in `report/`: builds to PDF with `python report/build_report.py`; sections 1, 2, 3, 4.2, 5, 9, 10, 12 and 14, 22 references and Appendix A–I written; 19 items pending. Pending work regrouped by person at the top of this log |
+| 29 Oct | Vishruth: **V1 done.** Label order now read from the Hub dataset card (`README.md`); `report/build_report.py` switched to the same source (it had broken: it still fetched `dataset_infos.json` but parsed it with the new card reader and found 0 labels). Notebook clone cell now updates an existing clone; it runs locally too (detects Colab, skips the pip cell). Handover note fixed. 353 tests pass offline, 6 real-GPT-2 tests pass |
+| 29 Oct | Vishruth: notebook verified **top to bottom with no errors on a local CPU run** (Apple M4 Pro, float32). Not report evidence: its `artifacts/` output is not committed and the T4 run (V2) is still owed. **V3 drafted**: §6 E1 table and findings from that run — GPT-2 echoes the prompt or loops in 5 of 5, Qwen summarises all 5 correctly but never as a routable label — with `[[CONFIRM §6]]` until checked against the T4 output |
 
 ### Still open for the group
 1. 🔴 **The Colab run.** The environment question is settled (model work in Colab, everything else local). What is missing is the run itself: E1, E2, E3, E6 and the real E7 all wait on it.
