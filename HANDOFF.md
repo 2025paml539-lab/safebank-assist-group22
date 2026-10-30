@@ -29,11 +29,12 @@ Last updated: 28 Oct 2026 by Kishore (Solution Architect).
 | **E1** model/tokenizer loading | `model_loader.py` | ✅ Done, 13 tests (6 gated on real GPT-2) | **Vishruth** |
 | Pinned dependencies | `requirements.txt`, `requirements-colab.txt` | ✅ Done | **Vishruth** |
 | Colab notebook | `notebooks/safebank_colab.ipynb` | 🔴 Written; **not yet run — no stored outputs** | **Vishruth** |
+| **E2/E3/E6** experiment runner + notebook | `experiments.py`, `notebooks/safebank_experiments.ipynb` | 🟡 Written, 45 tests (PR pending); **not yet run on Colab** | **Satya** |
 | Report assembly | — | 🔴 Not started — drafts ready, see `WORKLOG.md` §2.1 | **Bhavani** |
 
 **All code is complete and merged — Kishore, Satya and Vishruth.** **353 tests** (347 run offline and pass, 6 gated on real GPT-2), a few seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
 
-**Satya's share (E2/E3/E6) is merged** (PR #1, 25 Oct). It added **+79** tests: `test_prompts.py` grew 42 → 59 as the three new variants replaced the stub tests, plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). A further **+2** came from exposing the model reply in `to_row()` for evaluation criterion 4, giving 276. Vishruth's PR #2 then added +37, and the review fixes plus the safety screen +40, for **353**.
+**Satya's share (E2/E3/E6) is merged** (PR #1, 25 Oct). It added **+79** tests: `test_prompts.py` grew 42 → 59 as the three new variants replaced the stub tests, plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). A further **+2** came from exposing the model reply in `to_row()` for evaluation criterion 4, giving 276. Vishruth's PR #2 then added +37, and the review fixes plus the safety screen +40, for **353**. Satya's follow-up PR adds the E2/E3/E6 runner (`experiments.py`) and its notebook with **+45** tests, taking the suite to **398**; it also writes report §4.1.
 
 **All code is now complete.** The experiment *runs* are what remains, and they wait only on a Colab session — see item 1 below.
 

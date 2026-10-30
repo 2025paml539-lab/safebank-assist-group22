@@ -2,7 +2,18 @@
 
 ## 4.1 Generative-model families
 
-[[PENDING §4.1 (Requirement 3) — compare at least three generative-model families covered in CS1, for example GANs [19], VAEs [20] and diffusion models [21] against autoregressive language models [3]: what each learns, how it produces a sample, whether it handles discrete text, and how it is conditioned. Close with why a causal LM fits this application: discrete token output, conditioning on an arbitrary text prompt, instruction following and structured output. About half a page.]]
+A generative model learns the distribution of its training data and then draws new samples from it. Four families differ in what they learn, how a sample is produced, and how well they suit discrete text:
+
+| Family | What it learns | How a sample is produced | Discrete text | Conditioning |
+|---|---|---|---|---|
+| **GAN** [19] | A generator that maps random noise to a sample, trained against a discriminator that tries to tell real from generated. The data distribution is implicit; there is no likelihood. | One forward pass of the generator on noise. | Poor fit. Choosing a token is a discrete step with no gradient, so the discriminator's signal cannot reach the generator directly. | Feed a label or other condition to both networks. |
+| **VAE** [20] | An encoder that maps data to a distribution over a latent code, and a decoder that rebuilds the data from it. Trained on a bound that combines reconstruction error with a penalty keeping the latent code close to a simple prior. | Draw a latent code from the prior and decode it. | Possible with a sequence decoder, but the decoder can learn to ignore the latent code, so control over the output is weak. | Feed a condition to the encoder and decoder. |
+| **Diffusion** [21] | A network that undoes a fixed, gradual noising process, one small step at a time. | Start from pure noise and denoise over many steps (1,000 in the original model). | Built for continuous data such as images. Text needs adaptations, such as diffusing in embedding space. | Pass the condition into the denoising network. |
+| **Autoregressive LM** [3] | The distribution of the next token given all previous tokens; the probability of a whole sequence is the product of these conditionals (§4.2). | Generate one token at a time, each conditioned on the tokens so far, until an end token or a length limit. | Native. The vocabulary is discrete and the model outputs a probability over it. | Put the condition in the prompt as text. |
+
+A causal LM fits SafeBank Assist for four reasons. The output we need is discrete: an intent label from a fixed list of 77, a reply, and a JSON object, all of which are token sequences. The input is an arbitrary customer message, and a prompt can carry it together with the label catalogue, the tool catalogue, the schema and worked examples, so a new intent is a catalogue edit and not a retraining run. An instruction-tuned model [10] follows those instructions directly, which is what lets one pass produce the label, the reply and the tool request. And sampling from a next-token distribution gives the decoding controls compared in §8: greedy, temperature, top-k [11] and top-p [12].
+
+The cost is that nothing in the model guarantees a valid object, and nothing stops it writing a plausible label that does not exist. That is why the application validates every reply after generation, repairs it once or twice, and escalates when that fails (§10).
 
 ## 4.2 LLM architecture and autoregressive generation
 

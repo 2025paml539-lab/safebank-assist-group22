@@ -29,8 +29,8 @@ For V1: `DATASET_INFOS_URL` points at `raw/main/dataset_infos.json`, which now r
 
 | # | When | Task | Output |
 |---|---|---|---|
-| S1 | Today | Report §4.1 model-family comparison (no results needed) | report §4.1 |
-| S2 | Today | Write the E2/E3/E6 experiment code | notebook cells |
+| S1 | Today | Report §4.1 model-family comparison (no results needed) | report §4.1 — ✅ written (PR pending) |
+| S2 | Today | Write the E2/E3/E6 experiment code | notebook cells — ✅ written and tested offline: `notebooks/safebank_experiments.ipynb` on `src/safebank/experiments.py` (PR pending); not yet run on Colab |
 | S3 | Thu AM | Run E2: 4 prompt strategies × 385 queries | results files |
 | S4 | Thu AM | Run E3: 6 decoding configs × 77 queries, plus 5 seeds | results files |
 | S5 | Thu AM | E6: score the six criteria, ≥3 failure cases, push results | results files |
@@ -534,6 +534,7 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 28 Oct | Kishore: found while verifying — Qwen's published `repetition_penalty` is **1.1**, not the 1.05 quoted on 25 Oct (the neutral reset covers it either way); Qwen's chat template injects a default system prompt into every prompt; `ARCHITECTURE.md` §7 claimed "constrained decoding", which we do not implement — corrected to post-generation validation |
 | 28 Oct | Kishore: stale figures swept across all four docs — 276 → 353 tests, Vishruth's modules marked merged, marks estimate split into "in git today" (~8.5) and "by 31 Oct" (~16) |
 | 28 Oct | Report draft assembled in `report/`: builds to PDF with `python report/build_report.py`; sections 1, 2, 3, 4.2, 5, 9, 10, 12 and 14, 22 references and Appendix A–I written; 19 items pending. Pending work regrouped by person at the top of this log |
+| 28 Oct | Satya: **S1 and S2 done, PR pending.** Report §4.1 written (GAN, VAE, diffusion, autoregressive LM, with why a causal LM fits); the report now builds at 10 body pages with 18 items pending. New `src/safebank/experiments.py` and `notebooks/safebank_experiments.ipynb` run E2, E3 and E6: first-attempt prompts are batch-generated and replayed through the unchanged pipeline (`PrefetchingGenerator`, hits and misses recorded), E3 runs on a 77-row one-per-intent subset with sampled configs once per seed and greedy once, and E6 draws failure cases across different classes. Adds **45 tests, 398 in total with this PR** (353 on `main` today). The notebook's experiment cells were executed offline against a scripted batch-capable model; they have **not** run on Colab, which waits on V1 (the dataset link) and a GPU session |
 
 ### Still open for the group
 1. 🔴 **The Colab run.** The environment question is settled (model work in Colab, everything else local). What is missing is the run itself: E1, E2, E3, E6 and the real E7 all wait on it.
