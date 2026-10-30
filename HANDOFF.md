@@ -29,7 +29,7 @@ Last updated: 30 Oct 2026 — PR #3 and PR #4 merged; `main` is `8aa5fce`.
 | **E1** model/tokenizer loading | `model_loader.py` | ✅ Done, 13 tests (6 gated on real GPT-2) | **Vishruth** |
 | Pinned dependencies | `requirements.txt`, `requirements-colab.txt` | ✅ Done | **Vishruth** |
 | Colab notebook | `notebooks/safebank_colab.ipynb` | ✅ **Merged with its Colab T4 outputs** (PR #3); `REPO_URL` still points at a fork | **Vishruth** |
-| **E2/E3/E6** experiment runner + notebook | `experiments.py`, `notebooks/safebank_experiments.ipynb` | 🟡 Written, 45 tests (PR pending); **not yet run on Colab** | **Satya** |
+| **E2/E3/E6** experiment runner + notebook | `experiments.py`, `notebooks/safebank_experiments.ipynb` | ✅ Done, 45 tests; **run on an A100 Kubeflow server on 31 Oct**, results in `artifacts/results/` (PR pending) | **Satya** |
 | Report assembly | `report/` | 🟡 **Draft assembled**, builds with `python report/build_report.py`; 17 items pending | **Bhavani** |
 
 **All code is complete and merged — Kishore, Satya and Vishruth.** **353 tests** (347 run offline and pass, 6 gated on real GPT-2), a few seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
