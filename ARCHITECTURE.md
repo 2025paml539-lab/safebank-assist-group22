@@ -93,11 +93,11 @@ Every stage is captured in a `PipelineResult`, and `PipelineResult.to_row()` fla
 | `prompts.py` | 4 prompt strategies, shared formatters, written rationale per variant | **E2** | Kishore (seam + zero-shot) → Satya (3 variants) | **Done**, 4 of 4 |
 | `decoding.py` | 6-config decoding grid, seed variation, self-consistency sets | **E3** | Satya | **Done** |
 | `evaluate.py` | All 6 metrics, `EvalRecord`, failure analysis, comparison tables | **E6** | Satya | **Done** |
-| `experiments.py` | E2/E3/E6 runner: batched first-attempt replay through the unchanged pipeline, grid and seed sweeps, failure-case selection, result persistence | **E2/E3/E6** | Satya | **Done** (follow-up PR; the 13 modules above predate it) |
+| `experiments.py` | E2/E3/E6 runner: batched first-attempt replay through the unchanged pipeline, grid and seed sweeps, failure-case selection, result persistence | **E2/E3/E6** | Satya | **Done** |
 | `data_prep.py` | BANKING77 load, stratified 385-row eval sample, train-split example bank, preprocessing record | — | Vishruth | **Done** |
 | `model_loader.py` | HF model + tokenizer loading, `HFGenerator`, batched generation, token and latency log | E1 | Vishruth | **Done** |
 
-**All 13 modules are implemented and merged.** The suite has 353 tests: 347 run offline and pass, and 6 that load real GPT-2 weights are skipped unless `SAFEBANK_MODEL_TESTS=1`. What remains is running the experiments, not writing code.
+**All 13 modules are implemented and merged.** The suite has 353 tests: 347 run offline and pass, and 6 that load real GPT-2 weights are skipped unless `SAFEBANK_MODEL_TESTS=1`. The E1 and E2/E3/E6 runs have since been done (see `WORKLOG.md`, 31 Oct).
 
 ---
 
@@ -237,7 +237,7 @@ OK (skipped=6)
 
 The suite grew from 195 to **353** as each share merged: Satya's E2/E3/E6 work +79, Vishruth's data and model loading +37 (including the 6 real-GPT-2 tests skipped unless `SAFEBANK_MODEL_TESTS=1`), and the review fixes plus the safety screen +42.
 
-Satya's follow-up (the experiment runner and its notebook) adds **45** more in `test_experiments.py`, taking the suite to **398** once merged (392 run offline, the same 6 gated).
+The experiment runner and its notebook add **45** more in `test_experiments.py`, taking the suite to **398** (392 run offline, the same 6 gated).
 
 Running the full suite needs **pydantic**; `scikit-learn` is additionally required only for the macro-F1 assertions, and `numpy`/`pandas` for the results DataFrame. Those three stay out of module scope — the heavy imports in `evaluate.py` live inside the functions that use them, so `import safebank` never pulls them in at import time. The model stack (torch, transformers, datasets) is needed only in Colab for the real E1/E7 runs; Vishruth pins the complete set in `requirements.txt`.
 
