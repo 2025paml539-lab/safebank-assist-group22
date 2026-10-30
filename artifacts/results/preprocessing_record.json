@@ -1,0 +1,37 @@
+{
+  "dataset_id": "PolyAI/banking77",
+  "loader": "official PolyAI CSVs + Hub dataset card (README.md) label order",
+  "source_urls": [
+    "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/train.csv",
+    "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/test.csv",
+    "https://huggingface.co/datasets/PolyAI/banking77/resolve/main/README.md"
+  ],
+  "n_intents_expected": 77,
+  "seed": 42,
+  "eval_rows_per_intent": 5,
+  "eval_rows_total": 385,
+  "eval_source_split": "test",
+  "few_shot_source_split": "train",
+  "preprocessing": [
+    "Strip leading/trailing whitespace from each query (CSV reader output).",
+    "No lowercasing, spelling correction or deduplication: queries are kept as the customer wrote them, because noisy phrasing is part of the task.",
+    "Evaluation sample drawn from the TEST split only; few-shot examples drawn from the TRAIN split only, excluding any text that also appears in the evaluation sample.",
+    "Prompt-time normalisation (whitespace collapse, length cap) is applied later by prompts._clean_query, identically for every prompt variant."
+  ],
+  "n_intents": 77,
+  "split_sizes": {
+    "train": 10003,
+    "test": 3080
+  },
+  "train_rows_per_intent": {
+    "min": 35,
+    "max": 187
+  },
+  "test_rows_per_intent": {
+    "min": 40,
+    "max": 40
+  },
+  "texts_in_both_splits": 6,
+  "eval_rows_actual": 385,
+  "eval_intents_covered": 77
+}

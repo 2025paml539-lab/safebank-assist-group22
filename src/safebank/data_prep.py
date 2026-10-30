@@ -10,8 +10,9 @@ Loading note
 dataset (``banking77.py``), and ``datasets`` 4.x and later refuse to run
 dataset scripts. ``load_banking77`` therefore reads the two official CSV files
 that script itself downloads (PolyAI-LDN/task-specific-datasets), and takes the
-canonical 77-name ``ClassLabel`` order from the Hub's ``dataset_infos.json``.
-The rows and the label ids are identical to ``load_dataset(DATASET_ID)``; only
+canonical 77-name ``ClassLabel`` order from the ``dataset_info`` front matter
+of the Hub's ``README.md`` (the Hub repo dropped ``dataset_infos.json`` when it
+was converted to Parquet). The rows and the label ids are identical to ``load_dataset(DATASET_ID)``; only
 the loader differs. This is recorded in :func:`preprocessing_record`.
 
 Dependency rule
@@ -29,6 +30,7 @@ from __future__ import annotations
 import csv
 import json
 import random
+import re
 import urllib.request
 from collections import Counter
 from pathlib import Path
@@ -46,9 +48,10 @@ TEST_CSV_URL: str = (
     "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/"
     "master/banking_data/test.csv"
 )
-#: Source of the canonical label-id order.
-DATASET_INFOS_URL: str = (
-    f"https://huggingface.co/datasets/{config.DATASET_ID}/raw/main/dataset_infos.json"
+#: Source of the canonical label-id order: the dataset card's YAML front
+#: matter (``dataset_info.features[label].dtype.class_label.names``).
+DATASET_CARD_URL: str = (
+    f"https://huggingface.co/datasets/{config.DATASET_ID}/resolve/main/README.md"
 )
 
 #: Published split sizes, checked after loading so a truncated download fails
@@ -85,10 +88,22 @@ def _download(url: str, dest: Path) -> Path:
     return dest
 
 
-def _read_label_names(infos_path: Path) -> list[str]:
-    infos = json.loads(infos_path.read_text(encoding="utf-8"))
-    info = next(iter(infos.values()))
-    return list(info["features"]["label"]["names"])
+#: One ``'<id>': <name>`` entry of the card's ``class_label.names`` mapping.
+_CLASS_LABEL_LINE = re.compile(r"^\s*'(\d+)':\s*(.+?)\s*$")
+
+
+def _read_label_names(card_path: Path) -> list[str]:
+    """Label names in id order, from the dataset card's YAML front matter."""
+    text = card_path.read_text(encoding="utf-8")
+    front_matter = text.split("---", 2)[1] if text.startswith("---") else ""
+    by_id: dict[int, str] = {}
+    for line in front_matter.splitlines():
+        m = _CLASS_LABEL_LINE.match(line)
+        if m:
+            by_id[int(m.group(1))] = m.group(2)
+    if sorted(by_id) != list(range(len(by_id))):
+        raise ValueError(f"{card_path} has non-contiguous class_label ids")
+    return [by_id[i] for i in range(len(by_id))]
 
 
 def _read_csv(path: Path) -> tuple[list[str], list[str]]:
@@ -120,7 +135,7 @@ def load_banking77(cache_dir: str | None = None) -> tuple[object, object]:
     from datasets import ClassLabel, Dataset, Features, Value
 
     root = Path(cache_dir) if cache_dir else config.DATA_DIR
-    names = _read_label_names(_download(DATASET_INFOS_URL, root / "dataset_infos.json"))
+    names = _read_label_names(_download(DATASET_CARD_URL, root / "README.md"))
     features = Features({"text": Value("string"), "label": ClassLabel(names=names)})
     label_id = {name: i for i, name in enumerate(names)}
 
@@ -129,7 +144,7 @@ def load_banking77(cache_dir: str | None = None) -> tuple[object, object]:
         texts, categories = _read_csv(_download(url, root / f"{split_name}.csv"))
         unknown = sorted(set(categories) - set(label_id))
         if unknown:
-            raise ValueError(f"{split_name}.csv has labels not in dataset_infos: {unknown}")
+            raise ValueError(f"{split_name}.csv has labels not in the dataset card: {unknown}")
         if len(texts) != EXPECTED_SPLIT_SIZES[split_name]:
             raise ValueError(
                 f"{split_name} split has {len(texts)} rows, expected "
@@ -335,8 +350,8 @@ def preprocessing_record(
     """
     record: dict = {
         "dataset_id": config.DATASET_ID,
-        "loader": "official PolyAI CSVs + Hub dataset_infos.json label order",
-        "source_urls": [TRAIN_CSV_URL, TEST_CSV_URL, DATASET_INFOS_URL],
+        "loader": "official PolyAI CSVs + Hub dataset card (README.md) label order",
+        "source_urls": [TRAIN_CSV_URL, TEST_CSV_URL, DATASET_CARD_URL],
         "n_intents_expected": config.EXPECTED_N_INTENTS,
         "seed": config.SEED,
         "eval_rows_per_intent": config.EVAL_EXAMPLES_PER_INTENT,
