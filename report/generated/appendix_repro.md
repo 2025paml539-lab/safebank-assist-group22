@@ -1,6 +1,6 @@
 | Item | Value |
 |---|---|
-| Code | https://github.com/2025paml539-lab/safebank-assist-group22 (built from commit `0b3064e`) |
+| Code | https://github.com/2025paml539-lab/safebank-assist-group22 (built from commit `3a3047a`) |
 | Seed | `42` for sampling, data selection and decoding |
 | Final model | `Qwen/Qwen2.5-1.5B-Instruct` |
 | Baseline model | `gpt2` |

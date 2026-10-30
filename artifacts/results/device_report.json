@@ -1,0 +1,16 @@
+{
+  "device": "cuda",
+  "device_name": "Tesla T4",
+  "cuda_capability": [
+    7,
+    5
+  ],
+  "vram_gb": 14.6,
+  "torch_version": "2.11.0+cu130",
+  "transformers_version": "5.19.0",
+  "cuda_version": "13.0",
+  "dtype": "float16",
+  "seed": 42,
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "baseline_model_id": "gpt2"
+}

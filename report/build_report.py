@@ -150,13 +150,6 @@ class Split:
         return len(self._cols["text"])
 
 
-#: The Hub dataset was converted to Parquet on 28 Oct 2026 and `dataset_infos.json`
-#: was removed from `main`. The label order is read from the last revision that
-#: still has it; its 77 names match the current dataset card exactly, in order.
-LABELS_URL = ("https://huggingface.co/datasets/PolyAI/banking77/raw/"
-              "90d4e2ee5521c04fc1488f065b8b083658768c57/dataset_infos.json")
-
-
 def load_splits() -> tuple[list[str], Split, Split]:
     """Read the official BANKING77 files the way ``data_prep`` does, minus ``datasets``.
 
@@ -165,7 +158,7 @@ def load_splits() -> tuple[list[str], Split, Split]:
     from safebank import data_prep
 
     root = BUILD / "data"
-    names = data_prep._read_label_names(data_prep._download(LABELS_URL, root / "dataset_infos.json"))
+    names = data_prep._read_label_names(data_prep._download(data_prep.DATASET_CARD_URL, root / "README.md"))
     if len(names) != 77:
         raise SystemExit(f"expected 77 label names, got {len(names)}")
     index = {n: i for i, n in enumerate(names)}
@@ -194,12 +187,6 @@ def stage_dataset() -> dict:
     eval_queries = {r["query"] for r in eval_rows}
     bank = data_prep.build_example_bank(train, names, exclude=eval_queries)
     record = data_prep.preprocessing_record(train, test, eval_rows)
-    record["source_urls"] = [data_prep.TRAIN_CSV_URL, data_prep.TEST_CSV_URL, LABELS_URL]
-    record["label_order_note"] = (
-        "dataset_infos.json read from Hub revision 90d4e2e; the file was removed from the Hub's "
-        "main branch on 28 Oct 2026 when the dataset was converted to Parquet. Its 77 names match "
-        "the current dataset card, in order."
-    )
     n_tool = sum(1 for n in names if tools.route_intent(n) is not None)
     lo = min(train_counts, key=train_counts.get)
     hi = max(train_counts, key=train_counts.get)

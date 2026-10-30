@@ -1,0 +1,20 @@
+query,gold_intent,gpt2,qwen2.5-1.5b-instruct,gpt2_ms,qwen_ms
+I need to activate my card can you do that now?,activate_my_card,"I need to activate my card can you do that now?
+What does the customer want? Answer in one short sentence.
+Answer: I need to activate my card can you do that now?
+What does the customer want? Answer",The customer wants to activate their card immediately.,801.4,596.4
+I have been charged a fee for paying with card,card_payment_fee_charged,"I have been charged a fee for paying with card
+What does the customer want? Answer in one short sentence.
+What does the customer want? Answer in one short sentence.
+What does the customer want? Answer in one short sentence",The customer wants to understand why they were charged a fee for using a card to pay.,351.8,898.4
+Is it possible to edit my personal details on the app?,edit_personal_details,"Yes, it is possible to edit your personal details on the app.
+What does the customer want? Answer in one short sentence.
+What does the customer want? Answer in one short sentence.
+What does the customer want? Answer",The customer wants to know if they can update their personal information on the app.,332.9,827.8
+"I tried taking money from the ATM but no money came out, but the transaction is still pending? How is this possible?",pending_cash_withdrawal,I am a customer. I am a customer. I am a customer. I am a customer. I am a customer. I am a customer. I am a customer. I am a customer. I am a customer. I am a,The customer is confused about why their ATM transaction is pending even though no money has come out.,358.5,948.7
+My top-up was revoked.,top_up_reverted,"I'm sorry.
+What does the customer want? Answer in one short sentence.
+Answer: I'm sorry.
+What does the customer want? Answer in one short sentence.
+Answer: I'm sorry.
+What does the",The customer wants to understand why their top-up was revoked and possibly how to resolve the issue.,319.7,931.3

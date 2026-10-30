@@ -1,0 +1,385 @@
+{"query": "I need to activate my card can you do that now?", "gold_intent": "activate_my_card"}
+{"query": "I received my new card, how is it activated?", "gold_intent": "activate_my_card"}
+{"query": "Would like to use my card and need to activate it first.  Can you help me do this?", "gold_intent": "activate_my_card"}
+{"query": "I need help activating my new card.", "gold_intent": "activate_my_card"}
+{"query": "Please, activate my card", "gold_intent": "activate_my_card"}
+{"query": "How do I go about setting up an account for my daughter?", "gold_intent": "age_limit"}
+{"query": "Is there an age minimum?", "gold_intent": "age_limit"}
+{"query": "What age do I have to be?", "gold_intent": "age_limit"}
+{"query": "What age do my kids need to be to use your service?", "gold_intent": "age_limit"}
+{"query": "How young can someone be in order to open an account?", "gold_intent": "age_limit"}
+{"query": "Can I use the system Google Pay for top-ups?", "gold_intent": "apple_pay_or_google_pay"}
+{"query": "My top-up for Google Pay isn't working", "gold_intent": "apple_pay_or_google_pay"}
+{"query": "Does Apple Pay give the option to top up?", "gold_intent": "apple_pay_or_google_pay"}
+{"query": "is apple pay eligible for top up", "gold_intent": "apple_pay_or_google_pay"}
+{"query": "I got my American Express in Apple Pay, why is top up not working?", "gold_intent": "apple_pay_or_google_pay"}
+{"query": "Which ATMs accept this card?", "gold_intent": "atm_support"}
+{"query": "How can I withdraw money?", "gold_intent": "atm_support"}
+{"query": "What ATMs will accept this type of card?", "gold_intent": "atm_support"}
+{"query": "Are there certain ATMs that I can use this card at?", "gold_intent": "atm_support"}
+{"query": "Is there places where I can't withdraw money?", "gold_intent": "atm_support"}
+{"query": "Is there an auto top-up option?", "gold_intent": "automatic_top_up"}
+{"query": "Are there limits on auto top-up?", "gold_intent": "automatic_top_up"}
+{"query": "Will it automatically top-up money if there isn't a lot left?", "gold_intent": "automatic_top_up"}
+{"query": "Can I set up an automatic top-up for travel.", "gold_intent": "automatic_top_up"}
+{"query": "Can you explain where I can find the auto-top option?", "gold_intent": "automatic_top_up"}
+{"query": "I made a transfer a few hours ago from a UK banking account.  I do not yet see the transfer.  Please check on this for me.", "gold_intent": "balance_not_updated_after_bank_transfer"}
+{"query": "I transferred some money but I think it has gotten lost somewhere.", "gold_intent": "balance_not_updated_after_bank_transfer"}
+{"query": "I had cash transferred but the balance did not change.", "gold_intent": "balance_not_updated_after_bank_transfer"}
+{"query": "I did a transfer to my account but it doesn't show up", "gold_intent": "balance_not_updated_after_bank_transfer"}
+{"query": "Why doesn't my balance reflect my transfer", "gold_intent": "balance_not_updated_after_bank_transfer"}
+{"query": "How can I get the cash deposit to show up on my account?", "gold_intent": "balance_not_updated_after_cheque_or_cash_deposit"}
+{"query": "Where is the cash from my cheque I recently deposited?", "gold_intent": "balance_not_updated_after_cheque_or_cash_deposit"}
+{"query": "cash deposit to my account has shown a red flag.", "gold_intent": "balance_not_updated_after_cheque_or_cash_deposit"}
+{"query": "I deposited a check but my balance is still the same.", "gold_intent": "balance_not_updated_after_cheque_or_cash_deposit"}
+{"query": "My bank statement doesn't show the cash deposit I made recently.", "gold_intent": "balance_not_updated_after_cheque_or_cash_deposit"}
+{"query": "Can you please help me with this exchange?  I am trying to get crypto and the app won't let me.", "gold_intent": "beneficiary_not_allowed"}
+{"query": "How do I do a successful transfer to an account?", "gold_intent": "beneficiary_not_allowed"}
+{"query": "A transfer to an account was not allowed", "gold_intent": "beneficiary_not_allowed"}
+{"query": "Explain why I can't do a transfer to a beneficiary.", "gold_intent": "beneficiary_not_allowed"}
+{"query": "i tried to make a transfer to a beneficiary and it didn't go through", "gold_intent": "beneficiary_not_allowed"}
+{"query": "Can I cancel my transaction?", "gold_intent": "cancel_transfer"}
+{"query": "I would like to revert a transaction I did this morning", "gold_intent": "cancel_transfer"}
+{"query": "I want to reverse my transaction from earlier", "gold_intent": "cancel_transfer"}
+{"query": "How do i cancel my transaction?", "gold_intent": "cancel_transfer"}
+{"query": "Cancel my last transfer", "gold_intent": "cancel_transfer"}
+{"query": "My card's expiring, what happens now?", "gold_intent": "card_about_to_expire"}
+{"query": "What do I do when my card is about to expire?", "gold_intent": "card_about_to_expire"}
+{"query": "Since my card is about to expire, I need a new one.", "gold_intent": "card_about_to_expire"}
+{"query": "What would the price be for an expired card replacement and how long will it take me to get it?", "gold_intent": "card_about_to_expire"}
+{"query": "I need to know the cost and when I will receive a new card to replace an old one.", "gold_intent": "card_about_to_expire"}
+{"query": "Can I use my card for payment all over the world?", "gold_intent": "card_acceptance"}
+{"query": "Where can the card be used?", "gold_intent": "card_acceptance"}
+{"query": "What places can I use my card?", "gold_intent": "card_acceptance"}
+{"query": "Is my card usable anywhere?", "gold_intent": "card_acceptance"}
+{"query": "Will filling stations accept my card?", "gold_intent": "card_acceptance"}
+{"query": "When will I get my card?", "gold_intent": "card_arrival"}
+{"query": "Do you know if there is a tracking number for the new card you sent me?", "gold_intent": "card_arrival"}
+{"query": "I am still waiting for my card after 1 week.  Is this ok?", "gold_intent": "card_arrival"}
+{"query": "Where is my new card? I have been waiting a week!", "gold_intent": "card_arrival"}
+{"query": "My card has not arrived yet, where is it?", "gold_intent": "card_arrival"}
+{"query": "Does delivery to the US take long?", "gold_intent": "card_delivery_estimate"}
+{"query": "When should I expect my card?", "gold_intent": "card_delivery_estimate"}
+{"query": "How long should I expect for the card to arrive?", "gold_intent": "card_delivery_estimate"}
+{"query": "Whats the delivery time to the United States?", "gold_intent": "card_delivery_estimate"}
+{"query": "How long until my card is delivered?", "gold_intent": "card_delivery_estimate"}
+{"query": "How do I link a card that I already have?", "gold_intent": "card_linking"}
+{"query": "How do I link a new card?", "gold_intent": "card_linking"}
+{"query": "How do I add a card to the app?", "gold_intent": "card_linking"}
+{"query": "How do I view the card I received in the app?", "gold_intent": "card_linking"}
+{"query": "How do I link my replacement card?", "gold_intent": "card_linking"}
+{"query": "How can I get my physical card to work?", "gold_intent": "card_not_working"}
+{"query": "Why isn't my card working?", "gold_intent": "card_not_working"}
+{"query": "My card is broke, what do I do?", "gold_intent": "card_not_working"}
+{"query": "I cannot use my card.", "gold_intent": "card_not_working"}
+{"query": "The card I have doesn't work.", "gold_intent": "card_not_working"}
+{"query": "I show another charge on my card from when I used it, why?", "gold_intent": "card_payment_fee_charged"}
+{"query": "When would my card be charged an extra fee for a transaction?", "gold_intent": "card_payment_fee_charged"}
+{"query": "I have been charged a fee for paying with card", "gold_intent": "card_payment_fee_charged"}
+{"query": "Will I always be charged a fee for using my card?", "gold_intent": "card_payment_fee_charged"}
+{"query": "There is a fee on my account. Why?", "gold_intent": "card_payment_fee_charged"}
+{"query": "I saw a payment i did not do", "gold_intent": "card_payment_not_recognised"}
+{"query": "I have a payment I didn't do", "gold_intent": "card_payment_not_recognised"}
+{"query": "There is a card payment I do not recognise.", "gold_intent": "card_payment_not_recognised"}
+{"query": "Please put a freeze on my card,  I am worried there has been some payments on it and I don't know what for.", "gold_intent": "card_payment_not_recognised"}
+{"query": "What can I do about some payments on my card I didn't make.  Please put a freeze on my card till we can figure this out.", "gold_intent": "card_payment_not_recognised"}
+{"query": "The exchange rate on my purchase is wrong.", "gold_intent": "card_payment_wrong_exchange_rate"}
+{"query": "Why is the exchange rate wrong when I purchase something abroad?", "gold_intent": "card_payment_wrong_exchange_rate"}
+{"query": "I don't think my card payment exchange rate is correct.", "gold_intent": "card_payment_wrong_exchange_rate"}
+{"query": "The wrong exchange rate was used when I bought something with a foriegn currency.", "gold_intent": "card_payment_wrong_exchange_rate"}
+{"query": "How can I check the exchange rate applied to my transaction?", "gold_intent": "card_payment_wrong_exchange_rate"}
+{"query": "The ATM didn't give me the card back!", "gold_intent": "card_swallowed"}
+{"query": "How can I get my card out of the damn ATM?", "gold_intent": "card_swallowed"}
+{"query": "The ATM won't give me my card back.", "gold_intent": "card_swallowed"}
+{"query": "My card was taken by the ATM.", "gold_intent": "card_swallowed"}
+{"query": "My card is stuck in the ATM, what can I do?", "gold_intent": "card_swallowed"}
+{"query": "I got a fee for an ATM withdrawal.", "gold_intent": "cash_withdrawal_charge"}
+{"query": "What is the reason for this fee I got after a simple cash withdrawal?", "gold_intent": "cash_withdrawal_charge"}
+{"query": "I took cash and got charged a fee", "gold_intent": "cash_withdrawal_charge"}
+{"query": "Was charged an ATM fee despite it being a small withdrawal on the 1st day of the month. I thought I was allowed 200 per month?", "gold_intent": "cash_withdrawal_charge"}
+{"query": "When I got cash, I'm pretty sure there was a glitch that overcharged me.", "gold_intent": "cash_withdrawal_charge"}
+{"query": "There's a cash withdraw on my statement that I didn't make.", "gold_intent": "cash_withdrawal_not_recognised"}
+{"query": "The app is showing an ATM withdrawl that I didn't make.", "gold_intent": "cash_withdrawal_not_recognised"}
+{"query": "I need to cancel my card that got stolen a little while ago. Someone has already taken some money out and I don't want them to take anymore. Can you please do that?", "gold_intent": "cash_withdrawal_not_recognised"}
+{"query": "There is an error, the app says I made an ATM withdrawal and I didn't.", "gold_intent": "cash_withdrawal_not_recognised"}
+{"query": "There is an ATM withdrawl in the app I don't recognize.", "gold_intent": "cash_withdrawal_not_recognised"}
+{"query": "If I am overseas, how do I change my pin?", "gold_intent": "change_pin"}
+{"query": "How might  I change my PIN?", "gold_intent": "change_pin"}
+{"query": "I want to set a new PIN", "gold_intent": "change_pin"}
+{"query": "Where can I find instructions to change my PIN?", "gold_intent": "change_pin"}
+{"query": "I need to change my pin but I am on the road.", "gold_intent": "change_pin"}
+{"query": "Can you freeze my card because someone used it while I was out of town. I did not make these purchases.", "gold_intent": "compromised_card"}
+{"query": "Someone else may be using my card.  There are transactions I don't recognize.", "gold_intent": "compromised_card"}
+{"query": "What do I do to stop unauthorized transactions on my card? I was never in the place from which the transactions on my bill were made and I never made them. Please help!", "gold_intent": "compromised_card"}
+{"query": "How do I freeze my card? I think someone is using it to make a bunch of online transactions.", "gold_intent": "compromised_card"}
+{"query": "Can I use app to freeze my card and dispute fraud?", "gold_intent": "compromised_card"}
+{"query": "How do I get the contactless feature to work for my card?", "gold_intent": "contactless_not_working"}
+{"query": "I wanted to use my card contactless but it doesn't seem to be working, what could be the problem?", "gold_intent": "contactless_not_working"}
+{"query": "I wanted to use my contactless at the metro today but it didn't accept it!", "gold_intent": "contactless_not_working"}
+{"query": "Help me with my contactless which isn't working.", "gold_intent": "contactless_not_working"}
+{"query": "How can I find out where my contactless works?", "gold_intent": "contactless_not_working"}
+{"query": "I live in the US but want to get a card", "gold_intent": "country_support"}
+{"query": "I'm not in the UK, is it possible for me to still get a card?", "gold_intent": "country_support"}
+{"query": "Is my country supported", "gold_intent": "country_support"}
+{"query": "I'm not in the UK, can I get a card?", "gold_intent": "country_support"}
+{"query": "If i'm not in the UK, can I still get a card?", "gold_intent": "country_support"}
+{"query": "My card declined", "gold_intent": "declined_card_payment"}
+{"query": "Do you know why my card payment did not work?", "gold_intent": "declined_card_payment"}
+{"query": "Something is wrong with my payment account since it has been declined", "gold_intent": "declined_card_payment"}
+{"query": "My card payment did not work.", "gold_intent": "declined_card_payment"}
+{"query": "Please explain why my card was declined?", "gold_intent": "declined_card_payment"}
+{"query": "Can you tell me why you won't let me get my own money out of the money machine? I know I used the right PIN.", "gold_intent": "declined_cash_withdrawal"}
+{"query": "Hi, My card withdrawal was declined this morning. It was working fine till yesterday. Please check and inform me.", "gold_intent": "declined_cash_withdrawal"}
+{"query": "I was declined when I tried to get cash.", "gold_intent": "declined_cash_withdrawal"}
+{"query": "Why didn't the ATM give me my money?", "gold_intent": "declined_cash_withdrawal"}
+{"query": "Why was I declined getting cash?", "gold_intent": "declined_cash_withdrawal"}
+{"query": "How can I fix my card, it got declined twice.", "gold_intent": "declined_transfer"}
+{"query": "If the transfer details have already but reviewed and confirmed that they are correct, what other reason would cause my transfer to be declined?", "gold_intent": "declined_transfer"}
+{"query": "When I try and to buy something using my card it keeps getting declined.", "gold_intent": "declined_transfer"}
+{"query": "I can't transfer money from my account.", "gold_intent": "declined_transfer"}
+{"query": "I was attempting to purchase a golf club off eBay yesterday, but my credit card was declined. I tried multiple times, and again this morning. Can you check into my card please?", "gold_intent": "declined_transfer"}
+{"query": "I may have a fraud charge on my debit statement.", "gold_intent": "direct_debit_payment_not_recognised"}
+{"query": "Why is there a direct debit payment on my app that is not from me?", "gold_intent": "direct_debit_payment_not_recognised"}
+{"query": "Even though it's late, I wanted to see about disputing a charge. I was just looking through my transactions over the past couple of months and noticed a pretty large amount that was not completed by me. Is this possibly something I can still do.", "gold_intent": "direct_debit_payment_not_recognised"}
+{"query": "why does the app show a direct debit payment that I did not authorize", "gold_intent": "direct_debit_payment_not_recognised"}
+{"query": "There is a direct debit I do not recognise in my statement", "gold_intent": "direct_debit_payment_not_recognised"}
+{"query": "How can i get multiple disposble cards.", "gold_intent": "disposable_card_limits"}
+{"query": "I would like to know any restrictions for the disposable cards.", "gold_intent": "disposable_card_limits"}
+{"query": "How many virtual cards do I get?", "gold_intent": "disposable_card_limits"}
+{"query": "How many times can I use a disposable card?", "gold_intent": "disposable_card_limits"}
+{"query": "How many transactions can I do with one disposable card?", "gold_intent": "disposable_card_limits"}
+{"query": "How to change my address.", "gold_intent": "edit_personal_details"}
+{"query": "I want to change my personal details.", "gold_intent": "edit_personal_details"}
+{"query": "I relocated and need to change my personal details.", "gold_intent": "edit_personal_details"}
+{"query": "How can I modify my details?", "gold_intent": "edit_personal_details"}
+{"query": "Is it possible to edit my personal details on the app?", "gold_intent": "edit_personal_details"}
+{"query": "Where do I find the exchange rate?", "gold_intent": "exchange_charge"}
+{"query": "My work sends me all over the world, can I get a discount for all the money I have to exchange?", "gold_intent": "exchange_charge"}
+{"query": "Will I be charged a fee for exchanging foreign currencies?", "gold_intent": "exchange_charge"}
+{"query": "I will need to exchange currencies frequently, will I be able to get a discount?", "gold_intent": "exchange_charge"}
+{"query": "I would like to exchange currencies, but is there an extra charge to do so?", "gold_intent": "exchange_charge"}
+{"query": "How do I find the exchange rate?", "gold_intent": "exchange_rate"}
+{"query": "How are exchange rates calculated?", "gold_intent": "exchange_rate"}
+{"query": "Where did your guys exchange rates come from?", "gold_intent": "exchange_rate"}
+{"query": "Can you tell me the foreign exchange rate?", "gold_intent": "exchange_rate"}
+{"query": "why do your exchange rates change", "gold_intent": "exchange_rate"}
+{"query": "What all currencies can be exchanged?", "gold_intent": "exchange_via_app"}
+{"query": "How would I use my money in a different country?", "gold_intent": "exchange_via_app"}
+{"query": "Where do I go to change GBP?", "gold_intent": "exchange_via_app"}
+{"query": "Is there currency exchange on this app?", "gold_intent": "exchange_via_app"}
+{"query": "Can I exchange currencies with my account?", "gold_intent": "exchange_via_app"}
+{"query": "When will the $1 transaction be credited to me?", "gold_intent": "extra_charge_on_statement"}
+{"query": "Where did this fee come from?", "gold_intent": "extra_charge_on_statement"}
+{"query": "What would be the reason there's an extra fee on my statement?", "gold_intent": "extra_charge_on_statement"}
+{"query": "Where did the extra fee on my statement come from?", "gold_intent": "extra_charge_on_statement"}
+{"query": "$1 extra has been charged on my statement, why is that?", "gold_intent": "extra_charge_on_statement"}
+{"query": "Can you help me figure out what's happening? I'm trying to transfer money to a friend but it keeps getting returned. I'm not sure what i'm doing wrong.", "gold_intent": "failed_transfer"}
+{"query": "Why hasn't my transfer been made?", "gold_intent": "failed_transfer"}
+{"query": "Why couldn't I complete a transfer?", "gold_intent": "failed_transfer"}
+{"query": "I can not seem to make a successful transfer, can you tell me what I'm doing wrong?", "gold_intent": "failed_transfer"}
+{"query": "help me with my transfer", "gold_intent": "failed_transfer"}
+{"query": "I want to know how many different currencies my money can be in", "gold_intent": "fiat_currency_support"}
+{"query": "What currencies can I hold money in?", "gold_intent": "fiat_currency_support"}
+{"query": "Do you offer additional currency options?", "gold_intent": "fiat_currency_support"}
+{"query": "Do you happen to do exchanges of EUR?", "gold_intent": "fiat_currency_support"}
+{"query": "What kind of fiat currency can I used for holding and exchange?", "gold_intent": "fiat_currency_support"}
+{"query": "can i get a description of how to use a disposable virtual card", "gold_intent": "get_disposable_virtual_card"}
+{"query": "how do VR cards work", "gold_intent": "get_disposable_virtual_card"}
+{"query": "What do I do to get a disposable virtual card?", "gold_intent": "get_disposable_virtual_card"}
+{"query": "where do I request a disposable virtual card?", "gold_intent": "get_disposable_virtual_card"}
+{"query": "how many transactions can i make with a disposable card", "gold_intent": "get_disposable_virtual_card"}
+{"query": "I do not have my pin", "gold_intent": "get_physical_card"}
+{"query": "Are PIN separately?", "gold_intent": "get_physical_card"}
+{"query": "I cannot seem to find my PIN. Where is it?", "gold_intent": "get_physical_card"}
+{"query": "what is my card PIN", "gold_intent": "get_physical_card"}
+{"query": "Where can I find the card PIN?", "gold_intent": "get_physical_card"}
+{"query": "Is there a fee for extra cards?", "gold_intent": "getting_spare_card"}
+{"query": "What is the procedure for getting another card?", "gold_intent": "getting_spare_card"}
+{"query": "My daughter would like a card as well, how can we make this happen?", "gold_intent": "getting_spare_card"}
+{"query": "How can I get a second card for my daughter?", "gold_intent": "getting_spare_card"}
+{"query": "Where do I request another card?", "gold_intent": "getting_spare_card"}
+{"query": "what is the virtual card", "gold_intent": "getting_virtual_card"}
+{"query": "Can you tell me where I can order a virtual card?", "gold_intent": "getting_virtual_card"}
+{"query": "Please help me get a virtual card.", "gold_intent": "getting_virtual_card"}
+{"query": "I would like a virtual card- where can I purchase one?", "gold_intent": "getting_virtual_card"}
+{"query": "I need to reorder my virtual card!", "gold_intent": "getting_virtual_card"}
+{"query": "Oh no!  I lost my card!  Help!", "gold_intent": "lost_or_stolen_card"}
+{"query": "My card is gone I think it was stolen", "gold_intent": "lost_or_stolen_card"}
+{"query": "How do I deal with a stolen card?", "gold_intent": "lost_or_stolen_card"}
+{"query": "Somehow I am missing my card.  What should I do?", "gold_intent": "lost_or_stolen_card"}
+{"query": "How do I report my card lost or stolen?", "gold_intent": "lost_or_stolen_card"}
+{"query": "I've lost track of my phone or someone stole it.", "gold_intent": "lost_or_stolen_phone"}
+{"query": "lost phone, dont want others to access account", "gold_intent": "lost_or_stolen_phone"}
+{"query": "Can I still use the app if I switched phones?", "gold_intent": "lost_or_stolen_phone"}
+{"query": "I was mugged yesterday and they took everything.  I can't access my app.  What are my next steps?", "gold_intent": "lost_or_stolen_phone"}
+{"query": "If I lost my phone, can someone use my account?", "gold_intent": "lost_or_stolen_phone"}
+{"query": "Where can I get my card at?", "gold_intent": "order_physical_card"}
+{"query": "Send me a physical card", "gold_intent": "order_physical_card"}
+{"query": "Where can you deliver cards?", "gold_intent": "order_physical_card"}
+{"query": "How can I get a physical card", "gold_intent": "order_physical_card"}
+{"query": "What are the fees to get a physical card?", "gold_intent": "order_physical_card"}
+{"query": "How do I reset a forgotten passcode, please?", "gold_intent": "passcode_forgotten"}
+{"query": "I don't remember my code to get into the app.", "gold_intent": "passcode_forgotten"}
+{"query": "I have forgotten my password.", "gold_intent": "passcode_forgotten"}
+{"query": "I forgot the code to access the app.", "gold_intent": "passcode_forgotten"}
+{"query": "My passcode doesn't work", "gold_intent": "passcode_forgotten"}
+{"query": "Why is my card payment showing as pending?", "gold_intent": "pending_card_payment"}
+{"query": "I am seeing pending from the card payment I made.", "gold_intent": "pending_card_payment"}
+{"query": "How long does an item I bought show as pending?", "gold_intent": "pending_card_payment"}
+{"query": "I would like to know why my purchases from this morning are still pending.", "gold_intent": "pending_card_payment"}
+{"query": "Explain what the pending payment means?", "gold_intent": "pending_card_payment"}
+{"query": "Hey I tried to get some money out earlier but the machine didn't work. Now just saw the transaction still seems in progress! Can you please check what's going there, seems something is broken, I don't want to be charged for money that I haven't actually received!", "gold_intent": "pending_cash_withdrawal"}
+{"query": "I tried taking money from the ATM but no money came out, but the transaction is still pending? How is this possible?", "gold_intent": "pending_cash_withdrawal"}
+{"query": "Why does my account have a pending cash withdrawal?", "gold_intent": "pending_cash_withdrawal"}
+{"query": "How long with my cash withdrawal stay pending for?", "gold_intent": "pending_cash_withdrawal"}
+{"query": "Where's accounting for my cash withdrawal?", "gold_intent": "pending_cash_withdrawal"}
+{"query": "new customer and filling gas today, it's not working, the thing shows pending half an hour!", "gold_intent": "pending_top_up"}
+{"query": "The top-up is pending.", "gold_intent": "pending_top_up"}
+{"query": "I topped up but it didn't complete", "gold_intent": "pending_top_up"}
+{"query": "What's going on with the top-up? All it says is pending, pending, pending! I use your service several times a week and have never had a problem before! What's going on here?", "gold_intent": "pending_top_up"}
+{"query": "OMG!  I'm trying to load my card and it wont top up!  I desperately need the money either on my card or in my bank, where is it?", "gold_intent": "pending_top_up"}
+{"query": "I have a pending transfer", "gold_intent": "pending_transfer"}
+{"query": "I'm trying to transfer money to another country. It's just pending and not sending. My account details are correct. Please help me.", "gold_intent": "pending_transfer"}
+{"query": "Pending transfer?", "gold_intent": "pending_transfer"}
+{"query": "Why does my transfer say \"pending\"?", "gold_intent": "pending_transfer"}
+{"query": "How long can I expect a transfer to pend for?", "gold_intent": "pending_transfer"}
+{"query": "How do I get my PIN unlocked?", "gold_intent": "pin_blocked"}
+{"query": "How many tries do I have to enter my pin before I'm blocked?", "gold_intent": "pin_blocked"}
+{"query": "How do I deal with a blocked PIN?", "gold_intent": "pin_blocked"}
+{"query": "Are you able to unblock my pin?", "gold_intent": "pin_blocked"}
+{"query": "What can you do to unblock my pin?", "gold_intent": "pin_blocked"}
+{"query": "Can I use this to receive my salary?", "gold_intent": "receiving_money"}
+{"query": "What do I need to do to transfer my paycheck to my account?", "gold_intent": "receiving_money"}
+{"query": "Can I use this account to receive my salary?", "gold_intent": "receiving_money"}
+{"query": "I receive my salary in GBP. Do I need to configure this somehwere?", "gold_intent": "receiving_money"}
+{"query": "Can I get paid in a different currency?", "gold_intent": "receiving_money"}
+{"query": "I was supposed to get a purchase refunded but I don't see the money in my account", "gold_intent": "Refund_not_showing_up"}
+{"query": "Still waiting on a refund.", "gold_intent": "Refund_not_showing_up"}
+{"query": "I requested a refund and it is missing.", "gold_intent": "Refund_not_showing_up"}
+{"query": "Where can I see the refund in my account", "gold_intent": "Refund_not_showing_up"}
+{"query": "I would like some help getting a refund back from a seller. It still isn't showing up on my statement and I requested this a long time ago. I'm not sure why it's not returned yet. Can you assist me in getting this money back?", "gold_intent": "Refund_not_showing_up"}
+{"query": "Would I be able to get a refund for something I bought?", "gold_intent": "request_refund"}
+{"query": "How do I get refunded?", "gold_intent": "request_refund"}
+{"query": "Hello! I recently made a purchase and I'm needing to cancel my order and process a refund as soon as possible.", "gold_intent": "request_refund"}
+{"query": "I would like to cancel a payment. I purchased something several days ago and i still have not received it.", "gold_intent": "request_refund"}
+{"query": "How can I process a refund for something I purchased?", "gold_intent": "request_refund"}
+{"query": "My card payment was cancelled.", "gold_intent": "reverted_card_payment?"}
+{"query": "I made a payment but the app reverted the payment.", "gold_intent": "reverted_card_payment?"}
+{"query": "What do I do if it says my card payment has been cancelled?", "gold_intent": "reverted_card_payment?"}
+{"query": "Why does the app revert a payment?", "gold_intent": "reverted_card_payment?"}
+{"query": "I did a payment but the app reverted it", "gold_intent": "reverted_card_payment?"}
+{"query": "What currencies are accepted for adding money?", "gold_intent": "supported_cards_and_currencies"}
+{"query": "Will you accept my other card from the U.S.?", "gold_intent": "supported_cards_and_currencies"}
+{"query": "Which cards do you guys support? I want to top up using my credit card.", "gold_intent": "supported_cards_and_currencies"}
+{"query": "Tell me which cards and what currency is supported.", "gold_intent": "supported_cards_and_currencies"}
+{"query": "What currencies or cards do you support for topping up?", "gold_intent": "supported_cards_and_currencies"}
+{"query": "I want to close my account", "gold_intent": "terminate_account"}
+{"query": "please delete my account, your services are not up to par.", "gold_intent": "terminate_account"}
+{"query": "Please delete my account, this company is not working for me!", "gold_intent": "terminate_account"}
+{"query": "I want to delete my account. I'm unhappy with the service you're providing.", "gold_intent": "terminate_account"}
+{"query": "Can you tell me how to close my account?", "gold_intent": "terminate_account"}
+{"query": "I need to make a transfer, what will the fee be?", "gold_intent": "top_up_by_bank_transfer_charge"}
+{"query": "Are SWIFT transfers accepted?", "gold_intent": "top_up_by_bank_transfer_charge"}
+{"query": "Do you do SWIFT transfers?", "gold_intent": "top_up_by_bank_transfer_charge"}
+{"query": "Do I get charged if i am getting money?", "gold_intent": "top_up_by_bank_transfer_charge"}
+{"query": "can i do a transfer with swift", "gold_intent": "top_up_by_bank_transfer_charge"}
+{"query": "What are the top-up fees?", "gold_intent": "top_up_by_card_charge"}
+{"query": "What fee is included if I top up by card?", "gold_intent": "top_up_by_card_charge"}
+{"query": "I want to use a European bank card for a top up. Must I pay?", "gold_intent": "top_up_by_card_charge"}
+{"query": "Is there a charge or discount if I use a European bank in a top up?", "gold_intent": "top_up_by_card_charge"}
+{"query": "What will happen if I want to add money using an international card? Will I run into any fees?", "gold_intent": "top_up_by_card_charge"}
+{"query": "How do I top up my account with a cash payment?", "gold_intent": "top_up_by_cash_or_cheque"}
+{"query": "Can you top-up a card with a cheque?", "gold_intent": "top_up_by_cash_or_cheque"}
+{"query": "I need to top up cash, How do I do it?", "gold_intent": "top_up_by_cash_or_cheque"}
+{"query": "is there a way to do top up with cash deposit", "gold_intent": "top_up_by_cash_or_cheque"}
+{"query": "How can I top up with this cheque I got?", "gold_intent": "top_up_by_cash_or_cheque"}
+{"query": "The app denied my topped up.", "gold_intent": "top_up_failed"}
+{"query": "Why did the app deny my top up?", "gold_intent": "top_up_failed"}
+{"query": "I topped up but the app did not accept it.", "gold_intent": "top_up_failed"}
+{"query": "The app denied my top-up", "gold_intent": "top_up_failed"}
+{"query": "I don't think my top up is working correctly", "gold_intent": "top_up_failed"}
+{"query": "How much money can i top up?", "gold_intent": "top_up_limits"}
+{"query": "Are the top-ups limited?", "gold_intent": "top_up_limits"}
+{"query": "How much can I top-up to my card at a time?", "gold_intent": "top_up_limits"}
+{"query": "How can I tell if there is a top-up limit?", "gold_intent": "top_up_limits"}
+{"query": "What are the top-up limits?", "gold_intent": "top_up_limits"}
+{"query": "I believe my money did not go through with my top up, was there a problem on your end?", "gold_intent": "top_up_reverted"}
+{"query": "Why would my top up be cancelled?", "gold_intent": "top_up_reverted"}
+{"query": "I think my top-up was cancelled.", "gold_intent": "top_up_reverted"}
+{"query": "My top-up was revoked.", "gold_intent": "top_up_reverted"}
+{"query": "The app reverted what I topped up.", "gold_intent": "top_up_reverted"}
+{"query": "How do I top up my card using your app? I'm new to this.", "gold_intent": "topping_up_by_card"}
+{"query": "How do I transfer money using a credit card?", "gold_intent": "topping_up_by_card"}
+{"query": "i know i entered the right info, but my top up isn't in my balance", "gold_intent": "topping_up_by_card"}
+{"query": "I tried to top up using my card, but now the money just disappeared!", "gold_intent": "topping_up_by_card"}
+{"query": "Help me transfer money to my credit card.", "gold_intent": "topping_up_by_card"}
+{"query": "Can you please check if I was charged twice?", "gold_intent": "transaction_charged_twice"}
+{"query": "I had a duplicate card and got charged twice. How do I resolve this?", "gold_intent": "transaction_charged_twice"}
+{"query": "Can you explain why there is a payment showing twice?", "gold_intent": "transaction_charged_twice"}
+{"query": "I have a transaction that shows several times", "gold_intent": "transaction_charged_twice"}
+{"query": "What are my remedies if I think I was charged twice for the same expense?", "gold_intent": "transaction_charged_twice"}
+{"query": "When I made a transfer, there was a fee.  Why?", "gold_intent": "transfer_fee_charged"}
+{"query": "Why was I charged extra for transferring money?", "gold_intent": "transfer_fee_charged"}
+{"query": "I'm not sure why I was charged an extra fee for transferring funds.", "gold_intent": "transfer_fee_charged"}
+{"query": "What extra charges are there?", "gold_intent": "transfer_fee_charged"}
+{"query": "I transferred money and was charged and want to know why.", "gold_intent": "transfer_fee_charged"}
+{"query": "What do I need to do to transfer money into my account?", "gold_intent": "transfer_into_account"}
+{"query": "I don't know what to do. Should I transfer funds. My account is out of money.", "gold_intent": "transfer_into_account"}
+{"query": "Can I add funds to the card directly from my bank account?", "gold_intent": "transfer_into_account"}
+{"query": "I want to top my account by using a bank transfer. How would that work?", "gold_intent": "transfer_into_account"}
+{"query": "How can I transfer money to my account?", "gold_intent": "transfer_into_account"}
+{"query": "how long do money transfers take?", "gold_intent": "transfer_not_received_by_recipient"}
+{"query": "I just finished sending money, but it's not logging on the recipient side.", "gold_intent": "transfer_not_received_by_recipient"}
+{"query": "I need to find out why my transfer didn't get there.", "gold_intent": "transfer_not_received_by_recipient"}
+{"query": "I've just moved address from a place in Durham to a place in Walton-On-The-Naze.  I have a new landlord at my new house and they haven't got my payment but I know I sent it on time, can you check they got it please?", "gold_intent": "transfer_not_received_by_recipient"}
+{"query": "I am still awaiting the completion of the transaction.", "gold_intent": "transfer_not_received_by_recipient"}
+{"query": "Will my transfer immediately show up in my account?", "gold_intent": "transfer_timing"}
+{"query": "How long do i have to wait for a transfer to reach my account?", "gold_intent": "transfer_timing"}
+{"query": "How long is the wait for a US transfer?", "gold_intent": "transfer_timing"}
+{"query": "I have to transfer something to China as fast as I can. How long will it take to arrive in China?", "gold_intent": "transfer_timing"}
+{"query": "How long to I have to wait for a transfer to reach my account?", "gold_intent": "transfer_timing"}
+{"query": "I am having trouble verifying my identity.", "gold_intent": "unable_to_verify_identity"}
+{"query": "It is impossible to verify my identity", "gold_intent": "unable_to_verify_identity"}
+{"query": "I am having trouble proving my identity.", "gold_intent": "unable_to_verify_identity"}
+{"query": "I cannot prove my own identity.", "gold_intent": "unable_to_verify_identity"}
+{"query": "How do I show this stupid system that this is really my identity?", "gold_intent": "unable_to_verify_identity"}
+{"query": "What can I use to verify my identify?", "gold_intent": "verify_my_identity"}
+{"query": "I need to verify my identity, but how do I do that?", "gold_intent": "verify_my_identity"}
+{"query": "I got a message that I need to verify my identity; what do I do?", "gold_intent": "verify_my_identity"}
+{"query": "What kind of documents do I need for the identity check?", "gold_intent": "verify_my_identity"}
+{"query": "What things do I need to verify my identity?", "gold_intent": "verify_my_identity"}
+{"query": "Can I verify the source of my funds?", "gold_intent": "verify_source_of_funds"}
+{"query": "How can I tell where my funds came from?", "gold_intent": "verify_source_of_funds"}
+{"query": "Where are my funds coming from? I need to know.", "gold_intent": "verify_source_of_funds"}
+{"query": "Where has my available money come from?", "gold_intent": "verify_source_of_funds"}
+{"query": "How can I check the source of my fund?", "gold_intent": "verify_source_of_funds"}
+{"query": "Where can I find the top-up verification code?", "gold_intent": "verify_top_up"}
+{"query": "Can you give me information about verification code?", "gold_intent": "verify_top_up"}
+{"query": "Can I verify a top up?", "gold_intent": "verify_top_up"}
+{"query": "Why do you need code verification for my top up?", "gold_intent": "verify_top_up"}
+{"query": "How do I verify a top-up?", "gold_intent": "verify_top_up"}
+{"query": "My disposable virtual card will not work", "gold_intent": "virtual_card_not_working"}
+{"query": "Why can't I get my virtual card to work?", "gold_intent": "virtual_card_not_working"}
+{"query": "My disposable virtual card is not working when I try to use it at a point of sale transaction. What do I do now?", "gold_intent": "virtual_card_not_working"}
+{"query": "Tell me why my virtual disposable card won't work.", "gold_intent": "virtual_card_not_working"}
+{"query": "I was trying to use my virtual card at a merchant and it was rejected. How can I fix this?", "gold_intent": "virtual_card_not_working"}
+{"query": "How do I get a visa card?", "gold_intent": "visa_or_mastercard"}
+{"query": "How to decide if I get a Visa or Mastercard?", "gold_intent": "visa_or_mastercard"}
+{"query": "Am I able to choose my card?", "gold_intent": "visa_or_mastercard"}
+{"query": "How do I select a Mastercard instead of a Visa?", "gold_intent": "visa_or_mastercard"}
+{"query": "I would like to apply for a visa card.", "gold_intent": "visa_or_mastercard"}
+{"query": "Do I have to do the identity check?", "gold_intent": "why_verify_identity"}
+{"query": "Why do you need so much information to verify my identity?", "gold_intent": "why_verify_identity"}
+{"query": "I don't like that I have to fill out so much information about my identity.", "gold_intent": "why_verify_identity"}
+{"query": "Can i make transactions before identity verification is complete?", "gold_intent": "why_verify_identity"}
+{"query": "Can I use my account if the identity verification is not complete?", "gold_intent": "why_verify_identity"}
+{"query": "Hi. I just withdrew cash from an ATM and received the wrong amount. However, my app shows the correct amount I withdrew. How do I get the rest of the cash?", "gold_intent": "wrong_amount_of_cash_received"}
+{"query": "The wrong amount of cash came out of the ATM today when I went to withdraw. When I looked at the app, it was showing it was much more.", "gold_intent": "wrong_amount_of_cash_received"}
+{"query": "My cash withdrawal was partly declined", "gold_intent": "wrong_amount_of_cash_received"}
+{"query": "I asked for 100 but only got 20.", "gold_intent": "wrong_amount_of_cash_received"}
+{"query": "Will declined funds I tried to withdraw be returned to me?", "gold_intent": "wrong_amount_of_cash_received"}
+{"query": "I took out money from a transaction machine and it exchanged the wrong dollar value amount from another currency!", "gold_intent": "wrong_exchange_rate_for_cash_withdrawal"}
+{"query": "Is there a fee for exchanging cash?", "gold_intent": "wrong_exchange_rate_for_cash_withdrawal"}
+{"query": "Will there be additional costs of I make a withdrawal from a local ATM of British pounds? I need some cash to feel comfortable on the journey home", "gold_intent": "wrong_exchange_rate_for_cash_withdrawal"}
+{"query": "I feel like too much money was taken during my currency exchange.", "gold_intent": "wrong_exchange_rate_for_cash_withdrawal"}
+{"query": "My cash withdrawal charged me the wrong exchange rate", "gold_intent": "wrong_exchange_rate_for_cash_withdrawal"}
