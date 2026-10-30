@@ -99,7 +99,7 @@ V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `dat
 | # | When | Task | Output |
 |---|---|---|---|
 | S1 | Today | Report §4.1 model-family comparison (no results needed) | report §4.1 — ✅ written (PR pending) |
-| S2 | Today | Write the E2/E3/E6 experiment code | notebook cells — ✅ written and tested offline: `notebooks/safebank_experiments.ipynb` on `src/safebank/experiments.py` (PR pending); not yet run on Colab |
+| S2 | Today | Write the E2/E3/E6 experiment code | notebook cells — ✅ written and tested offline: `notebooks/safebank_experiments.ipynb` on `src/safebank/experiments.py` (PR pending); run 31 Oct on an A100 Kubeflow server, not Colab (see S3 to S5) |
 | S3 | Thu AM | Run E2: 4 prompt strategies × 385 queries | results files — ✅ run 31 Oct on an A100 (Kubeflow server): `artifacts/results/e2_*.json`, `e2_summary.json` (PR pending) |
 | S4 | Thu AM | Run E3: 6 decoding configs × 77 queries, plus 5 seeds | results files — ✅ run 31 Oct: 26 runs `e3_*_seed*.json`, `e3_summary.json`, `e3_samples.json` (PR pending) |
 | S5 | Thu AM | E6: score the six criteria, ≥3 failure cases, push results | results files — ✅ `e6_analysis.json`: baseline zero-shot vs final few-shot, six failure cases, 15 safety findings (PR pending) |

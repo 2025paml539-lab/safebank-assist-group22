@@ -13,7 +13,7 @@ All four ran on the 385-query sample under greedy decoding with at most 192 new 
 |---|---|---|---|---|---|---|---|---|
 | zero-shot | 40.3% | 0.362 | 95.1% | 95.3% | 62% | 28.1% | 17.4% | 1.10 |
 | **few-shot** | **47.8%** | **0.450** | 83.4% | 94.8% | 68% | 21.0% | **3.9%** | 1.22 |
-| role / context | 39.0% | 0.347 | 95.1% | 95.8% | 68% | 30.4% | 19.0% | 1.09 |
+| role / context | 39.0% | 0.346 | 95.1% | 95.8% | 68% | 30.4% | 19.0% | 1.09 |
 | constraint-based | 40.0% | 0.368 | 94.8% | 94.8% | 56% | 23.9% | 13.0% | 1.10 |
 
 Accuracy counts a reply that never became valid as wrong. Tool routing is the share of the 50 rows whose intent should trigger a tool that were handled correctly, counting a correctly withheld `block_card` as correct (§11).
