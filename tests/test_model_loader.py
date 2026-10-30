@@ -85,7 +85,8 @@ class TestOfflineContract(unittest.TestCase):
         gen = HFGenerator(model, _FakeTokenizer())
         base = gen._base_config
         self.assertFalse(base.do_sample)
-        self.assertIsNone(base.top_k)
+        # 0, not None: None is refilled from the model's config by generate().
+        self.assertEqual(base.top_k, 0)
         self.assertEqual(base.top_p, 1.0)
         self.assertEqual(base.temperature, 1.0)
         self.assertEqual(base.repetition_penalty, 1.0)

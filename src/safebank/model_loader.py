@@ -229,7 +229,11 @@ class HFGenerator:
         gc = copy.deepcopy(self.model.generation_config)
         gc.do_sample = False
         gc.temperature = 1.0
-        gc.top_k = None
+        # 0 disables top-k. ``None`` does not: ``generate()`` fills every unset
+        # field back in from the model's own ``generation_config``, which would
+        # restore Qwen's ``top_k=20`` (or the stock default of 50) and apply
+        # top-k truncation to the E3 temperature and top-p runs as well.
+        gc.top_k = 0
         gc.top_p = 1.0
         gc.min_p = None
         gc.typical_p = 1.0
