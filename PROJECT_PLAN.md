@@ -20,7 +20,7 @@
 >
 > Corrected in this file on 25 Oct to match the implementation: the eval set is **385 rows across all 77 intents** (not 200 rows across 20), the intent name is `lost_or_stolen_card` (not `card_lost_or_stolen`), `block_card` returns `replacement_eta_days`, and **10** intents route to a tool (not 6).
 >
-> Current state: application code ~90% done, **experiment results 0%**, report ~5%. See `WORKLOG.md` §1.
+> Current state (30 Oct): all 13 modules merged and 353 tests passing; the Colab T4 run with E1 and the E7 trace is merged; the report draft is assembled in `report/` with 17 items pending; **E2, E3 and E6 are not yet run**. See the 30 Oct update at the top of `WORKLOG.md`.
 
 ---
 

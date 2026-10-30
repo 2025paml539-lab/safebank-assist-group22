@@ -9,6 +9,70 @@ This is the single source of truth for project status. If this file and `PROJECT
 
 ---
 
+## Update 30 Oct — PR #3 and PR #4 merged; the experiment runs are unblocked
+
+`main` is **`8aa5fce`**. Two merges landed today, in this order:
+
+| PR | Merge commit | What it contained |
+|---|---|---|
+| **#3** | `d49e9bc` | V1–V3: the dataset-link fix, the Colab T4 notebook run with stored outputs, and report §6. 7 commits, 22 files, +8,524 / −485 |
+| **#4** | `8aa5fce` | `_neutral_generation_config()` now disables top-k with `0` instead of `None`. 2 files, +7 / −2 |
+
+**Verified on PR #3 before merge:** 353 tests pass (6 skipped, real-model); `import safebank` still pulls in no torch, transformers or datasets; the 77 label names match the pinned dataset revision exactly, in order; 10,003 train / 3,080 test rows; `eval_sample.jsonl`, `few_shot_examples.json` and `preprocessing_record.json` all reproduce from the code; the notebook ran 12/12 cells on a Tesla T4 (float16, torch 2.11.0+cu130, transformers 5.19.0) with no errors and nothing sensitive in the stored outputs; report §6 matches those outputs and the draft's pending markers dropped from 19 to 17.
+
+**Why PR #4 was needed, and what it changes.** `_neutral_generation_config()` exists so an E3 "temperature only" run really is temperature only. It set `gc.top_k = None`, which does not disable top-k: transformers 5.19 `generate()` → `_prepare_generation_config()` calls `update(**model.generation_config.to_dict(), defaults_only=True)`, refilling any field left as `None` from the model's own config — so Qwen's `top_k=20` came back (50 on GPT-2). Greedy decoding (E1/E2) is unaffected because `do_sample=False` ignores the sampling knobs, but all four E3 temperature and top-p configurations would have silently applied top-k truncation as well, and those numbers would not have described the configuration the report names. `gc.top_k = 0` disables top-k and is not refilled. 353 tests pass with the updated expectation. **Not yet confirmed against a real `generate()` call** — there is no GPU in the local environment, so the first E3 run should check that the `['top_k']` ignored-flag warning no longer appears.
+
+**Dependency state: no one is now waiting on anyone else.** E1 and the E7 smoke run exist on a T4; the label space loads from the group repo's `main`; the decoding path is clean. E2, E3 and E6 can all run now. When running the notebook in Colab, set `REPO_URL` to `https://github.com/2025paml539-lab/safebank-assist-group22.git` for the session — the committed notebook still points at a fork, so a clone of it would miss the PR #4 fix.
+
+### Pending work, 30 Oct
+
+**Data, model loading, environment (V-items)**
+
+| # | Status | Task |
+|---|---|---|
+| V1 | ✅ | Dataset-link fix, tests, notebook handover note — merged in PR #3 |
+| V2 | ✅ | Colab T4 run with stored outputs — merged in PR #3 |
+| V3 | ✅ | Report §6 baseline — merged in PR #3 |
+| V4 | 🟡 | Contribution row: typed name + date |
+| V5 | 🟡 | Delete the duplicate `artifacts/results/e1_baseline (1).csv`. That file is the T4 run and `e1_baseline.csv` is the earlier one, so keep the T4 timings under the canonical name |
+| V6 | 🟡 | Point the notebook's `REPO_URL` back at the group repo |
+| V7 | ⚪ | Optional: warn when `build_example_bank` is called without `exclude=` (train/test-overlap protection is opt-in today); SHA-256 per downloaded CSV in `preprocessing_record()`; a unit test for `_read_label_names` |
+| — | ✅ | The `top_k` follow-up from the PR #3 review is closed by PR #4 |
+
+**Prompts, decoding, evaluation (S-items)**
+
+| # | Status | Task |
+|---|---|---|
+| S1 | 🟡 | Report §4.1 model-family comparison — reported written, not yet in the repo |
+| S2 | 🟡 | E2/E3/E6 experiment code — reported written, not yet in the repo. Push before the runs, so the code that produced the numbers is in git ahead of them |
+| S3 | 🔴 | Run E2: 4 prompt strategies × 385 queries. Pass the train split to the few-shot variant via `prompt_kwargs={"examples": …}`; the offline example bank is illustrative only |
+| S4 | 🔴 | Run E3: 6 decoding configs × 77 queries, plus the 5-seed self-consistency set. Unblocked by PR #4 |
+| S5 | 🔴 | E6: score the six criteria and analyse ≥3 failure cases. Three real ones already exist in the T4 E7 trace — a card-not-delivered query classified as `card_not_working`, a PIN request withheld by the safety screen, and an ATM query that ended as `unknown_intent` after the repair attempts |
+| S6 | 🔴 | Report §7, §8, §11, §12.1, §13; the §10.1 validity numbers; Appendix E samples; confirm the §3 subset. §8 and §11 follow the E3 numbers |
+| S7 | 🟡 | Contribution row: typed name + date |
+
+**Architecture and report sections (K-items)**
+
+| # | Status | Task |
+|---|---|---|
+| K1 | 🟡 | Paste the T4 outputs into the report: tokenizer walkthrough → §4.2, E7 trace → §10.2, `device_report()` → Appendix F |
+| K2 | 🔴 | §9 sentence with the measured E2 numbers; check the numbers agree across sections |
+| K3 | 🟡 | Contribution row: typed name + date |
+
+**Report assembly and submission (B-items)**
+
+| # | Status | Task |
+|---|---|---|
+| B1 | 🔴 | Results sentences in §1 and §14 |
+| B2 | 🟡 | Collect all four typed name + date confirmations |
+| B3 | 🔴 | `python report/build_report.py --final` until it reports READY |
+| B4 | 🟡 | Re-check `report/section8_compliance.md` |
+| B5 | 🔴 | Upload the PDF, the notebook or repo link, and the contribution statement |
+
+**Everyone:** the demo deck is not built — only the opening-segment script exists, in `report/demo_opening_segment.md` — plus the 8–10 minute rehearsal, with every member able to explain the whole workflow.
+
+---
+
 ## Update 28 Oct — pending work by person, and what this push adds
 
 ### Pending work, in order
@@ -74,6 +138,8 @@ V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `dat
 ---
 
 ## 1. Where we are
+
+> **Partly superseded on 30 Oct.** `main` is now `8aa5fce`: the dataset fix, the T4 notebook run with stored outputs and report §6 are merged, and the decoding path is clean. The table below still describes the 28 Oct push — read the 30 Oct update at the top of this log for current state and ownership.
 
 | | |
 |---|---|

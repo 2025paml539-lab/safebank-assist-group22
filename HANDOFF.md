@@ -2,7 +2,7 @@
 
 **SafeBank Assist** · PCAM ZG516 Group Major Project · Group 22 · due **31 Oct 2026**
 
-Last updated: 30 Oct 2026 by Vishruth (data, environment).
+Last updated: 30 Oct 2026 — PR #3 and PR #4 merged; `main` is `8aa5fce`.
 
 - **[`WORKLOG.md`](WORKLOG.md)** — live status, what's done, what's pending, and **complete specifications for every unwritten file**. Start here if you are picking up a task.
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — full technical detail and report source material.
@@ -28,8 +28,8 @@ Last updated: 30 Oct 2026 by Vishruth (data, environment).
 | Dataset load + sampling | `data_prep.py` | ✅ Done, 24 tests | **Vishruth** |
 | **E1** model/tokenizer loading | `model_loader.py` | ✅ Done, 13 tests (6 gated on real GPT-2) | **Vishruth** |
 | Pinned dependencies | `requirements.txt`, `requirements-colab.txt` | ✅ Done | **Vishruth** |
-| Colab notebook | `notebooks/safebank_colab.ipynb` | 🟡 **Runs clean on a Colab T4 (30 Oct, from the fork)**; T4 outputs and artifacts not yet committed | **Vishruth** |
-| Report assembly | — | 🔴 Not started — drafts ready, see `WORKLOG.md` §2.1 | **Bhavani** |
+| Colab notebook | `notebooks/safebank_colab.ipynb` | ✅ **Merged with its Colab T4 outputs** (PR #3); `REPO_URL` still points at a fork | **Vishruth** |
+| Report assembly | `report/` | 🟡 **Draft assembled**, builds with `python report/build_report.py`; 17 items pending | **Bhavani** |
 
 **All code is complete and merged — Kishore, Satya and Vishruth.** **353 tests** (347 run offline and pass, 6 gated on real GPT-2), a few seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
 
@@ -88,22 +88,26 @@ If you think one of these needs to change, message me first — `pipeline.py` an
 
 ---
 
-## Vishruth — T4 run done; next is the group-repo PR
+## Vishruth — V1–V3 merged (PR #3)
 
 `data_prep.py`, `model_loader.py`, both requirements files and the notebook are merged (PR #2), and `validate_label_space()` passes on the real 77 labels. On 29 Oct the dataset-link fix (V1) landed on Vishruth's fork, the notebook ran top to bottom with no errors on a local CPU (nbconvert and VS Code), and report §6 was drafted from that run. On 30 Oct the notebook ran top to bottom on a Colab T4 (float16) from the fork, with the same E1 replies as the CPU run, so §6 is confirmed. Still owed:
 
-1. 🔴 **Get the fix into the group repo (V1b) — now blocks Satya.** The group repo's `main` is still `a4a1e5f`, without the fix; any Colab run that clones it (E2/E3/E6) fails with a 404 on `dataset_infos.json`. Open a PR from the fork's `main` into `2025paml539-lab/safebank-assist-group22`; Kishore to review and merge; then point the notebook's `REPO_URL` back at the group repo.
-2. 🟡 **Commit the T4 run.** The run itself is done; commit the notebook with its T4 outputs and replace `artifacts/results/device_report.json` and `e1_baseline.csv`, which in git are from the CPU run, with the files from the Colab runtime.
-3. 🟡 Sign the contribution row in Appendix I (V4): the description is updated; add name and date.
-4. 🟡 Warn when `build_example_bank` gets no `exclude=` — today the train/test-overlap protection is opt-in.
-5. 🟡 Record a SHA-256 of each downloaded CSV in `preprocessing_record()`, so the frozen-eval-set claim can be checked.
+1. ✅ **CLOSED — the fix is in the group repo.** PR #3 merged as `d49e9bc`: the dataset-link fix, the notebook with its T4 outputs, the result artifacts and report §6. Colab runs that clone `main` now load the label space.
+2. ✅ **CLOSED — the T4 run is committed**, together with `device_report.json`, `e1_baseline.csv`, `eval_sample.jsonl`, `few_shot_examples.json`, `preprocessing_record.json` and the class-distribution figure.
+3. 🟡 Sign the contribution row in Appendix I (V4): the description is updated; add typed name and date.
+4. 🟡 Delete the duplicate `artifacts/results/e1_baseline (1).csv`. That copy is the T4 run — its timings match the notebook output — and `e1_baseline.csv` is the earlier run, so keep the T4 numbers under the canonical name.
+5. 🟡 Point the notebook's `REPO_URL` back at `https://github.com/2025paml539-lab/safebank-assist-group22.git`; it currently points at the fork, so a Colab clone of the committed notebook misses anything merged since.
+6. 🟡 Warn when `build_example_bank` gets no `exclude=` — today the train/test-overlap protection is opt-in.
+7. 🟡 Record a SHA-256 of each downloaded CSV in `preprocessing_record()`, so the frozen-eval-set claim can be checked.
+
+The `top_k` follow-up raised in the PR #3 review is closed by **PR #4** (`8aa5fce`): `_neutral_generation_config()` set `gc.top_k = None`, but transformers 5.19 `_prepare_generation_config()` calls `update(**model.generation_config.to_dict(), defaults_only=True)`, which refills `None` fields from the model's own config — so Qwen's `top_k=20` came back and would have applied top-k truncation to the E3 temperature and top-p runs as well. It is now `gc.top_k = 0`, which is not refilled, with the test expectation updated. Greedy decoding was never affected. Not yet confirmed against a real `generate()` call, since there is no GPU locally: the first E3 run should check the `['top_k']` ignored-flag warning is gone.
 
 ---
 
 ## Open items
 
-**1. 🟠 The Colab runs — E1 and the E7 smoke run are done on a T4 (30 Oct); E2, E3, E6 still to run.**
-Decided: the model stack (`torch`, `transformers`, `datasets`, `tokenizers`) runs in Colab only; the application layer and tests run locally on pydantic, numpy, pandas and scikit-learn. The environment is verified on a T4. What blocks the E2/E3/E6 runs is the dataset fix reaching the group repo (see Vishruth, item 1); until it is merged, run from the fork.
+**1. 🟠 The Colab runs — E1 and the E7 smoke run are done on a T4 (30 Oct) and merged; E2, E3, E6 still to run.**
+Decided: the model stack (`torch`, `transformers`, `datasets`, `tokenizers`) runs in Colab only; the application layer and tests run locally on pydantic, numpy, pandas and scikit-learn. The environment is verified on a T4. **Nothing blocks E2, E3 or E6 any more** — the dataset fix is on `main` (PR #3) and the decoding path is clean (PR #4). One session setting to remember: set `REPO_URL` to the group repo before the clone cell, because the committed notebook still points at a fork.
 
 **2. 🟠 `PROJECT_PLAN.md` is stale — Bhavani must not quote it yet.**
 Most important: the plan says *20 intents / 200 eval rows*; the code uses the **full 77 intents / 385 rows** (`EVAL_EXAMPLES_PER_INTENT = 5`). Full list of deviations in `ARCHITECTURE.md` §10.
