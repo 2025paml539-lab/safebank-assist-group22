@@ -16,6 +16,30 @@
 
 <!-- include: generated/appendix_decoding.md -->
 
+**Sample outputs.** The first three of the 77 queries under every configuration (seed 42 for the sampled ones), as the model replied after validation and repair. "No valid reply" means all three attempts failed validation and the case was escalated.
+
+| Configuration | Query | Intent | Reply |
+|---|---|---|---|
+| greedy | I need to activate my card can you do that now? | `activate_my_card` | I can help you activate your card now. Please provide your card details so I… |
+| greedy | How do I go about setting up an account for my daug… | `get_disposable_virtual_card` | I can help you with that. Let me guide you through the process of setting up… |
+| greedy | Can I use the system Google Pay for top-ups? | `apple_pay_or_google_pay` | Yes, you can use Google Pay for top-ups. Would you like to proceed with this… |
+| temperature=0.7 | I need to activate my card can you do that now? | `activate_my_card` | I can help with that. Please follow the prompts to activate your card. |
+| temperature=0.7 | How do I go about setting up an account for my daug… | `get_disposable_virtual_card` | I can guide you through setting up a disposable virtual card for your daughte… |
+| temperature=0.7 | Can I use the system Google Pay for top-ups? | `apple_pay_or_google_pay` | I can help you with that. Google Pay can be used for top-ups on your card. |
+| temperature=1.2 | I need to activate my card can you do that now? | `activate_my_card` | Sure, I can guide you through the process. Let's initiate the activation of y… |
+| temperature=1.2 | How do I go about setting up an account for my daug… | `no valid reply` | (none) |
+| temperature=1.2 | Can I use the system Google Pay for top-ups? | `apple_pay_or_google_pay` | I can help you with that. Currently, Google Pay is not enabled for top-ups wh… |
+| top_k=50 temp=0.7 | I need to activate my card can you do that now? | `activate_my_card` | I can help with that. Please follow the prompts to activate your card. |
+| top_k=50 temp=0.7 | How do I go about setting up an account for my daug… | `get_disposable_virtual_card` | I can guide you through setting up a disposable virtual card for your daughte… |
+| top_k=50 temp=0.7 | Can I use the system Google Pay for top-ups? | `apple_pay_or_google_pay` | I can help you with that. Google Pay can be used for top-ups on your card. |
+| top_p=0.9 temp=0.7 | I need to activate my card can you do that now? | `activate_my_card` | I can help with that. Please provide your card details so I can activate it f… |
+| top_p=0.9 temp=0.7 | How do I go about setting up an account for my daug… | `get_disposable_virtual_card` | I can guide you through setting up a disposable virtual card for your daughte… |
+| top_p=0.9 temp=0.7 | Can I use the system Google Pay for top-ups? | `apple_pay_or_google_pay` | I can help you with that. Google Pay can be used for top-ups on your card. |
+| top_p=0.95 temp=0.7 | I need to activate my card can you do that now? | `activate_my_card` | I can help with that. Please follow the prompts to activate your card. |
+| top_p=0.95 temp=0.7 | How do I go about setting up an account for my daug… | `get_disposable_virtual_card` | I can guide you through setting up a disposable virtual card for your daughte… |
+| top_p=0.95 temp=0.7 | Can I use the system Google Pay for top-ups? | `apple_pay_or_google_pay` | I can help you with that. Google Pay can be used for top-ups on your card. |
+
+
 ## C. Structured-output schema (E4)
 
 <!-- include: generated/appendix_schema.md -->

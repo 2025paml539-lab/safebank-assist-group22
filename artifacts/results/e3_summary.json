@@ -1,0 +1,80 @@
+[
+  {
+    "decoding": "greedy",
+    "n_runs": 1,
+    "accuracy_mean": 0.4805,
+    "accuracy_min": 0.4805,
+    "accuracy_max": 0.4805,
+    "schema_first_attempt_rate": 0.8182,
+    "schema_final_rate": 0.9351,
+    "escalation_rate": 0.2078,
+    "mean_attempts": 1.26,
+    "mean_agreement": null,
+    "fully_stable_fraction": null
+  },
+  {
+    "decoding": "temperature=0.7",
+    "n_runs": 5,
+    "accuracy_mean": 0.4467,
+    "accuracy_min": 0.4286,
+    "accuracy_max": 0.4545,
+    "schema_first_attempt_rate": 0.9013,
+    "schema_final_rate": 0.948,
+    "escalation_rate": 0.2701,
+    "mean_attempts": 1.1508,
+    "mean_agreement": 0.8519,
+    "fully_stable_fraction": 0.5844
+  },
+  {
+    "decoding": "temperature=1.2",
+    "n_runs": 5,
+    "accuracy_mean": 0.3948,
+    "accuracy_min": 0.3636,
+    "accuracy_max": 0.4416,
+    "schema_first_attempt_rate": 0.7922,
+    "schema_final_rate": 0.8442,
+    "escalation_rate": 0.374,
+    "mean_attempts": 1.3666,
+    "mean_agreement": 0.7195,
+    "fully_stable_fraction": 0.2597
+  },
+  {
+    "decoding": "top_k=50 temp=0.7",
+    "n_runs": 5,
+    "accuracy_mean": 0.4467,
+    "accuracy_min": 0.4286,
+    "accuracy_max": 0.4545,
+    "schema_first_attempt_rate": 0.9039,
+    "schema_final_rate": 0.948,
+    "escalation_rate": 0.2701,
+    "mean_attempts": 1.1482,
+    "mean_agreement": 0.8519,
+    "fully_stable_fraction": 0.5844
+  },
+  {
+    "decoding": "top_p=0.9 temp=0.7",
+    "n_runs": 5,
+    "accuracy_mean": 0.4494,
+    "accuracy_min": 0.4286,
+    "accuracy_max": 0.4675,
+    "schema_first_attempt_rate": 0.8857,
+    "schema_final_rate": 0.9455,
+    "escalation_rate": 0.2805,
+    "mean_attempts": 1.1716,
+    "mean_agreement": 0.8649,
+    "fully_stable_fraction": 0.6104
+  },
+  {
+    "decoding": "top_p=0.95 temp=0.7",
+    "n_runs": 5,
+    "accuracy_mean": 0.4493,
+    "accuracy_min": 0.4156,
+    "accuracy_max": 0.4805,
+    "schema_first_attempt_rate": 0.8779,
+    "schema_final_rate": 0.948,
+    "escalation_rate": 0.2779,
+    "mean_attempts": 1.1742,
+    "mean_agreement": 0.8623,
+    "fully_stable_fraction": 0.5974
+  }
+]
