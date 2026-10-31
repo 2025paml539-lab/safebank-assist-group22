@@ -268,7 +268,7 @@ Running the full suite needs **pydantic**; `scikit-learn` is additionally requir
 
 ## 10. Deviations from PROJECT_PLAN.md
 
-The plan predates the code and is stale in three places. The code is correct; the plan needs updating before Bhavani assembles the report.
+The plan predates the code and is stale in three places. The code is correct; the report follows the code, not the plan.
 
 | Item | PROJECT_PLAN.md | Code | Why the code is right |
 |---|---|---|---|

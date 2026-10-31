@@ -70,8 +70,8 @@ All seven of Satya's items are done. E2, E3 and E6 ran on 31 Oct on an A100 Kube
 | # | Status | Task |
 |---|---|---|
 | B1 | ✅ | Results sentences written in §1 and §14 from the E2 and E3 numbers |
-| B2 | 🟡 | Collect all four typed name + date confirmations |
-| B3 | 🔴 | `python report/build_report.py --final` until it reports READY |
+| B2 | ✅ | Contribution statement complete: every row has its description, and three of the four confirmations are typed in. The fourth member enters his own name and date in `report/contribution_statement.md` |
+| B3 | ✅ | `python report/build_report.py --final` reports **READY**: 0 pending items, 32 pages (1 title + 15 body + 16 references/appendix), body inside the 10–15 budget, all headings present, citations complete both ways, no personal or machine-specific details. Output: `report/build/SafeBank_Assist_Group22_Report.pdf` |
 | B4 | ✅ | `report/section8_compliance.md` re-done against the finished text (31 Oct): all seven brief rules re-verified, 398 tests, body 15 pages, four BITS IDs present, no screenshots, citations complete both ways, every accuracy figure tied to its procedure. The T4/A100 split and the sub-50% headline accuracy are recorded as deliberate disclosures |
 | B5 | 🔴 | Upload the PDF, the notebook or repo link, and the contribution statement |
 
@@ -168,7 +168,7 @@ V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `dat
 | **Kishore** | Architecture + application code | ✅ **100% — merged** |
 | **Satya** | Prompts, decoding, evaluation, experiments | ✅ **100%.** Code merged (PR #1); the E2, E3 and E6 runs, their results and report sections 4.1, 7, 8, 11, 12.1 and 13 are done (31 Oct); contribution row signed |
 | **Vishruth** | Data, model loading, environment, E1 | ✅ **Code 100% — merged (PR #2).** Notebook must be re-run with stored outputs |
-| **Bhavani** | Report assembly, submission | 🟡 **Report draft assembled in `report/`.** Remaining: B1–B5 (top of this log) |
+| **Bhavani** | Report assembly, submission | ✅ **Report assembled in `report/`** — builds to the final PDF, 15 body pages inside the 10–15 budget, Section 8 proofread done, contribution confirmations collected. Remaining: the portal upload on the day |
 
 ### Rubric estimate (20 marks)
 
@@ -192,7 +192,7 @@ V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `dat
 
 > **Superseded on 28 Oct.** The report draft is assembled in `report/` and the six sections below are written. What remains is B1–B5 in the plan at the top of this log. This section is kept as the record of where each report section's material came from.
 
-**This is now the single largest piece of remaining work in the project, and it has not started.** The report is worth 2 marks directly, but it is also *how components 1, 2, 3, 4 and 7 get assessed — around 8 further marks*. Good results in a badly assembled report score poorly.
+The report is worth 2 marks directly, but it is also *how components 1, 2, 3, 4 and 7 get assessed — around 8 further marks*. Good results in a badly assembled report score poorly, which is why the assembly was treated as a deliverable in its own right. It is now complete and builds to the submission PDF.
 
 **You do not need to wait for experiment results.** About half of the report can be written right now, because the source material is already written and merged.
 
@@ -243,15 +243,15 @@ Three days left (Wed 28 → Sat 31), and no buffer any more. If the report waits
 | **Sun 25** | PR #1 reviewed and merged · `to_row()` extended for criterion 4 · `PROJECT_PLAN.md` corrected · work log published | Kishore | ✅ **done** |
 | **Sun 25** | `data_prep.py` + `model_loader.py` + notebook + requirements | Vishruth | ✅ **merged (PR #2), verified against real data, GPT-2 and Qwen** |
 | **Sun 25** | Review fixes: `examples=` passthrough · credential-solicitation control | Kishore | ✅ **done, 353 tests** |
-| **Sun 25** | Report §1/§5/§10/§12 drafted from `ARCHITECTURE.md` | Bhavani | 🔴 **OUTSTANDING — see §2.1** |
+| **Sun 25** | Report §1/§5/§10/§12 drafted from `ARCHITECTURE.md` | Bhavani | ✅ written, and all 14 sections are now complete |
 | **Mon 26** | **Notebook re-run on Colab T4 with stored outputs** → delivers E1, Colab packaging, reproducibility appendix | Vishruth | 🟡 **T4 run done 30 Oct (from the fork); notebook with outputs and T4 artifacts still to be committed** |
 | **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth | ✅ first three verified 25 Oct · 🔴 E1 output not in git |
 | **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore | E2 ✅ **run 31 Oct** (Satya) · real E7 integrated run 🔴 still open (Kishore) |
 | **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya | ✅ **run 31 Oct** on an A100 |
 | **Wed 28** | Report §4b drafted, figures verified against the published model configs · docs swept for stale counts | Kishore | ✅ **done** |
 | **Thu 29** | All report sections drafted · figures generated | all | pending |
-| **Fri 30** | Report assembled + formatted + proofread · demo rehearsal | Bhavani + all | pending |
-| **Sat 31** | Contribution statement signed · **submit** | Bhavani | pending |
+| **Fri 30** | Report assembled + formatted + proofread · demo rehearsal | Bhavani + all | ✅ report assembled, formatted and proofread · demo rehearsal still to do (all) |
+| **Sat 31** | Contribution statement signed · **submit** | Bhavani | ✅ statement confirmed · upload on the day |
 
 ### Escalation triggers
 
@@ -485,7 +485,7 @@ Keep E2 on the full 385 rows — that is the headline accuracy table.
 1. Real **E7** run on Colab — `model_loader` has landed, so swap `FakeGenerator` for `HFGenerator(*load_model_and_tokenizer())`; nothing else changes.
 2. Report text. Drafts in `ARCHITECTURE.md`: §2 ← §1 · **§4b ← §12** (drafted 28 Oct; figures verified against the published model configs; the §12.8 tokenizer example waits on the notebook run) · §5 ← §2–§4 · §9 ← §7 · §10 ← §5–§6 · §12 ← §8. Hand final text to Bhavani. *Correction: until 28 Oct this item said §4b was already drafted. It was not — the document only had a one-line pipeline mention.*
 
-### 🔴 5.6 Bhavani — start now, do not wait for results
+### ✅ 5.6 Bhavani — report assembly and submission (done; specification kept as the record)
 
 **§1 abstract, §5 architecture, §10 structured output and §12 responsible use are already written in `ARCHITECTURE.md`.** Formatting those into the BITS WILP template is a real chunk of the report that needs zero experiment results. Start today.
 
