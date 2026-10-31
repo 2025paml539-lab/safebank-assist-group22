@@ -179,7 +179,7 @@ def build() -> dict:
                "types, decides whether to look something up, and replies without inventing account "
                "facts. Done by hand it is slow and inconsistent. The hardest cases are the "
                "near-twins."),
-        speaker="Speaker 1", timing="0:00 - 0:45")
+        speaker="Bhavani", timing="0:00 - 0:45")
 
     # --- 2. what we built ---
     add_slide(
@@ -194,7 +194,7 @@ def build() -> dict:
                "routing in one pass, and a new request type is a prompt edit instead of a retrain. "
                "The catch is that the output is just text, so most of what we built checks that text "
                "before anyone acts on it. Hand over: 'starting with the data we used.'"),
-        speaker="Speaker 1", timing="0:45 - 1:30")
+        speaker="Bhavani", timing="0:45 - 1:30")
 
     # --- 3. data ---
     add_slide(
@@ -203,10 +203,25 @@ def build() -> dict:
          f"Evaluation sample: {f['n_eval']} messages, 5 per intent, stratified, seed 42, test split only",
          "Few-shot examples come from the training split; the runner refuses to start if any example is also an evaluation query",
          "Label order read from the dataset card and checked against the pinned revision - all 77 names, in order"],
-        notes=("1:30-2:15. Point at the frozen evaluation set and the train/eval separation - that is "
-               "what makes the numbers later believable. Mention that the label file moved on the Hub "
-               "mid-project and we pinned a revision to keep the label order stable."),
-        speaker="Speaker 2", timing="1:30 - 2:15")
+        notes=("1:30-2:15. Vishruth. Point at the frozen evaluation set and the train/eval separation "
+               "- that is what makes the numbers later believable. Mention that the label file moved "
+               "on the Hub mid-project and we pinned a revision to keep the label order stable."),
+        speaker="Vishruth", timing="1:30 - 2:15")
+
+    # --- 4. tokenizer, model and the GPT-2 baseline ---
+    add_slide(
+        prs, "Tokenizer, the model, and the GPT-2 baseline (E1)",
+        ['"I need to activate my card can you do that now?" → 12 tokens, about 4 characters each',
+         ("byte-level BPE, so a misspelt word is never out-of-vocabulary - it just becomes more pieces", 1),
+         "The checkpoint we actually loaded: vocabulary 151,643 · hidden 1,536 · 28 blocks · 12 heads · context 32,768",
+         f"E1 baseline, one plain prompt, greedy: {f['baseline']} never answers - it continues the text pattern",
+         f"{f['model']} summarises all five correctly - but no reply is one of the 77 labels, and nothing can be validated or routed"],
+        notes=("2:15-3:00. Vishruth. Show the stored tokenizer cell, then the E1 comparison - do not "
+               "run anything, the outputs are committed. The point to land: the instruction-tuned "
+               "model understands the request, and understanding alone is not a system. That gap is "
+               "what the rest of the demo fills. Hand over: 'Kishore will show what we built around "
+               "it.'"),
+        speaker="Vishruth", timing="2:15 - 3:00")
 
     # --- 4. architecture ---
     add_slide(
@@ -216,10 +231,12 @@ def build() -> dict:
          "→ label must exist in BANKING77 → confidence gate → tool router → simulated tool",
          "→ reply-safety screen → final reply with disclaimer, or escalation",
          "Nothing unvalidated reaches the customer, and a card is never blocked automatically"],
-        notes=("2:15-3:15. Walk the arrows once, slowly. The point to land: the model is one "
-               "component, wrapped in deterministic checks. Name the four validation failure kinds "
-               "- no JSON, malformed JSON, schema violation, unknown intent."),
-        speaker="Speaker 2", timing="2:15 - 3:15", accent_last=True)
+        notes=("3:00-3:45. Kishore. Walk the arrows once, slowly. The point to land: the model is one "
+               "component, wrapped in deterministic checks. Name the four validation failure kinds - "
+               "no_json_found, malformed_json, schema_violation, unknown_intent - and say that "
+               "build_prompt(strategy, query, allowed_intents, **kwargs) is the one reusable "
+               "template, so E2 is this same pipeline with one argument changed."),
+        speaker="Kishore", timing="3:00 - 3:45", accent_last=True)
 
     # --- 5. live demo ---
     add_slide(
@@ -230,11 +247,13 @@ def build() -> dict:
           "and escalated", 1),
          '"Is there an ATM near 560001?" → no valid label after 3 attempts → escalated, nothing shown',
          "Same pipeline, three different terminal paths"],
-        notes=("3:15-4:30. This is the heart of the demo. Run it live from the notebook if a GPU "
-               "session is up; otherwise show the stored outputs - they are committed, so nothing has "
-               "to be re-run. Say plainly that case two is a 1.5B model asking a customer for their "
-               "PIN, and that no accuracy or validity metric would have caught it."),
-        speaker="Speaker 3", timing="3:15 - 4:30", accent_last=True)
+        notes=("3:45-5:00. Kishore. This is the heart of the demo. Run it live from the notebook if a "
+               "GPU session is up; otherwise show the stored outputs - they are committed, so nothing "
+               "has to be re-run, and say so once rather than debugging on stage. Say plainly that "
+               "case two is a 1.5B model asking a customer for their PIN, and that no accuracy or "
+               "validity metric would have caught it. Hand over: 'Satya ran the experiments that "
+               "tell us which prompt and which decoding to use.'"),
+        speaker="Kishore", timing="3:45 - 5:00", accent_last=True)
 
     # --- 6. prompt experiments ---
     add_slide(
@@ -245,10 +264,11 @@ def build() -> dict:
          "Two of our four hypotheses were wrong:",
          ("few-shot LOWERED first-attempt validity - every violation was an invented tool name", 1),
          ("the role persona did not make replies safer", 1)],
-        notes=("4:30-5:30. Lead with the honest finding: only few-shot moved the needle, and two of "
-               "the four design hypotheses failed. Mention the comparison is paired on the same "
-               f"{f['n_eval']} messages, which is why the significance test is meaningful."),
-        speaker="Speaker 3", timing="4:30 - 5:30")
+        notes=("5:00-6:00. Satya. Lead with the honest finding: only few-shot moved the needle, and "
+               "two of the four design hypotheses failed. The comparison is paired on the same "
+               f"{f['n_eval']} messages, which is why the significance test is meaningful: "
+               "few-shot right on 55 where zero-shot was wrong, wrong on 26 where it was right."),
+        speaker="Satya", timing="5:00 - 6:00")
 
     # --- 7. decoding ---
     add_slide(
@@ -258,37 +278,43 @@ def build() -> dict:
          ("at temperature 0.7 almost no probability sits beyond the 50 most likely tokens", 1),
          f"Stability is not correctness: {f['t07_stable']:.0f}% of queries agree across all five seeds at 0.7, only {f['t12_stable']:.0f}% at 1.2",
          "Qwen ships sampling defaults on - they had to be neutralised or every row would mean something else"],
-        notes=("5:30-6:30. The neutralisation point is worth 20 seconds: top_k had to be set to 0, "
-               "because None is refilled from the model's own config and would have put top-k=20 back "
-               "into every sampled run. Without that fix the whole E3 table would have been wrong."),
-        speaker="Speaker 4", timing="5:30 - 6:30")
+        notes=("6:00-6:50. Satya. The neutralisation point is worth 20 seconds: top_k had to be set "
+               "to 0, because None is refilled from the model's own config and would have put "
+               "top-k=20 back into every sampled run. Without that fix the whole E3 table would have "
+               "been wrong. Close on 'stable is not correct' - the daughter's-account query is "
+               "confidently and consistently wrong."),
+        speaker="Satya", timing="6:00 - 6:50")
 
-    # --- 8. safety result ---
-    add_slide(
-        prs, "The result we care about most",
-        [f"Replies flagged unsafe: {f['zs_unsafe']:.1f}% zero-shot → {f['fs_unsafe']:.1f}% few-shot",
-         f"Credential-asking replies: {f['zs_cred']} of {f['n_eval']} → {f['fs_cred']} of {f['n_eval']}",
-         f"{f['fs_withheld']} replies withheld and escalated by the safety screen",
-         "Every one of those passed JSON validation and had the right intent",
-         "Accuracy, validity and routing all scored them as success"],
-        notes=("6:30-7:15. Land the lesson: a reply can pass every structural check and still be "
-               "unsafe. That is why the screen exists and why it is rule-based rather than inferred "
-               "from the metrics."),
-        speaker="Speaker 4", timing="6:30 - 7:15", accent_last=True)
-
-    # --- 9. evaluation + failures ---
+    # --- 9. evaluation + failures (before the safety slide, per the demo script) ---
     add_slide(
         prs, "E6 - how we evaluate, and where it fails",
         ["Six criteria: accuracy and macro-F1, schema validity, tool routing, reply safety, latency and attempts, self-consistency",
+         f"Baseline zero-shot → final few-shot: accuracy {f['zs_acc']:.1f}% → {f['fs_acc']:.1f}%, escalations 28.1% → 21.0%",
          f"Repair raises validity {f['fs_valid_first']:.1f}% → {f['fs_valid_final']:.1f}%",
          ("it rescues 47 of 60 formatting errors but only 1 of 62 invented labels - the retry never "
           "re-states the valid labels", 1),
          f"Routing handled correctly for {f['fs_routing']:.0f}% of the tool-triggering messages; every miss followed a wrong intent",
          f"{f['n_failure_cases']} failure cases analysed, {f['n_safety_findings']} safety findings recorded"],
-        notes=("7:15-8:00. The repair asymmetry is the most interesting engineering finding - it "
-               "points straight at the fix, which is putting the label catalogue into the repair "
-               "prompt. We did not change it because it would invalidate the measured numbers."),
-        speaker="Speaker 4", timing="7:15 - 8:00")
+        notes=("6:50-7:35. Satya. The repair asymmetry is the most interesting engineering finding - "
+               "it points straight at the fix, which is putting the label catalogue into the repair "
+               "prompt. We did not change it because it would invalidate the measured numbers. "
+               "Hand over: 'Kishore will close on the safety result and why we chose prompting.'"),
+        speaker="Satya", timing="6:50 - 7:35")
+
+    # --- 10. safety result + adaptation decision ---
+    add_slide(
+        prs, "The result we care about most",
+        [f"Replies flagged unsafe: {f['zs_unsafe']:.1f}% zero-shot → {f['fs_unsafe']:.1f}% few-shot",
+         f"Credential-asking replies: {f['zs_cred']} of {f['n_eval']} → {f['fs_cred']} of {f['n_eval']}; 9 of the {f['fs_withheld']} withheld asked for a secret",
+         "Every one of those passed JSON validation and had the right intent",
+         "Accuracy, validity and routing all scored them as success",
+         "Adaptation: prompting chosen, RAG rejected (no corpus to retrieve) - and our own numbers say PEFT is next"],
+        notes=("7:35-8:15. Kishore. Land the lesson: a reply can pass every structural check and "
+               "still be unsafe. That is why the screen exists and why it is rule-based rather than "
+               "inferred from the metrics. Then the adaptation decision: 47.8% on a 77-way task is "
+               "not production-ready and 10,003 labelled training rows are sitting unused, so a LoRA "
+               "adapter is the next step - section 9 says so rather than defending prompting."),
+        speaker="Kishore", timing="7:35 - 8:15", accent_last=True)
 
     # --- 10. honest limits ---
     add_slide(
@@ -298,9 +324,12 @@ def build() -> dict:
          "output is validated after generation, not constrained during it",
          "the safety screen is rule-based and will miss reworded requests; tools are simulated; conversations are single-turn",
          f"E1 and the live trace ran on a {f['t4']}; E2, E3 and E6 on an {f['a100']} - stated in Appendix F"],
-        notes=("8:00-8:45. Say these out loud rather than waiting to be asked. Naming the hardware "
-               "split and the sub-50% accuracy is what makes the rest of the numbers credible."),
-        speaker="all", timing="8:00 - 8:45")
+        notes=("8:15-8:50. One bullet each, in this order: Vishruth takes the hardware split, Satya "
+               "the 47.8% and the five-per-intent noise, Kishore the uncalibrated confidence and "
+               "validate-after-generation, Bhavani the rule-based screen, simulated tools and "
+               "synthetic identifiers. Say these out loud rather than waiting to be asked - naming "
+               "them is what makes the rest of the numbers credible."),
+        speaker="all four - one bullet each", timing="8:15 - 8:50")
 
     # --- 11. close ---
     add_slide(
@@ -310,22 +339,26 @@ def build() -> dict:
          "Calibrated confidence from token probabilities instead of the model's own number",
          "Put the label catalogue in the repair prompt - the 1-of-62 result says this is the cheap win",
          "398 automated tests · every result file and both notebooks public in the repository"],
-        notes=("8:45-9:30. Close on the engineering posture: the model is one replaceable component "
-               "behind a tested, deterministic shell. Invite questions."),
-        speaker="all", timing="8:45 - 9:30", accent_last=True)
+        notes=("8:50-9:30. Bhavani. Close on the engineering posture: the model is one replaceable "
+               "component behind a tested, deterministic shell, and every number in the report is "
+               "traceable to a stored run. Then: 'Thank you - we're happy to take questions.' Leave "
+               "this slide up for the Q&A."),
+        speaker="Bhavani", timing="8:50 - 9:30", accent_last=True)
 
     # --- 12. speaking plan ---
     add_slide(
-        prs, "Speaking plan",
-        ["Speaker 1 - problem, what we built, why a generative model (0:00-1:30)",
-         "Speaker 2 - data, the frozen evaluation set, the pipeline walk-through (1:30-3:15)",
-         "Speaker 3 - the live run, then the prompt experiments (3:15-5:30)",
-         "Speaker 4 - decoding, the safety result, evaluation and failures (5:30-8:00)",
-         "All four - limits and next steps, then questions (8:00-9:30)",
-         "Assign the four slots in the group; every member should be able to explain any slide"],
-        notes=("Not a presented slide - keep it as the rehearsal plan, or delete it before the demo. "
-               "The brief expects all four members to speak and to be able to explain the whole "
-               "workflow."),
+        prs, "Speaking plan (rehearsal aid - not presented)",
+        ["Bhavani - slides 1-2: the problem, what we built, why a generative model (0:00-1:30)",
+         "Vishruth - slides 3-4: the data and frozen evaluation set, tokenizer, model, E1 baseline (1:30-3:00)",
+         "Kishore - slides 5-6: the pipeline, then the live three-outcome run (3:00-5:00)",
+         "Satya - slides 7-9: E2 prompt strategies, E3 decoding, E6 evaluation and failures (5:00-7:35)",
+         "Kishore - slide 10: the safety result and the adaptation decision (7:35-8:15)",
+         "All four - slide 11: one limitation each (8:15-8:50), then Bhavani closes on slide 12 (8:50-9:30)",
+         "Full script with what to say and what to show: demo_script.html"],
+        notes=("Not a presented slide - delete it before the demo or leave it hidden. This matches "
+               "demo_script.html exactly. The brief expects all four members to speak and every "
+               "member to be able to explain the complete workflow, so rehearse one pass with the "
+               "segments swapped."),
         speaker="rehearsal aid", timing="not presented")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -361,4 +394,6 @@ def verify(f: dict) -> None:
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
+    if len(sys.argv) > 1:          # optional: write elsewhere when the deck is open in PowerPoint
+        OUT = Path(sys.argv[1]).resolve()
     verify(build())

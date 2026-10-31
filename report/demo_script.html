@@ -72,15 +72,15 @@ so rehearse one full pass where you each take someone else's segment.
 <tr><td>0:00–0:45</td><td><strong>Bhavani</strong></td><td>The problem and the user</td><td>1 Problem</td><td>R1</td></tr>
 <tr><td>0:45–1:30</td><td><strong>Bhavani</strong></td><td>What we built, why a generative model</td><td>2 What we built</td><td>R1, R3</td></tr>
 <tr><td>1:30–2:15</td><td><strong>Vishruth</strong></td><td>Dataset and the frozen evaluation set</td><td>3 The data</td><td>R2</td></tr>
-<tr><td>2:15–3:00</td><td><strong>Vishruth</strong></td><td>Tokenizer, the model, and the GPT-2 baseline</td><td>3 → 4</td><td>R4, R5</td></tr>
-<tr><td>3:00–3:45</td><td><strong>Kishore</strong></td><td>The pipeline: model proposes, code decides</td><td>4 Pipeline</td><td>R9, R11, R13</td></tr>
-<tr><td>3:45–5:00</td><td><strong>Kishore</strong></td><td><strong>Live run</strong> — three messages, three outcomes</td><td>5 Live</td><td>R9, R10, R13</td></tr>
-<tr><td>5:00–6:00</td><td><strong>Satya</strong></td><td>E2 — four prompt strategies</td><td>6 E2</td><td>R6, R11</td></tr>
-<tr><td>6:00–6:50</td><td><strong>Satya</strong></td><td>E3 — decoding study</td><td>7 E3</td><td>R7</td></tr>
+<tr><td>2:15–3:00</td><td><strong>Vishruth</strong></td><td>Tokenizer, the model, and the GPT-2 baseline</td><td>4 Tokenizer + E1</td><td>R4, R5</td></tr>
+<tr><td>3:00–3:45</td><td><strong>Kishore</strong></td><td>The pipeline: model proposes, code decides</td><td>5 Pipeline</td><td>R9, R11, R13</td></tr>
+<tr><td>3:45–5:00</td><td><strong>Kishore</strong></td><td><strong>Live run</strong> — three messages, three outcomes</td><td>6 Live</td><td>R9, R10, R13</td></tr>
+<tr><td>5:00–6:00</td><td><strong>Satya</strong></td><td>E2 — four prompt strategies</td><td>7 E2</td><td>R6, R11</td></tr>
+<tr><td>6:00–6:50</td><td><strong>Satya</strong></td><td>E3 — decoding study</td><td>8 E3</td><td>R7</td></tr>
 <tr><td>6:50–7:35</td><td><strong>Satya</strong></td><td>E6 — evaluation and failure analysis</td><td>9 E6</td><td>R12</td></tr>
-<tr><td>7:35–8:15</td><td><strong>Kishore</strong></td><td>The safety result, and the adaptation decision</td><td>8 Safety</td><td>R8, R13</td></tr>
-<tr><td>8:15–8:50</td><td><strong>all four</strong></td><td>What we would not claim</td><td>10 Limits</td><td>R12, R13</td></tr>
-<tr><td>8:50–9:30</td><td><strong>Bhavani</strong></td><td>Next steps and close</td><td>11 Next</td><td>R8</td></tr>
+<tr><td>7:35–8:15</td><td><strong>Kishore</strong></td><td>The safety result, and the adaptation decision</td><td>10 Safety</td><td>R8, R13</td></tr>
+<tr><td>8:15–8:50</td><td><strong>all four</strong></td><td>What we would not claim</td><td>11 Limits</td><td>R12, R13</td></tr>
+<tr><td>8:50–9:30</td><td><strong>Bhavani</strong></td><td>Next steps and close</td><td>12 Next</td><td>R8</td></tr>
 </tbody>
 </table>
 
@@ -152,7 +152,8 @@ so rehearse one full pass where you each take someone else's segment.
 <div class="body">
 <div class="lbl">On screen</div>
 <ul>
-<li>Notebook 1, the <strong>tokenizer walkthrough cell</strong> — stored output visible.</li>
+<li><strong>Slide 4</strong> — tokenizer, the model, and the GPT-2 baseline.</li>
+<li>Then notebook 1, the <strong>tokenizer walkthrough cell</strong> — stored output visible.</li>
 <li>Then the <strong>E1 cell</strong> showing GPT-2 against Qwen on the same five queries.</li>
 </ul>
 <div class="lbl">Do</div>
@@ -173,7 +174,7 @@ so rehearse one full pass where you each take someone else's segment.
 <header><h3>5 · The pipeline: the model proposes, code decides</h3><span class="who">Kishore</span><span class="time">3:00–3:45</span></header>
 <div class="body">
 <div class="lbl">On screen</div>
-<ul><li>Slide 4 — the pipeline arrows. Report §5 has the same diagram if anyone wants it bigger.</li></ul>
+<ul><li><strong>Slide 5</strong> — the pipeline arrows. Report §5 has the same diagram if anyone wants it bigger.</li></ul>
 <div class="lbl">Say</div>
 <div class="say">
 <p>"The workflow is: message, into a programmatic prompt template, into the tokenizer, into the model, decoding control, raw text out. Then the deterministic half: parse the JSON, validate it against a Pydantic schema, and if it fails, show the model its own rejected reply plus the validator's errors and ask again — at most twice."</p>
@@ -189,7 +190,7 @@ so rehearse one full pass where you each take someone else's segment.
 <div class="body">
 <div class="lbl">On screen</div>
 <ul>
-<li>Notebook 1, the <strong>E7 cell</strong>. Run it live if a GPU session is up; otherwise show the stored output.</li>
+<li><strong>Slide 6</strong>, then notebook 1's <strong>E7 cell</strong>. Run it live if a GPU session is up; otherwise show the stored output.</li>
 <li>Have Appendix E.1 of the report ready for the tool-call record.</li>
 </ul>
 <div class="lbl">Do</div>
@@ -215,7 +216,7 @@ so rehearse one full pass where you each take someone else's segment.
 <div class="body">
 <div class="lbl">On screen</div>
 <ul>
-<li>Slide 6 — E2. Then notebook 2 at the <strong>E2 summary cell</strong>, or report §7's table.</li>
+<li><strong>Slide 7</strong> — E2. Then notebook 2 at the <strong>E2 summary cell</strong>, or report §7's table.</li>
 </ul>
 <div class="lbl">Say</div>
 <div class="say">
@@ -232,7 +233,7 @@ so rehearse one full pass where you each take someone else's segment.
 <header><h3>8 · E3 — decoding study</h3><span class="who">Satya</span><span class="time">6:00–6:50</span></header>
 <div class="body">
 <div class="lbl">On screen</div>
-<ul><li>Slide 7 — E3, or report §8's table of six configurations.</li></ul>
+<ul><li><strong>Slide 8</strong> — E3, or report §8's table of six configurations.</li></ul>
 <div class="lbl">Say</div>
 <div class="say">
 <p>"E3 holds the model and the prompt fixed — few-shot, the E2 winner — and changes only how the next token is chosen. Six configurations: greedy, temperature 0.7 and 1.2, top-k 50, and top-p at 0.9 and 0.95, on a 77-message subset, one per intent. Each sampled configuration ran under five seeds, 42 to 46; greedy ran once because it is deterministic."</p>
@@ -249,7 +250,7 @@ so rehearse one full pass where you each take someone else's segment.
 <header><h3>9 · E6 — evaluation and failure analysis</h3><span class="who">Satya</span><span class="time">6:50–7:35</span></header>
 <div class="body">
 <div class="lbl">On screen</div>
-<ul><li>Slide 9 — E6. Report §11 table and §12.1 failure table ready for questions.</li></ul>
+<ul><li><strong>Slide 9</strong> — E6. Report §11 table and §12.1 failure table ready for questions.</li></ul>
 <div class="lbl">Say</div>
 <div class="say">
 <p>"We evaluate on six criteria, not one: intent accuracy and macro-F1; schema validity before and after repair; tool-routing correctness; reply safety; latency and attempts per reply; and self-consistency across seeds."</p>
@@ -266,7 +267,7 @@ so rehearse one full pass where you each take someone else's segment.
 <header><h3>10 · The safety result, and the adaptation decision</h3><span class="who">Kishore</span><span class="time">7:35–8:15</span></header>
 <div class="body">
 <div class="lbl">On screen</div>
-<ul><li>Slide 8 — the safety numbers. Then slide 10 for the handover to the group close.</li></ul>
+<ul><li><strong>Slide 10</strong> — the safety numbers and the adaptation decision. Then slide 11 for the group close.</li></ul>
 <div class="lbl">Say</div>
 <div class="say">
 <p>"The result we care about most is not the accuracy. Zero-shot asked the customer for an account number, a card number or a secret in <strong>65 of 385</strong> replies — 16.9%. Few-shot cut that to <strong>15</strong>, 3.9%. Nine of those 15 asked for an actual secret: a PIN, CVV or one-time code. All 15 were withheld and escalated."</p>
@@ -281,7 +282,7 @@ so rehearse one full pass where you each take someone else's segment.
 <header><h3>11 · What we would not claim</h3><span class="who">all four — one line each</span><span class="time">8:15–8:50</span></header>
 <div class="body">
 <div class="lbl">On screen</div>
-<ul><li>Slide 10 — limits. Each person takes one bullet, in this order.</li></ul>
+<ul><li><strong>Slide 11</strong> — limits. Each person takes one bullet, in this order.</li></ul>
 <div class="lbl">Say</div>
 <div class="say">
 <p><strong>Vishruth:</strong> "E1 and the live trace ran on a free Colab T4; E2, E3 and E6 ran on an A100 because of a CUDA driver mismatch. Both hardware records are in Appendix F, and we re-built the 385 evaluation messages on the second machine to confirm they were identical."</p>
@@ -297,7 +298,7 @@ so rehearse one full pass where you each take someone else's segment.
 <header><h3>12 · Next steps and close</h3><span class="who">Bhavani</span><span class="time">8:50–9:30</span></header>
 <div class="body">
 <div class="lbl">On screen</div>
-<ul><li>Slide 11 — next steps. Leave it up for questions.</li></ul>
+<ul><li><strong>Slide 12</strong> — next steps. Leave it up for questions.</li></ul>
 <div class="lbl">Say</div>
 <div class="say">
 <p>"Four things we would do next. Constrained decoding, so only valid JSON and real labels can be generated at all — that removes most repair calls. A LoRA adapter on the 10,003 training messages, compared head to head with the best prompt. Confidence derived from token probabilities instead of the number the model writes. And the cheap one our own data points at: put the label catalogue into the repair prompt, because rescuing 1 of 62 invented labels is not acceptable."</p>
