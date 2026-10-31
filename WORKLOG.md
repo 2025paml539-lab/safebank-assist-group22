@@ -40,8 +40,8 @@ All seven of Satya's items are done. E2, E3 and E6 ran on 31 Oct on an A100 Kube
 | V2 | ✅ | Colab T4 run with stored outputs — merged in PR #3 |
 | V3 | ✅ | Report §6 baseline — merged in PR #3 |
 | V4 | 🟡 | Contribution row: typed name + date |
-| V5 | 🟡 | Delete the duplicate `artifacts/results/e1_baseline (1).csv`. That file is the T4 run and `e1_baseline.csv` is the earlier one, so keep the T4 timings under the canonical name |
-| V6 | 🟡 | Point the notebook's `REPO_URL` back at the group repo |
+| V5 | ✅ | Duplicate `artifacts/results/e1_baseline (1).csv` deleted. **Correction to the earlier note:** `e1_baseline.csv` is the T4 run, not the `(1)` copy — its latencies (1905.8, 579.9, 424.0 ms) appear in the committed notebook output and the `(1)` file's do not, and `appendix_e1.md` shows the notebook writing that exact filename. The canonical file was therefore left untouched and only the stray download copy removed |
+| V6 | ✅ | Notebook `REPO_URL` now points at the group repo, with the fork URL kept as a commented override. Done as a two-line text edit rather than a JSON rewrite: 19 cells, stored outputs (175,013 chars) and execution counts all unchanged, widget state key intact |
 | V7 | ⚪ | Optional: warn when `build_example_bank` is called without `exclude=` (train/test-overlap protection is opt-in today); SHA-256 per downloaded CSV in `preprocessing_record()`; a unit test for `_read_label_names` |
 | — | ✅ | The `top_k` follow-up from the PR #3 review is closed by PR #4 |
 
@@ -61,18 +61,18 @@ All seven of Satya's items are done. E2, E3 and E6 ran on 31 Oct on an A100 Kube
 
 | # | Status | Task |
 |---|---|---|
-| K1 | 🟡 | Paste the T4 outputs into the report: tokenizer walkthrough → §4.2, E7 trace → §10.2, `device_report()` → Appendix F |
-| K2 | 🔴 | §9 sentence with the measured E2 numbers; check the numbers agree across sections |
-| K3 | 🟡 | Contribution row: typed name + date |
+| K1 | ✅ | T4 outputs in the report: tokenizer walkthrough in §4.2, the end-to-end traces in §10.2. Appendix F needed no separate block — the two-runtime table written for E2/E3/E6 already carries the T4 column |
+| K2 | ✅ | §9 now quotes the measured E2 result (few-shot 47.8%, macro-F1 0.450) and argues PEFT from it; every figure cross-checked against the §7, §8, §10.1 and §11 tables, and two of my own figures were corrected to match them |
+| K3 | ✅ | Contribution row confirmed (name, date) |
 
 **Report assembly and submission (B-items)**
 
 | # | Status | Task |
 |---|---|---|
-| B1 | 🔴 | Results sentences in §1 and §14 |
+| B1 | ✅ | Results sentences written in §1 and §14 from the E2 and E3 numbers |
 | B2 | 🟡 | Collect all four typed name + date confirmations |
 | B3 | 🔴 | `python report/build_report.py --final` until it reports READY |
-| B4 | 🟡 | Re-check `report/section8_compliance.md` |
+| B4 | ✅ | `report/section8_compliance.md` re-done against the finished text (31 Oct): all seven brief rules re-verified, 398 tests, body 15 pages, four BITS IDs present, no screenshots, citations complete both ways, every accuracy figure tied to its procedure. The T4/A100 split and the sub-50% headline accuracy are recorded as deliberate disclosures |
 | B5 | 🔴 | Upload the PDF, the notebook or repo link, and the contribution statement |
 
 **Everyone:** the demo deck is not built — only the opening-segment script exists, in `report/demo_opening_segment.md` — plus the 8–10 minute rehearsal, with every member able to explain the whole workflow.
