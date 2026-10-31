@@ -39,7 +39,7 @@ All seven of Satya's items are done. E2, E3 and E6 ran on 31 Oct on an A100 Kube
 | V1 | ✅ | Dataset-link fix, tests, notebook handover note — merged in PR #3 |
 | V2 | ✅ | Colab T4 run with stored outputs — merged in PR #3 |
 | V3 | ✅ | Report §6 baseline — merged in PR #3 |
-| V4 | 🟡 | Contribution row: typed name + date |
+| V4 | ✅ | Contribution row confirmed (name, date) |
 | V5 | ✅ | Duplicate `artifacts/results/e1_baseline (1).csv` deleted. **Correction to the earlier note:** `e1_baseline.csv` is the T4 run, not the `(1)` copy — its latencies (1905.8, 579.9, 424.0 ms) appear in the committed notebook output and the `(1)` file's do not, and `appendix_e1.md` shows the notebook writing that exact filename. The canonical file was therefore left untouched and only the stray download copy removed |
 | V6 | ✅ | Notebook `REPO_URL` now points at the group repo, with the fork URL kept as a commented override. Done as a two-line text edit rather than a JSON rewrite: 19 cells, stored outputs (175,013 chars) and execution counts all unchanged, widget state key intact |
 | V7 | ⚪ | Optional: warn when `build_example_bank` is called without `exclude=` (train/test-overlap protection is opt-in today); SHA-256 per downloaded CSV in `preprocessing_record()`; a unit test for `_read_label_names` |
@@ -70,7 +70,7 @@ All seven of Satya's items are done. E2, E3 and E6 ran on 31 Oct on an A100 Kube
 | # | Status | Task |
 |---|---|---|
 | B1 | ✅ | Results sentences written in §1 and §14 from the E2 and E3 numbers |
-| B2 | ✅ | Contribution statement complete: every row has its description, and three of the four confirmations are typed in. The fourth member enters his own name and date in `report/contribution_statement.md` |
+| B2 | ✅ | Contribution statement complete: all four rows described and **all four confirmations in** (name + date). Printed as Appendix I of the report and also available as a standalone PDF via `python report/build_contribution_pdf.py` |
 | B3 | ✅ | `python report/build_report.py --final` reports **READY**: 0 pending items, 32 pages (1 title + 15 body + 16 references/appendix), body inside the 10–15 budget, all headings present, citations complete both ways, no personal or machine-specific details. Output: `report/build/SafeBank_Assist_Group22_Report.pdf` |
 | B4 | ✅ | `report/section8_compliance.md` re-done against the finished text (31 Oct): all seven brief rules re-verified, 398 tests, body 15 pages, four BITS IDs present, no screenshots, citations complete both ways, every accuracy figure tied to its procedure. The T4/A100 split and the sub-50% headline accuracy are recorded as deliberate disclosures |
 | B5 | 🔴 | Upload the PDF, the notebook or repo link, and the contribution statement |
