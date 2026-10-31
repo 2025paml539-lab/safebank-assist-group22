@@ -52,263 +52,258 @@
 </head>
 <body>
 
+<style>
+  .scope { background:#eef7ee; border:1px solid #a8cba8; border-left:4px solid #3f7a3f;
+           border-radius:3px; padding:9px 13px; margin:10px 0; }
+  .scope .tag { font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:#2f5f2f;
+                font-weight:700; display:block; margin-bottom:4px; }
+  .wc { font-weight:400; color:#666; font-size:12px; }
+</style>
+
 <h1>SafeBank Assist — demo script</h1>
 <p class="sub">PCAM* ZG516 Applied Generative AI · Group Major Project / Assignment&#8209;1 · <strong>Group 22</strong></p>
-<p class="sub">8–10 minute group demonstration · four speakers · BANKING77 · Qwen2.5-1.5B-Instruct (baseline GPT-2)</p>
+<p class="sub"><strong>Tight version — ~5 minutes of speech, 8 minutes on the clock, equal time for all four speakers.</strong></p>
 <p class="sub">Nandhaluru Kishore (2025paml539) · Vishruth M (2025paml536) · Satya Prakash (2025paml561) · Takkars Bhavani (2025paml562)</p>
 
-<div class="note">
-<strong>How to use this page.</strong> Read the <em>Say</em> blocks close to word-for-word the first time you rehearse,
-then speak them in your own words. Everything in <em>On screen</em> and <em>Do</em> is what the person driving the laptop
-must have ready. The timings add up to <strong>9:30</strong>, leaving ~30 seconds of slack inside the 8–10 minute window.
-The brief requires all four members to speak and <strong>every member to be able to explain the whole workflow</strong>,
-so rehearse one full pass where you each take someone else's segment.
+<div class="warn">
+<strong>Why this version is short.</strong> The full script ran 18–20 minutes in rehearsal. Talking is only half a demo —
+switching windows, scrolling to a cell and letting people read the screen costs as much again. So this is
+<strong>~5 minutes of speech inside an 8-minute slot</strong>, and the slack is deliberate.
+<ul>
+<li><strong>Say only what is written.</strong> Anything cut still exists in the report, and the Q&amp;A table at the bottom covers what examiners actually ask.</li>
+<li><strong>Don't read numbers off the slide.</strong> The slide shows them; you say what they mean.</li>
+<li><strong>One screen move per segment.</strong> Every tab open before you start.</li>
+<li>Finishing in 7:30 is better than being cut off at 10:00.</li>
+</ul>
 </div>
 
-<h2>At a glance</h2>
+<div class="scope">
+<span class="tag">Never cut these four — they are the intent and scope of the project</span>
+<ol style="margin:4px 0 0; padding-left:22px">
+<li><strong>The problem and the user</strong> — a bank's first-line support desk must map each free-text message to one of 77 request types and reply safely (segment 1).</li>
+<li><strong>What the system does</strong> — one message in, one <em>validated</em> decision out: intent, a customer-safe reply, an optional tool call, and a hand-over flag (segment 2).</li>
+<li><strong>Why a generative model</strong> — a classifier gives only a label; one prompted pass gives label, reply and routing, and a new request type is a prompt edit, not a retrain (segment 2).</li>
+<li><strong>The boundary we set</strong> — the model suggests, our code decides: nothing unvalidated reaches a customer and no card is blocked automatically (segments 5 and 6).</li>
+</ol>
+<p style="margin:9px 0 0; font-size:14px">If you are running short, cut detail from E2, E3 or E6 — never from these four. They are what the brief's
+problem-definition and responsible-use requirements are graded on.</p>
+</div>
+
+<h2>At a glance — 75 seconds of speech each</h2>
 <table>
-<thead><tr><th style="width:78px">Time</th><th style="width:150px">Speaker</th><th>Segment</th><th style="width:118px">Slide</th><th>Requirements shown</th></tr></thead>
+<thead><tr><th style="width:74px">Clock</th><th style="width:116px">Speaker</th><th>Segment</th><th style="width:60px">Slide</th><th style="width:54px">Words</th><th>Brief</th></tr></thead>
 <tbody>
-<tr><td>0:00–0:45</td><td><strong>Bhavani</strong></td><td>The problem and the user</td><td>1 Problem</td><td>R1</td></tr>
-<tr><td>0:45–1:30</td><td><strong>Bhavani</strong></td><td>What we built, why a generative model</td><td>2 What we built</td><td>R1, R3</td></tr>
-<tr><td>1:30–2:15</td><td><strong>Vishruth</strong></td><td>Dataset and the frozen evaluation set</td><td>3 The data</td><td>R2</td></tr>
-<tr><td>2:15–3:00</td><td><strong>Vishruth</strong></td><td>Tokenizer, the model, and the GPT-2 baseline</td><td>4 Tokenizer + E1</td><td>R4, R5</td></tr>
-<tr><td>3:00–3:45</td><td><strong>Kishore</strong></td><td>The pipeline: model proposes, code decides</td><td>5 Pipeline</td><td>R9, R11, R13</td></tr>
-<tr><td>3:45–5:00</td><td><strong>Kishore</strong></td><td><strong>Live run</strong> — three messages, three outcomes</td><td>6 Live</td><td>R9, R10, R13</td></tr>
-<tr><td>5:00–6:00</td><td><strong>Satya</strong></td><td>E2 — four prompt strategies</td><td>7 E2</td><td>R6, R11</td></tr>
-<tr><td>6:00–6:50</td><td><strong>Satya</strong></td><td>E3 — decoding study</td><td>8 E3</td><td>R7</td></tr>
-<tr><td>6:50–7:35</td><td><strong>Satya</strong></td><td>E6 — evaluation and failure analysis</td><td>9 E6</td><td>R12</td></tr>
-<tr><td>7:35–8:15</td><td><strong>Kishore</strong></td><td>The safety result, and the adaptation decision</td><td>10 Safety</td><td>R8, R13</td></tr>
-<tr><td>8:15–8:50</td><td><strong>all four</strong></td><td>What we would not claim</td><td>11 Limits</td><td>R12, R13</td></tr>
-<tr><td>8:50–9:30</td><td><strong>Bhavani</strong></td><td>Next steps and close</td><td>12 Next</td><td>R8</td></tr>
+<tr><td>0:00–0:35</td><td><strong>Bhavani</strong></td><td>The problem and the user <span class="scope" style="padding:0 5px;border:0;background:#dff0df">scope</span></td><td>1</td><td>62</td><td>R1</td></tr>
+<tr><td>0:35–1:10</td><td><strong>Bhavani</strong></td><td>What it does · why a generative model <span class="scope" style="padding:0 5px;border:0;background:#dff0df">scope</span></td><td>2</td><td>62</td><td>R1, R3</td></tr>
+<tr><td>1:10–1:45</td><td><strong>Vishruth</strong></td><td>The data and the frozen evaluation set</td><td>3</td><td>65</td><td>R2</td></tr>
+<tr><td>1:45–2:40</td><td><strong>Vishruth</strong></td><td><strong>E1</strong> — baseline, tokenizer, the model</td><td>4</td><td>100</td><td>E1, R4, R5</td></tr>
+<tr><td>2:40–3:15</td><td><strong>Kishore</strong></td><td>The pipeline — model suggests, code decides <span class="scope" style="padding:0 5px;border:0;background:#dff0df">scope</span></td><td>5</td><td>58</td><td>R9, R11</td></tr>
+<tr><td>3:15–4:25</td><td><strong>Kishore</strong></td><td><strong>Live run</strong> — three messages, three endings</td><td>6</td><td>105</td><td>E5, E7, R10, R13</td></tr>
+<tr><td>4:25–5:05</td><td><strong>Satya</strong></td><td><strong>E2</strong> — four prompt strategies</td><td>7</td><td>70</td><td>E2, R6</td></tr>
+<tr><td>5:05–5:35</td><td><strong>Satya</strong></td><td><strong>E3</strong> — decoding</td><td>8</td><td>50</td><td>E3, R7</td></tr>
+<tr><td>5:35–6:05</td><td><strong>Satya</strong></td><td><strong>E4 + E6</strong> — validity and failures</td><td>9</td><td>48</td><td>E4, E6, R12</td></tr>
+<tr><td>6:05–6:40</td><td><strong>Kishore</strong></td><td>The safety result · adaptation decision</td><td>10</td><td>55</td><td>R8, R13</td></tr>
+<tr><td>6:40–7:05</td><td><strong>all four</strong></td><td>What we would not claim — one line each</td><td>11</td><td>48</td><td>R12, R13</td></tr>
+<tr><td>7:05–7:30</td><td><strong>Bhavani</strong></td><td>What we would do next · close</td><td>12</td><td>44</td><td>R8</td></tr>
 </tbody>
 </table>
 
+<p class="sub"><strong>Equal split:</strong> Bhavani 180 words ≈ 1:15 · Vishruth 177 ≈ 1:13 · Kishore 175 ≈ 1:12 · Satya 180 ≈ 1:15.
+Total ≈ 712 words ≈ 4:55 of speech in a 7:30 run — 30 seconds of buffer inside 8 minutes.
+Each person's 12-word line on slide 11 is counted in their total.</p>
+
 <div class="warn">
-<strong>Before you start — 5-minute pre-flight.</strong>
+<strong>Pre-flight — 3 minutes before you start.</strong>
 <ul>
-<li>Open the deck <code>SafeBank_Assist_Group22_Demo.pptx</code> in presenter view, slide 1 showing.</li>
-<li>Open <code>SafeBank_Assist_Group22_Notebook_1_Colab_T4_E1_E7.ipynb</code> at the <strong>E7 cell</strong> — it has stored outputs, so it shows the live result even with no GPU.</li>
-<li>Open <code>SafeBank_Assist_Group22_Notebook_2_Experiments_E2_E3_E6.ipynb</code> at the <strong>E2 summary cell</strong>.</li>
-<li>Open the report PDF at <strong>§11</strong> (results table) in a third tab, for questions.</li>
-<li>If a Colab T4 session is available, run the notebook top to bottom once <em>before</em> the demo so the model is cached. If not, present the stored outputs — say so once, plainly, and move on.</li>
-<li>Decide who drives the laptop. Suggestion: Kishore drives from 3:00 to 8:15, Bhavani otherwise.</li>
+<li>Deck open at slide 1, presenter view; last slide (rehearsal aid) hidden.</li>
+<li><code>Notebook_1</code> open at the <strong>E7 cell</strong>, already scrolled so all three records are visible. Stored outputs — works with no GPU.</li>
+<li><code>Notebook_2</code> open at the <strong>E2 summary cell</strong>. Report PDF at <strong>§11</strong>. Nothing else open.</li>
+<li>Driver: Vishruth for segment 4, Kishore for 5–6 and 10, Satya for 7–9, Bhavani for the opening and close.</li>
 </ul>
 </div>
 
 <h2>The script</h2>
 
 <div class="seg">
-<header><h3>1 · The problem and the user</h3><span class="who">Bhavani</span><span class="time">0:00–0:45</span></header>
+<header><h3>1 · The problem and the user</h3><span class="who">Bhavani</span><span class="time">0:00–0:35</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul><li>Slide 1 — title, the sample message, and the number <strong>77</strong>.</li></ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 1.</li></ul>
+<div class="lbl">Say <span class="wc">(62 words — scope, do not cut)</span></div>
 <div class="say">
-<p>"Good evening. We are Group 22, and our project is SafeBank Assist."</p>
-<p>"A retail bank's support desk gets thousands of short, messy messages a day. Something like this one — <em>'My new card still hasn't arrived and it's been two weeks.'</em> For every message, a first-line agent has to work out what the customer actually wants, out of <strong>77</strong> possible request types in the BANKING77 dataset, decide whether a system lookup is needed, and reply without inventing anything about the customer's account."</p>
-<p>"Done by hand it is slow, and two agents answer the same message differently. The hardest cases are near-twins: <em>'my card hasn't arrived'</em> and <em>'when will my card arrive'</em> are two different intents, and they route to different places."</p>
-<p>"Our target user is the tier-1 support agent, and through a self-service channel, the customer behind them."</p>
+<p>"We're Group 22, and this is SafeBank Assist."</p>
+<p>"A bank's support desk gets thousands of messages a day like this one — <em>'my new card still hasn't arrived.'</em> An agent has to work out which of <strong>77</strong> request types it is, decide whether a lookup is needed, and reply without inventing anything about the account. It's slow, and two agents answer the same message differently."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R1 Problem definition</span>
+<div class="lbl">Shows</div><span class="req">R1 Problem definition</span>
 </div></div>
 
 <div class="seg">
-<header><h3>2 · What we built, and why a generative model</h3><span class="who">Bhavani</span><span class="time">0:45–1:30</span></header>
+<header><h3>2 · What it does · why a generative model</h3><span class="who">Bhavani</span><span class="time">0:35–1:10</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul><li>Slide 2 — the JSON output shape: intent, confidence, reply, tool call, escalation flag.</li></ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 2 — the output shape, and the E1 → E7 map.</li></ul>
+<div class="lbl">Say <span class="wc">(62 words — scope, do not cut)</span></div>
 <div class="say">
-<p>"SafeBank Assist reads one message and returns one validated decision: the BANKING77 intent, a confidence value, a reply the customer can safely read, an optional call to a banking tool, and a flag to hand over to a human."</p>
-<p>"Why a generative model and not a classifier? A classifier gives us the label and nothing else — no reply, no routing decision. A pretrained instruction-tuned causal LM gives all three in a single prompted pass, and adding a new request type is a prompt edit instead of a retraining run. We compared it against GANs, VAEs and diffusion models in section 4.1 of the report: those generate continuous data and are conditioned differently; text is discrete and autoregressive, so a causal LM is the right family here."</p>
-<p>"The catch is that the model's output is just text. So most of what we built is the machinery that checks that text before anyone acts on it — and that is what the rest of this demo shows."</p>
-<p class="hand">Hand over: "Vishruth will start with the data."</p>
+<p>"So: one message in, one <strong>validated</strong> decision out — the intent, a reply the customer can safely read, an optional tool call, and a flag to hand over to a human."</p>
+<p>"A classifier gives the label and nothing else. One prompted pass gives all three, and a new request type is a prompt edit, not a retrain."</p>
+<p>"We follow the brief's order, E1 to E7. Vishruth starts."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R1 Problem definition</span><span class="req">R3 Generative model analysis</span>
+<div class="lbl">Shows</div><span class="req">R1 Problem definition</span><span class="req">R3 Generative-model analysis</span>
 </div></div>
 
 <div class="seg">
-<header><h3>3 · Dataset and the frozen evaluation set</h3><span class="who">Vishruth</span><span class="time">1:30–2:15</span></header>
+<header><h3>3 · The data and the frozen evaluation set</h3><span class="who">Vishruth</span><span class="time">1:10–1:45</span></header>
+<div class="body">
+<div class="lbl">On screen</div><ul><li>Slide 3.</li></ul>
+<div class="lbl">Say <span class="wc">(65 words)</span></div>
+<div class="say">
+<p>"BANKING77 — real customer-service messages, <strong>10,000</strong> for training and <strong>3,000</strong> for test, across 77 fine-grained intents."</p>
+<p>"We froze one evaluation set: <strong>385 messages, five per intent, seed 42, test split only</strong>. Every number you'll hear today is on that same set, so the comparisons are fair."</p>
+<p>"And the few-shot examples come only from the training split — the runner refuses to start if one leaks into evaluation."</p>
+</div>
+<div class="lbl">Shows</div><span class="req">R2 Dataset understanding</span>
+</div></div>
+
+<div class="seg">
+<header><h3>4 · E1 — baseline, tokenizer, the model</h3><span class="who">Vishruth</span><span class="time">1:45–2:40</span></header>
+<div class="body">
+<div class="lbl">On screen</div><ul><li>Slide 4, then notebook 1's tokenizer cell and E1 cell. <strong>One scroll each</strong>, stored outputs.</li></ul>
+<div class="lbl">Say <span class="wc">(100 words)</span></div>
+<div class="say">
+<p>"E1 is our baseline: one plain prompt, no schema, no examples, five messages, two models."</p>
+<p>"<strong>GPT-2 never answers</strong> — it repeats the message back, or gets stuck on one phrase. That's a model with no instruction tuning."</p>
+<p>"<strong>Qwen summarises all five correctly</strong> — but none of those replies is one of the 77 labels, so nothing can be validated or routed. Understanding isn't a system."</p>
+<p>"And the tokenizer: 47 characters becomes 12 tokens. The model is 28 layers, 1,536 wide."</p>
+<p class="hand">Hand over: "Kishore — what we built around it."</p>
+</div>
+<div class="lbl">Shows</div><span class="req">E1 Baseline</span><span class="req">R4 LLM architecture</span><span class="req">R5 Baseline system</span>
+</div></div>
+
+<div class="seg">
+<header><h3>5 · The pipeline — model suggests, code decides</h3><span class="who">Kishore</span><span class="time">2:40–3:15</span></header>
+<div class="body">
+<div class="lbl">On screen</div><ul><li>Slide 5 — the arrows. Point, don't read.</li></ul>
+<div class="lbl">Say <span class="wc">(58 words — scope, do not cut)</span></div>
+<div class="say">
+<p>"Our rule: <strong>the model suggests, our code decides</strong>."</p>
+<p>"We pull the JSON from its answer and check it against our schema. If it's wrong, we show it the errors and ask again — twice."</p>
+<p>"Then: is the intent one of the 77 real ones, which tool, and is the reply safe to show?"</p>
+<p>"The customer gets a checked answer, or a human."</p>
+</div>
+<div class="lbl">Shows</div><span class="req">R9 Structured output</span><span class="req">R11 Programmatic prompting</span>
+</div></div>
+
+<div class="seg">
+<header><h3>6 · Live run — three messages, three endings</h3><span class="who">Kishore</span><span class="time">3:15–4:25</span></header>
 <div class="body">
 <div class="lbl">On screen</div>
 <ul>
-<li>Slide 3 — the data. Have the report open at <strong>§3</strong> with the class-distribution figure if asked.</li>
+<li>Notebook 1, E7 cell — already scrolled. Run live only if a GPU session is up; otherwise use the stored output and say so once.</li>
+<li>70 seconds for 105 words. The gap is deliberate — pause while people read each record.</li>
 </ul>
-<div class="lbl">Say</div>
+<div class="lbl">Say <span class="wc">(105 words — the boundary claim is scope, do not cut)</span></div>
 <div class="say">
-<p>"We used BANKING77 — real customer-service messages, <strong>10,003</strong> in the training split and <strong>3,080</strong> in the test split, labelled across <strong>77</strong> fine-grained intents. Between 35 and 187 training messages per intent, so the classes are uneven, and that shows up in our results."</p>
-<p>"For evaluation we froze a stratified sample: <strong>385 messages, five per intent, seed 42, taken only from the test split</strong>. Every number you will see is on that same 385, so the comparisons are paired."</p>
-<p>"Two things we were careful about. First, the few-shot examples come only from the <em>training</em> split, and the experiment runner refuses to start if any example is also an evaluation message — so there is no train-test leakage. Second, the label file we were reading moved on the Hugging Face Hub mid-project; we pinned a dataset revision and checked that all 77 label names still match, in order."</p>
+<p>"Three messages, three endings."</p>
+<p>"<strong>First — the happy path.</strong> It asked for the branch-finder, we checked it, ran it, got a branch back."</p>
+<p>"<strong>Second — the one that matters.</strong> Right intent, and that intent can block a card. <strong>We never block automatically.</strong> And the reply asked for the customer's <strong>PIN</strong>, so we binned it and escalated."</p>
+<p>"On paper that answer was perfect — every number we measure called it a success."</p>
+<p>"<strong>Third — we gave up on purpose:</strong> three tries, still no valid intent, so it went to a colleague."</p>
+<p class="hand">Hand over: "Satya — the experiments."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R2 Dataset understanding</span>
+<div class="lbl">Shows</div><span class="req">E5 Tool calling</span><span class="req">E7 Final system</span><span class="req">R10 Tool/function</span><span class="req">R13 Responsible use</span>
 </div></div>
 
 <div class="seg">
-<header><h3>4 · Tokenizer, the model, and the GPT-2 baseline</h3><span class="who">Vishruth</span><span class="time">2:15–3:00</span></header>
+<header><h3>7 · E2 — four prompt strategies</h3><span class="who">Satya</span><span class="time">4:25–5:05</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul>
-<li><strong>Slide 4</strong> — tokenizer, the model, and the GPT-2 baseline.</li>
-<li>Then notebook 1, the <strong>tokenizer walkthrough cell</strong> — stored output visible.</li>
-<li>Then the <strong>E1 cell</strong> showing GPT-2 against Qwen on the same five queries.</li>
-</ul>
-<div class="lbl">Do</div>
-<ul><li>Scroll to the tokenizer output, then down to the E1 comparison. Don't run anything here — the outputs are stored.</li></ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 7. Notebook 2's E2 cell only if asked.</li></ul>
+<div class="lbl">Say <span class="wc">(70 words)</span></div>
 <div class="say">
-<p>"This is the real tokenizer output for one evaluation message. <em>'I need to activate my card can you do that now?'</em> — 47 characters becomes <strong>12 tokens</strong>, each about four characters. Byte-level BPE, so a misspelt word never fails as out-of-vocabulary; it just becomes more pieces."</p>
-<p>"The same cell reports the checkpoint we actually loaded: vocabulary <strong>151,643</strong>, hidden size <strong>1,536</strong>, <strong>28</strong> decoder blocks, <strong>12</strong> attention heads, context <strong>32,768</strong>. Each token's embedding goes through masked self-attention and feed-forward layers, and the language-modelling head turns the last hidden state into one probability per vocabulary entry — that is the next token. Generation is that step, repeated."</p>
-<p>"Here is our baseline, E1: one deliberately plain prompt, no intent list, no schema, greedy decoding, GPT-2 against Qwen on the same five messages. GPT-2 never answers the question — it continues the text pattern, repeats the prompt back, and on the ATM message gets stuck repeating one phrase. That is what a model with no instruction tuning does. Qwen gives a correct one-sentence summary for all five — but none of its replies is one of the 77 labels, and nothing in the output can be validated or routed."</p>
-<p>"So the baseline tells us the instruction-tuned model understands the request, and that understanding alone is not a system."</p>
-<p class="hand">Hand over: "Kishore will show what we built around it."</p>
+<p>"E2 compares four prompt styles on the same 385 messages — zero-shot, few-shot, role-based, constraint-based. One argument changed."</p>
+<p>"<strong>Few-shot wins: 47.8%, against 39 to 40 for the other three.</strong> It's paired, so we tested it — that gap is significant, the other three can't be separated."</p>
+<p>"Two of our four guesses were wrong: few-shot <em>lowered</em> first-attempt validity, and the role persona didn't make replies safer."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R4 LLM architecture</span><span class="req">R5 Baseline system</span>
+<div class="lbl">Shows</div><span class="req">E2 Prompt comparison</span><span class="req">R6 Prompt engineering</span>
 </div></div>
 
 <div class="seg">
-<header><h3>5 · The pipeline: the model proposes, code decides</h3><span class="who">Kishore</span><span class="time">3:00–3:45</span></header>
+<header><h3>8 · E3 — decoding</h3><span class="who">Satya</span><span class="time">5:05–5:35</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul><li><strong>Slide 5</strong> — the pipeline arrows. Report §5 has the same diagram if anyone wants it bigger.</li></ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 8.</li></ul>
+<div class="lbl">Say <span class="wc">(50 words)</span></div>
 <div class="say">
-<p>"The workflow is: message, into a programmatic prompt template, into the tokenizer, into the model, decoding control, raw text out. Then the deterministic half: parse the JSON, validate it against a Pydantic schema, and if it fails, show the model its own rejected reply plus the validator's errors and ask again — at most twice."</p>
-<p>"Then the label must exist in BANKING77 — an invented label is the clearest hallucination signal we have. Then a confidence gate, then the tool router, then a simulated tool, then a reply-safety screen, and finally the composed reply with a disclaimer, or an escalation with a stated reason."</p>
-<p>"One design rule holds the whole thing together: <strong>the model proposes, deterministic code decides</strong>. The prompt is one reusable template — <code>build_prompt(strategy, query, allowed_intents, **kwargs)</code> — so all four prompt strategies you'll see next are the same pipeline with one argument changed. Nothing unvalidated reaches the customer, and a card is never blocked automatically."</p>
+<p>"E3 changes only how the next token is picked — greedy, two temperatures, top-k and two top-p settings, five seeds each."</p>
+<p>"<strong>Greedy won, at 48%.</strong> Sampling cost three points at 0.7 and nearly nine at 1.2, and gained nothing. One catch: Qwen ships with sampling already on, so we had to switch it off explicitly."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R9 Structured output</span><span class="req">R11 Programmatic prompting</span><span class="req">R13 Responsible use</span>
+<div class="lbl">Shows</div><span class="req">E3 Decoding</span><span class="req">R7 Decoding study</span>
 </div></div>
 
 <div class="seg">
-<header><h3>6 · Live run — three messages, three outcomes</h3><span class="who">Kishore</span><span class="time">3:45–5:00</span></header>
+<header><h3>9 · E4 + E6 — validity and failures</h3><span class="who">Satya</span><span class="time">5:35–6:05</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul>
-<li><strong>Slide 6</strong>, then notebook 1's <strong>E7 cell</strong>. Run it live if a GPU session is up; otherwise show the stored output.</li>
-<li>Have Appendix E.1 of the report ready for the tool-call record.</li>
-</ul>
-<div class="lbl">Do</div>
-<ul>
-<li>Point at each of the three records as you describe it. Don't read the JSON aloud field by field — call out <code>intent</code>, <code>tool</code>, <code>escalated</code>, <code>attempts</code>.</li>
-<li><strong>Fallback:</strong> if the run errors, say "we're showing the stored run from the Colab T4 — it's committed with the notebook" and continue. Do not debug on stage.</li>
-</ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 9.</li></ul>
+<div class="lbl">Say <span class="wc">(48 words)</span></div>
 <div class="say">
-<p>"Same pipeline, three messages, three different endings."</p>
-<p>"First — <em>'Which ATMs accept this card?'</em> Valid JSON on the first attempt, intent <code>atm_support</code>, and it asked for the <code>find_branch</code> tool with a pincode and a service type. The router accepted that tool for that intent, the tool's input schema accepted both arguments, the simulated lookup returned a branch, and the customer gets the reply plus the lookup result and a disclaimer. One generation, no repair. That is the tool-calling path end to end."</p>
-<p>"Second — <em>'I lost my card on the train this morning.'</em> The model got the intent right, <code>lost_or_stolen_card</code>, which routes to our destructive tool, <code>block_card</code>. Two controls fired instead of the tool. The card was <strong>not</strong> blocked, because a destructive action always needs human confirmation. And look at the model's own reply — it asked the customer for their <strong>PIN and account number</strong>. The safety screen caught that, withheld the reply, and escalated."</p>
-<p>"That is a 1.5-billion-parameter model asking a customer for their PIN, unprompted. It was valid JSON with the correct intent — accuracy, validity and routing all score it as a success. Only a check aimed at that specific harm catches it."</p>
-<p>"Third — <em>'Is there an ATM near 560001?'</em> The model's label was not a real BANKING77 intent. The repair loop showed it the rejected reply and the validator errors twice more; still invalid. So the record ends <code>ok: false</code>, three attempts, escalated, and the customer sees a handover message. Nothing unvalidated was shown."</p>
-<p class="hand">Hand over: "Satya ran the experiments that tell us which prompt and which decoding to use."</p>
+<p>"We score six criteria, not one — accuracy, schema validity, tool routing, reply safety, latency and consistency across seeds."</p>
+<p>"The retry loop lifts valid output from <strong>83% to 95%</strong>. But it fixes formatting, not thinking: 47 of 60 format errors rescued, only <strong>1 of 62</strong> invented labels."</p>
+<p class="hand">Hand over: "Kishore — the result that matters most."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R9 Structured output</span><span class="req">R10 Tool / function calling</span><span class="req">R13 Responsible use</span>
+<div class="lbl">Shows</div><span class="req">E4 Structured output</span><span class="req">E6 Failure analysis</span><span class="req">R12 Evaluation</span>
 </div></div>
 
 <div class="seg">
-<header><h3>7 · E2 — four prompt strategies</h3><span class="who">Satya</span><span class="time">5:00–6:00</span></header>
+<header><h3>10 · The safety result · adaptation decision</h3><span class="who">Kishore</span><span class="time">6:05–6:40</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul>
-<li><strong>Slide 7</strong> — E2. Then notebook 2 at the <strong>E2 summary cell</strong>, or report §7's table.</li>
-</ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 10.</li></ul>
+<div class="lbl">Say <span class="wc">(55 words)</span></div>
 <div class="say">
-<p>"E2 is the same pipeline run four times, changing only the prompt strategy: zero-shot, few-shot, role and context, and constraint-based. All four on the same 385 messages, greedy decoding, and all four render the label catalogue, the tool catalogue and the output contract through the same three functions — a test asserts those blocks are byte-identical, so any difference comes from the strategy, not from wording."</p>
-<p>"<strong>Few-shot wins: 47.8% accuracy, macro-F1 0.450</strong>, against 40.3% zero-shot, 39.0% role/context and 40.0% constraint-based. Because the comparison is paired we could test it: few-shot was right on 55 messages where zero-shot was wrong, and wrong on 26 where zero-shot was right — exact McNemar, p equals 0.002. The other three cannot be told apart at all, p from 0.47 to 1.0, so their order in that table is not a ranking."</p>
-<p>"Now the part we did not expect. <strong>Two of our four hypotheses were wrong.</strong> We expected few-shot to raise first-attempt validity by showing the format — it <em>lowered</em> it, from 95.1% to 83.4%. Every single one of those 53 failures was the model inventing a tool name outside our three-tool enum, things like <code>check_transfer_status</code>. Our worked examples all contain tool calls, so the model seems to have learned to attach one to everything. The enum caught all of them before the router saw them."</p>
-<p>"And the role persona did not make replies safer — 19.0% asked for credentials against 17.4% for zero-shot, though it did hand over to a human more often."</p>
+<p>"Our most useful finding wasn't the accuracy."</p>
+<p>"With the plain prompt it asked customers for an account number or a secret in <strong>65 of 385</strong> replies. With examples, 15 — and every one looked fine on paper."</p>
+<p>"On adaptation: retrieval ruled out, prompting chosen, <strong>fine-tuning next</strong>."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R6 Prompt engineering</span><span class="req">R11 Programmatic prompting</span>
+<div class="lbl">Shows</div><span class="req">R8 Adaptation</span><span class="req">R13 Responsible use</span>
 </div></div>
 
 <div class="seg">
-<header><h3>8 · E3 — decoding study</h3><span class="who">Satya</span><span class="time">6:00–6:50</span></header>
+<header><h3>11 · What we would not claim</h3><span class="who">all four — one line each</span><span class="time">6:40–7:05</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul><li><strong>Slide 8</strong> — E3, or report §8's table of six configurations.</li></ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 11. Straight down the line, no pause between speakers.</li></ul>
+<div class="lbl">Say <span class="wc">(48 words — 12 each)</span></div>
 <div class="say">
-<p>"E3 holds the model and the prompt fixed — few-shot, the E2 winner — and changes only how the next token is chosen. Six configurations: greedy, temperature 0.7 and 1.2, top-k 50, and top-p at 0.9 and 0.95, on a 77-message subset, one per intent. Each sampled configuration ran under five seeds, 42 to 46; greedy ran once because it is deterministic."</p>
-<p>"<strong>Greedy was best at 48.1%.</strong> Sampling at 0.7 cost about three points, and at 1.2 it cost 8.6 — down to 39.5%, with final validity down to 84.4% and 37% of cases escalating. So sampling cost us accuracy and reliability and gained nothing we could measure. Our default stays greedy."</p>
-<p>"<strong>Top-k 50 behaved exactly like plain temperature 0.7</strong> — same accuracy, same agreement, at every seed. At temperature 0.7 almost no probability mass sits beyond the 50 most likely tokens, so the cut-off removes nothing."</p>
-<p>"One methodological point worth naming: Qwen ships a generation config with sampling already on — temperature 0.7, top-k 20, top-p 0.8. Left alone, our 'temperature only' row would secretly have been temperature plus top-k plus top-p. We reset all of them, and <code>top_k</code> specifically has to be set to <strong>0</strong>, because <code>None</code> gets refilled from the model's own config and puts 20 back. Without that fix every row in this table would have meant something other than its label."</p>
-<p>"And stability is not correctness. At 0.7, 58% of messages get the same answer from all five seeds — but one message about setting up an account for a daughter gets the same <em>wrong</em> label from greedy and from almost every seed. Confidently and consistently wrong."</p>
+<p><strong>Satya:</strong> "47.8% on a 77-way task isn't production-ready, and five messages per intent makes it noisy."</p>
+<p><strong>Vishruth:</strong> "E1 ran on a Colab T4 and the experiments on an A100 — both recorded in the appendix."</p>
+<p><strong>Kishore:</strong> "The confidence score barely moved, so the cut-off we built around it never did anything."</p>
+<p><strong>Bhavani:</strong> "The safety screen is rule-based, the tools are simulated, and no real customer data is used."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R7 Decoding study</span>
+<div class="lbl">Shows</div><span class="req">R12 Evaluation</span><span class="req">R13 Responsible use</span>
 </div></div>
 
 <div class="seg">
-<header><h3>9 · E6 — evaluation and failure analysis</h3><span class="who">Satya</span><span class="time">6:50–7:35</span></header>
+<header><h3>12 · What we would do next · close</h3><span class="who">Bhavani</span><span class="time">7:05–7:30</span></header>
 <div class="body">
-<div class="lbl">On screen</div>
-<ul><li><strong>Slide 9</strong> — E6. Report §11 table and §12.1 failure table ready for questions.</li></ul>
-<div class="lbl">Say</div>
+<div class="lbl">On screen</div><ul><li>Slide 12. Leave it up for questions.</li></ul>
+<div class="lbl">Say <span class="wc">(44 words)</span></div>
 <div class="say">
-<p>"We evaluate on six criteria, not one: intent accuracy and macro-F1; schema validity before and after repair; tool-routing correctness; reply safety; latency and attempts per reply; and self-consistency across seeds."</p>
-<p>"Baseline zero-shot against the final few-shot system: accuracy 40.3% to 47.8%, unsafe replies 17.4% down to 3.9%, routing 62% to 68%, escalations 28.1% down to 21.0%, at a cost of 1.22 generations per message instead of 1.10."</p>
-<p>"The repair loop raises few-shot validity from <strong>83.4% to 94.8%</strong> — but the breakdown matters more than the headline. It rescued <strong>47 of 60</strong> formatting failures and only <strong>1 of 62</strong> invented labels. The reason is in our own prompt: the retry shows the model its rejected reply and the validator's errors, but it never re-states the valid label space, so a model that has invented a label has nothing new to choose from. Putting the catalogue into the repair prompt is the obvious fix, and we did not make it because it would invalidate every validity number in the report."</p>
-<p>"For failure analysis we recorded <strong>six analysed cases</strong> across five classes and <strong>15 safety findings</strong>. Routing is not an independent source of error — every one of the 16 misses and all five unnecessary tool runs followed a wrong intent. Routing is only as good as the label."</p>
-<p class="hand">Hand over: "Kishore will close on the safety result and why we chose prompting."</p>
+<p>"Three things next: constrain the output so invalid JSON can't be produced at all, fine-tune on the 10,000 examples, and put the label list into the retry."</p>
+<p>"398 automated tests, both notebooks public, every number traceable to a stored run."</p>
+<p>"Thank you — happy to take questions."</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R12 Evaluation + failure analysis</span>
+<div class="lbl">Shows</div><span class="req">R8 Adaptation</span>
 </div></div>
 
-<div class="seg">
-<header><h3>10 · The safety result, and the adaptation decision</h3><span class="who">Kishore</span><span class="time">7:35–8:15</span></header>
-<div class="body">
-<div class="lbl">On screen</div>
-<ul><li><strong>Slide 10</strong> — the safety numbers and the adaptation decision. Then slide 11 for the group close.</li></ul>
-<div class="lbl">Say</div>
-<div class="say">
-<p>"The result we care about most is not the accuracy. Zero-shot asked the customer for an account number, a card number or a secret in <strong>65 of 385</strong> replies — 16.9%. Few-shot cut that to <strong>15</strong>, 3.9%. Nine of those 15 asked for an actual secret: a PIN, CVV or one-time code. All 15 were withheld and escalated."</p>
-<p>"Every one of them was valid JSON with the correct intent. That is the whole argument for the deterministic layer: a reply can pass every structural check and still be unsafe, and no accuracy metric will tell you."</p>
-<p>"On adaptation — we compared prompting, RAG and PEFT. RAG we rejected: there is no external corpus to retrieve, the whole catalogue fits in context, so it would add latency and a new failure mode for nothing. We chose prompting, and our own numbers argue against stopping there: 47.8% on a 77-way task is not production-ready, and we have 10,003 labelled training messages sitting unused. <strong>A LoRA adapter is the next thing we would do</strong>, and we say that in section 9 rather than defending prompting."</p>
+<div class="note">
+<strong>What was cut, and where it lives.</strong> Don't say these unprompted — use them only if asked.
+The McNemar p-values and the per-strategy table (§7) · the four validation failure kinds and the schema itself (§10, Appendix C) ·
+the three tool specifications and the routing breakdown (§10.2, Appendix D) · the seed-by-seed decoding table and the
+self-consistency figures (§8) · the two-GPU explanation (Appendix F) · the ten-row responsible-use control table (§12) ·
+the dataset class distribution (§3) · the repair-prompt fix we identified but did not make (§13).
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R8 Adaptation decision</span><span class="req">R13 Responsible use</span>
-</div></div>
 
-<div class="seg">
-<header><h3>11 · What we would not claim</h3><span class="who">all four — one line each</span><span class="time">8:15–8:50</span></header>
-<div class="body">
-<div class="lbl">On screen</div>
-<ul><li><strong>Slide 11</strong> — limits. Each person takes one bullet, in this order.</li></ul>
-<div class="lbl">Say</div>
-<div class="say">
-<p><strong>Vishruth:</strong> "E1 and the live trace ran on a free Colab T4; E2, E3 and E6 ran on an A100 because of a CUDA driver mismatch. Both hardware records are in Appendix F, and we re-built the 385 evaluation messages on the second machine to confirm they were identical."</p>
-<p><strong>Satya:</strong> "47.8% on a 77-way task is not production-ready, and we say so in the report rather than framing it as a success. Five messages per intent also makes per-intent results noisy."</p>
-<p><strong>Kishore:</strong> "Confidence is a number the model writes, not a calibrated probability — it was effectively constant, so our 0.55 gate never fired. And we validate after generation rather than constraining during it."</p>
-<p><strong>Bhavani:</strong> "The safety screen is rule-based, so a reworded request will get past it. The tools are simulated, conversations are single-turn, and no real customer data is used anywhere — all identifiers are synthetic."</p>
+<div class="scope">
+<span class="tag">If you overrun — cut in this order</span>
+<p style="margin:0">1. The tokenizer sentence in segment 4. &nbsp; 2. The second half of segment 8 (the Qwen defaults catch). &nbsp;
+3. Segment 9's second paragraph. &nbsp; 4. Segment 12's first item.</p>
+<p style="margin:7px 0 0"><strong>Never</strong> cut segments 1, 2, 5, or the "we never block automatically" line in segment 6 —
+that is the project's intent, scope and safety boundary, and it is what R1 and R13 are graded on.</p>
 </div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R12 Evaluation</span><span class="req">R13 Responsible use</span>
-</div></div>
-
-<div class="seg">
-<header><h3>12 · Next steps and close</h3><span class="who">Bhavani</span><span class="time">8:50–9:30</span></header>
-<div class="body">
-<div class="lbl">On screen</div>
-<ul><li><strong>Slide 12</strong> — next steps. Leave it up for questions.</li></ul>
-<div class="lbl">Say</div>
-<div class="say">
-<p>"Four things we would do next. Constrained decoding, so only valid JSON and real labels can be generated at all — that removes most repair calls. A LoRA adapter on the 10,003 training messages, compared head to head with the best prompt. Confidence derived from token probabilities instead of the number the model writes. And the cheap one our own data points at: put the label catalogue into the repair prompt, because rescuing 1 of 62 invented labels is not acceptable."</p>
-<p>"To summarise: the model is one replaceable component inside a tested, deterministic shell. 398 automated tests, every result file and both notebooks public in the repository, and every number in our report traceable to a stored run."</p>
-<p>"Thank you — we're happy to take questions."</p>
-</div>
-<div class="lbl">Requirements shown</div>
-<span class="req">R8 Adaptation decision</span>
-</div></div>
-
 <h2>Likely questions, with the numbers ready</h2>
 <table>
 <thead><tr><th style="width:36%">Question</th><th>Answer</th><th style="width:14%">Who takes it</th></tr></thead>
