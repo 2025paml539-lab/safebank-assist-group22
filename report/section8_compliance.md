@@ -6,8 +6,8 @@ Checked against "8. What Students Should NOT Do" in the brief. Re-run before sub
 |---|---|---|
 | Do not train a large LLM from scratch | ✅ | pretrained checkpoints only (§2, §4.2); the repository contains no training code |
 | Do not submit only screenshots of ChatGPT/LLM conversations | ✅ | no screenshots in the report; evidence is code, 353 automated tests and the notebook |
-| Do not use prompts without explaining why they were designed | 🟡 | the written rationale for all four strategies is in Appendix A.2; §7 must also explain each design when its results are added |
-| Do not claim model accuracy without an evaluation procedure | ✅ so far | no accuracy figure is claimed yet; every number added to §7, §8 and §11 must sit next to its procedure (385-row sample, seed 42, the six criteria) |
+| Do not use prompts without explaining why they were designed | ✅ | the written rationale for all four strategies is in Appendix A.2, and §7 explains each design next to its result (checked for §7 on 31 Oct) |
+| Do not claim model accuracy without an evaluation procedure | ✅ for §7, §8, §11 | every accuracy figure in §7, §8 and §11 sits next to its procedure: the 385-row sample (seed 42, greedy, batch 16) for E2 and §11, and the 77-row subset with five seeds for E3 (checked on 31 Oct; re-check any number added later) |
 | Do not expose real personal, financial, medical or confidential information | ✅ | public dataset, simulated tools, synthetic identifiers; the automated scan finds no personal or machine-specific details |
 | Do not treat generated text as automatically correct | ✅ | validation, label check, safety screen, confidence gate and escalation (§10, §12); failure analysis in §12.1 |
 | Do not make diffusion or multimodal generation mandatory | ✅ | diffusion appears only as one of the families compared in §4.1 |

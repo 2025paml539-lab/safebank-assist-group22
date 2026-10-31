@@ -1,11 +1,17 @@
 # Work Log — SafeBank Assist
 
 **PCAM ZG516 Applied Generative AI · Group Major Project / Assignment-1 · Group 22**
-**Deadline: 31 October 2026** (extended from 25 Oct) · Log updated: **30 October 2026**
+**Deadline: 31 October 2026** (extended from 25 Oct) · Log updated: **31 October 2026**
 
 This is the single source of truth for project status. If this file and `PROJECT_PLAN.md` disagree, **this file wins** — the plan was written before the code existed.
 
 > **Picking this up in your own AI IDE?** Read sections 1, 5, 6 and 7. Section 5 contains complete specifications for every unwritten file: exact paths, signatures, contracts, gotchas and verification commands. You should not need to ask anyone a question to start.
+
+---
+
+## Update 31 Oct — Satya's S1–S7 complete; E2, E3 and E6 have run
+
+All seven of Satya's items are done. E2, E3 and E6 ran on 31 Oct on an A100 Kubeflow server, not on Colab, and the results are in `artifacts/results/`. Headline: few-shot reaches 47.8% accuracy against 39.0–40.3% for the other three prompt strategies (paired test p ≤ 0.002), and cuts credential-asking replies from 16.9% to 3.9%. Report sections 3 (E3 subset), 4.1, 7, 8, 10.1, 11, 12.1, 13 and Appendix E and F are written from the data. Details are in the 31 Oct entry of the change log at the end of this file. **Not Satya's, still open:** §1 and §14 (Bhavani); §4.2, §9 and §10.2 (Kishore); the real E7 run (Kishore); the other three contribution-row confirmations.
 
 ---
 
@@ -43,13 +49,13 @@ This is the single source of truth for project status. If this file and `PROJECT
 
 | # | Status | Task |
 |---|---|---|
-| S1 | 🟡 | Report §4.1 model-family comparison — reported written, not yet in the repo |
-| S2 | 🟡 | E2/E3/E6 experiment code — reported written, not yet in the repo. Push before the runs, so the code that produced the numbers is in git ahead of them |
-| S3 | 🔴 | Run E2: 4 prompt strategies × 385 queries. Pass the train split to the few-shot variant via `prompt_kwargs={"examples": …}`; the offline example bank is illustrative only |
-| S4 | 🔴 | Run E3: 6 decoding configs × 77 queries, plus the 5-seed self-consistency set. Unblocked by PR #4 |
-| S5 | 🔴 | E6: score the six criteria and analyse ≥3 failure cases. Three real ones already exist in the T4 E7 trace — a card-not-delivered query classified as `card_not_working`, a PIN request withheld by the safety screen, and an ATM query that ended as `unknown_intent` after the repair attempts |
-| S6 | 🔴 | Report §7, §8, §11, §12.1, §13; the §10.1 validity numbers; Appendix E samples; confirm the §3 subset. §8 and §11 follow the E3 numbers |
-| S7 | 🟡 | Contribution row: typed name + date |
+| S1 | ✅ | Report §4.1 model-family comparison — written (GAN, VAE, diffusion, autoregressive LM) |
+| S2 | ✅ | E2/E3/E6 experiment code — `src/safebank/experiments.py` and `notebooks/safebank_experiments.ipynb`, 45 tests (398 in total). Pushed ahead of the runs, as asked |
+| S3 | ✅ | Run E2 — **done 31 Oct** on an A100 (Kubeflow server): few-shot 47.8% against 39.0–40.3% for the other three. `artifacts/results/e2_*.json`, `e2_summary.json`. Few-shot used the train-split bank, with a guard that refuses to run if an example is also an evaluation query |
+| S4 | ✅ | Run E3 — **done 31 Oct**: few-shot, 77 queries, 26 runs (greedy once, five sampled configurations × 5 seeds). `e3_*_seed*.json`, `e3_summary.json`, `e3_samples.json`. PR #4 follow-up: the `['top_k']` ignored-flag warning still appears once under greedy decoding (E2), which is expected because greedy ignores top-k; it was not checked in the sampled runs' output |
+| S5 | ✅ | E6 — **done 31 Oct**: `e6_analysis.json` (baseline zero-shot against final few-shot, six failure cases across five classes, 15 safety findings), analysed in §12.1 |
+| S6 | ✅ | Report §7, §8, §11, §12.1, §13, the §10.1 validity analysis, Appendix E and F, and the §3 E3-subset rule — all written from the results; §8 and §11 use the E3 numbers |
+| S7 | ✅ | Contribution row — name and date entered in `report/contribution_statement.md` (31 Oct) |
 
 **Architecture and report sections (K-items)**
 
@@ -82,7 +88,7 @@ This is the single source of truth for project status. If this file and `PROJECT
 | # | When | Task | Output |
 |---|---|---|---|
 | V1 | ✅ 29 Oct | Fix the dataset link in `data_prep.py` (the label file was removed from the Hugging Face Hub on 28 Oct), run the tests, update the notebook's handover note | PR |
-| V1b | 🔴 **Now — blocks Satya's E2/E3/E6 runs** | Get the fix into the group repo: PR the fork's `main` into `2025paml539-lab/safebank-assist-group22`, merge, then set the notebook's `REPO_URL` back to the group repo. The group repo's `main` is still `a4a1e5f` (pre-fix); any Colab run that clones it hits the 404 | PR |
+| V1b | ✅ **Resolved 30 Oct (PR #3 merged); Satya's E2/E3/E6 runs have since completed** | Get the fix into the group repo: PR the fork's `main` into `2025paml539-lab/safebank-assist-group22`, merge, then set the notebook's `REPO_URL` back to the group repo. The group repo's `main` is still `a4a1e5f` (pre-fix); any Colab run that clones it hits the 404 | PR |
 | V2 | 🟡 **run done 30 Oct** | Run the notebook top to bottom on a Colab T4, push it with outputs. All cells pass on a Tesla T4 (float16, CUDA 13.0, torch 2.11.0+cu130). Still to do: commit the notebook with its T4 outputs, and replace `artifacts/results/device_report.json` + `e1_baseline.csv`, which in git are still from the CPU run, with the files from the Colab runtime | E1 outputs, tokenizer output, E7 trace, device report |
 | V3 | ✅ 30 Oct | Report §6 baseline: E1 table plus 2–3 sentences. Checked against the T4 run: all five Qwen replies identical to the CPU run, GPT-2 identical as far as the stored output shows; `[[CONFIRM §6]]` removed | report §6 |
 | V4 | 🟡 row text updated 30 Oct | Confirm own contribution row (name + date). Description now lists the label-source fix, the T4 run and the §3/§6 material; the name + date cell is still blank — Vishruth to sign | Appendix I |
@@ -94,17 +100,17 @@ V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `dat
 
 **Earlier, why Colab failed (29 Oct):** the fix is on the fork only — `mvishruth-bits/safebank-assist-group22` `main` is at `3a3047a`, plus the local commit `b2ecbfe` (report build fix, notebook clone cell, §6 draft), not yet pushed. The notebook clones `2025paml539-lab/safebank-assist-group22`, whose `main` is still `a4a1e5f`, so Colab gets the old loader and hits the same 404 on `dataset_infos.json`. Nothing is wrong with the code: the notebook runs top to bottom with no errors locally, both through `nbconvert` and in VS Code. V1b is the whole remaining blocker for V2.
 
-#### 2. Satya — S1 and S2 start today; S3 onwards waits for V1 and V2
+#### 2. Satya — all of S1–S7 done by 31 Oct
 
 | # | When | Task | Output |
 |---|---|---|---|
-| S1 | Today | Report §4.1 model-family comparison (no results needed) | report §4.1 |
-| S2 | Today | Write the E2/E3/E6 experiment code | notebook cells |
-| S3 | Thu AM | Run E2: 4 prompt strategies × 385 queries | results files |
-| S4 | Thu AM | Run E3: 6 decoding configs × 77 queries, plus 5 seeds | results files |
-| S5 | Thu AM | E6: score the six criteria, ≥3 failure cases, push results | results files |
-| S6 | Thu PM | §7, §8, §11, §12.1, §13; §10.1 validity numbers; Appendix E samples; confirm the §3 subset | report |
-| S7 | Thu | Confirm own contribution row | Appendix I |
+| S1 | Today | Report §4.1 model-family comparison (no results needed) | report §4.1 — ✅ written |
+| S2 | Today | Write the E2/E3/E6 experiment code | notebook cells — ✅ written and tested offline: `notebooks/safebank_experiments.ipynb` on `src/safebank/experiments.py`; run 31 Oct on an A100 Kubeflow server, not Colab (see S3 to S5) |
+| S3 | Thu AM | Run E2: 4 prompt strategies × 385 queries | results files — ✅ run 31 Oct on an A100 (Kubeflow server): `artifacts/results/e2_*.json`, `e2_summary.json` |
+| S4 | Thu AM | Run E3: 6 decoding configs × 77 queries, plus 5 seeds | results files — ✅ run 31 Oct: 26 runs `e3_*_seed*.json`, `e3_summary.json`, `e3_samples.json` |
+| S5 | Thu AM | E6: score the six criteria, ≥3 failure cases, push results | results files — ✅ `e6_analysis.json`: baseline zero-shot vs final few-shot, six failure cases, 15 safety findings |
+| S6 | Thu PM | §7, §8, §11, §12.1, §13; §10.1 validity numbers; Appendix E samples; confirm the §3 subset | report — ✅ all written from the results; Appendix F also filled |
+| S7 | Thu | Confirm own contribution row | Appendix I — ✅ name and date entered 31 Oct |
 
 #### 3. Kishore — after V2 and S5
 
@@ -147,20 +153,20 @@ V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `dat
 | **Marks — what is in git today** | **~11 / 20** (after the 28 Oct report push) |
 | **Marks — achievable by 31 Oct** | **~16 / 20** (range 15–17) if the Colab run, E2/E3/E6 and the report all land |
 | Application + experiment code | **100% — all 13 modules merged** |
-| **Experiment results** | **0% — no E1/E2/E3/E6 output in git.** Vishruth's smoke runs verified the stack on real GPT-2 and Qwen but produced no reported numbers |
+| **Experiment results** | **E1 merged (T4, PR #3). E2, E3 and E6 ran on 31 Oct on an A100; results in `artifacts/results/`** |
 | Report | **Draft assembled in `report/`** — 22 pages, builds with one command; 19 items pending (results, §4.1, confirmations) |
 | Demo | 0% |
 | **Tests passing on `main`** | **353** (6 skipped — real-model, gated on `SAFEBANK_MODEL_TESTS=1`) |
 | **All 13 modules** | ✅ implemented |
 
-**One-line summary:** **all 13 modules are now written, reviewed and merged.** Zero experiment results exist. The project has stopped being a coding problem and is now two things: the Colab runs (the notebook, then E2/E3/E6), and filling the report's 19 pending items.
+**One-line summary:** **all 13 modules are now written, reviewed and merged.** The E1 results (T4, 30 Oct) and the E2, E3 and E6 results (A100, 31 Oct) exist. The project has stopped being a coding problem and is now filling the report's pending items.
 
 ### Completion by workstream
 
 | Member | Area | Status |
 |---|---|---|
 | **Kishore** | Architecture + application code | ✅ **100% — merged** |
-| **Satya** | Prompts, decoding, evaluation code | ✅ **100% code — merged (PR #1).** Experiment *runs* still pending the environment |
+| **Satya** | Prompts, decoding, evaluation, experiments | ✅ **100%.** Code merged (PR #1); the E2, E3 and E6 runs, their results and report sections 4.1, 7, 8, 11, 12.1 and 13 are done (31 Oct); contribution row signed |
 | **Vishruth** | Data, model loading, environment, E1 | ✅ **Code 100% — merged (PR #2).** Notebook must be re-run with stored outputs |
 | **Bhavani** | Report assembly, submission | 🟡 **Report draft assembled in `report/`.** Remaining: B1–B5 (top of this log) |
 
@@ -168,13 +174,13 @@ V1 done (29 Oct): instead of pinning the old `dataset_infos.json` revision, `dat
 
 | # | Component | Marks | In git today | By 31 Oct | What closes the gap |
 |---|---|---|---|---|---|
-| 1 | Problem + dataset analysis | 2 | 1.3 | 1.7 | §3 written from the real data; confirm the E3 subset |
-| 2 | LLM / generative-model understanding | 3 | 1.5 | 2.4 | §4.2 written in the report — paste the notebook's tokenizer output. §4.1 model-family comparison unwritten |
-| 3 | Prompt engineering | 3 | 1.2 | 2.4 | 4 variants merged with written rationale; **E2 accuracy table** |
+| 1 | Problem + dataset analysis | 2 | 1.3 | 1.7 | §3 written from the real data; E3 subset confirmed 31 Oct |
+| 2 | LLM / generative-model understanding | 3 | 1.5 | 2.4 | §4.2 written in the report — paste the notebook's tokenizer output. §4.1 model-family comparison written 31 Oct |
+| 3 | Prompt engineering | 3 | 1.2 | 2.4 | 4 variants merged with written rationale; **E2 accuracy table** done 31 Oct |
 | 4 | Adaptation strategy | 2 | 1.1 | 1.5 | §9 written; needs the measured E2 numbers |
 | 5 | Structured output + tool calling | 3 | 2.4 | 2.7 | §10 written; E4 validity rate before/after repair from a real run |
 | 6 | Implementation | 3 | 2.2 | 2.7 | 353 tests, pinned requirements, reviewed PRs, reproducible report build; **notebook with stored outputs** |
-| 7 | Evaluation + failure analysis | 2 | 0.5 | 1.5 | 2 real failures analysed in §12.1; **E6 run + ≥3 analysed failure cases** |
+| 7 | Evaluation + failure analysis | 2 | 0.5 | 1.5 | 2 real failures analysed in §12.1; **E6 run + ≥3 analysed failure cases** done 31 Oct, six cases analysed |
 | 8 | Report + demo + contribution | 2 | 0.6 | 1.4 | Report draft assembled, contribution statement drafted; final report, demo, confirmations |
 | | | **20** | **~11** | **~16** | |
 
@@ -240,8 +246,8 @@ Three days left (Wed 28 → Sat 31), and no buffer any more. If the report waits
 | **Sun 25** | Report §1/§5/§10/§12 drafted from `ARCHITECTURE.md` | Bhavani | 🔴 **OUTSTANDING — see §2.1** |
 | **Mon 26** | **Notebook re-run on Colab T4 with stored outputs** → delivers E1, Colab packaging, reproducibility appendix | Vishruth | 🟡 **T4 run done 30 Oct (from the fork); notebook with outputs and T4 artifacts still to be committed** |
 | **Mon 26** | `data_prep.py` working · **`validate_label_space()` passes** · `model_loader` running on Colab · E1 baseline captured | Vishruth | ✅ first three verified 25 Oct · 🔴 E1 output not in git |
-| **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore | 🔴 **overdue** — nothing in git |
-| **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya | 🔴 **due today** — waits on the notebook run |
+| **Tue 27** | E2 full run (4 variants × 385 rows) · real E7 integrated run | Satya, Kishore | E2 ✅ **run 31 Oct** (Satya) · real E7 integrated run 🔴 still open (Kishore) |
+| **Wed 28** | E3 decoding grid (reduced scope) · E6 evaluation + failure analysis | Satya | ✅ **run 31 Oct** on an A100 |
 | **Wed 28** | Report §4b drafted, figures verified against the published model configs · docs swept for stale counts | Kishore | ✅ **done** |
 | **Thu 29** | All report sections drafted · figures generated | all | pending |
 | **Fri 30** | Report assembled + formatted + proofread · demo rehearsal | Bhavani + all | pending |
@@ -447,9 +453,9 @@ assert isinstance(HFGenerator(model, tok), TextGenerator)   # runtime_checkable 
 
 ---
 
-### 🟡 5.4 Satya — experiment runs (code merged, runs pending)
+### ✅ 5.4 Satya — experiment runs (done 31 Oct)
 
-Code is done and merged. These are the *runs*. They no longer wait on any code, only on a Colab session.
+Code is done and merged, and the runs below were completed on 31 Oct on an A100 Kubeflow server, with results in `artifacts/results/`. The list is kept as the specification they were run against.
 
 1. ~~Switch `flag_unsafe_responses` to read `record.row["response"]`~~ ✅ done by Kishore: use `evaluate.response_safety(records)`.
 2. **E2** — 4 variants × 385 rows → accuracy comparison table. Rationale per variant is already in `STRATEGY_RATIONALE`. For FEW_SHOT pass real examples: `SafeBankPipeline(gen, labels, strategy=PromptStrategy.FEW_SHOT, prompt_kwargs={"examples": build_example_bank(train, labels, exclude={r["query"] for r in eval_rows})})`. Qwen's chat template adds a default system prompt to every variant — note it in report §7 (see §8).
@@ -609,9 +615,11 @@ Byte-compile check: `python -m compileall -q src\safebank`
 | 29 Oct | Vishruth: notebook verified **top to bottom with no errors on a local CPU run** (Apple M4 Pro, float32). Not report evidence: its `artifacts/` output is not committed and the T4 run (V2) is still owed. **V3 drafted**: §6 E1 table and findings from that run — GPT-2 echoes the prompt or loops in 5 of 5, Qwen summarises all 5 correctly but never as a routable label — with `[[CONFIRM §6]]` until checked against the T4 output |
 | 29 Oct | Vishruth: notebook re-run interactively in VS Code — all 11 code cells pass. Colab attempt still 404s: the group repo's `main` (`a4a1e5f`) does not have the fix yet, so the fork → group PR (V1b) is now what blocks V2 |
 | 30 Oct | Vishruth: **V2 T4 run done** from the fork — all cells pass on a Tesla T4 (float16). E1 replies match the CPU run, so **V3 §6 confirmed** and its `[[CONFIRM]]` removed. Contribution row text updated (V4, signature pending). Clone cell fixed: it deleted the folder the kernel was standing in, which broke the clone on re-runs. Remaining: commit the T4 notebook and artifacts, and V1b — the group repo still lacks the fix, which now blocks Satya's runs |
+| 28 Oct | Satya: **S1 and S2 done.** Report §4.1 written (GAN, VAE, diffusion, autoregressive LM, with why a causal LM fits); the report still builds at 10 body pages and §4.1 is no longer pending. New `src/safebank/experiments.py` and `notebooks/safebank_experiments.ipynb` run E2, E3 and E6: first-attempt prompts are batch-generated and replayed through the unchanged pipeline (`PrefetchingGenerator`, hits and misses recorded), E3 runs on a 77-row one-per-intent subset with sampled configs once per seed and greedy once, and E6 draws failure cases across different classes. Adds **45 tests (398 in total)**. The notebook's experiment cells were executed offline against a scripted batch-capable model; they have **not** run on Colab yet. V1, V2 and PR #4 have since landed, so the only thing between this and the E2/E3/E6 runs is a GPU session on the merged code |
+| 31 Oct | Satya: **E2, E3 and E6 run** on a Kubeflow JupyterLab server with an A100 80 GB (torch 2.8.0+cu128, transformers 5.19.0, batch 16), not on Colab; results in `artifacts/results/`. **E2** (385 queries, greedy): few-shot 47.8% accuracy against 39.0–40.3% for the other three; paired exact McNemar p 0.0002–0.002, and the other three cannot be told apart. Two of four design hypotheses did not hold: few-shot lowered first-attempt validity (95.1% → 83.4%, all 53 violations were invented tool names) and role/context did not make replies safer. Credential-asking replies fall from 16.9% (zero-shot) to 3.9% (few-shot). **E3** (few-shot, 77 queries, 5 seeds): greedy 48.1%; sampling at 0.7 about −3 points, at 1.2 −8.6; top-k 50 is identical to plain temperature 0.7. Greedy re-run in a different batch changed 1 of 77 predictions. **Other findings:** the model reports confidence 0.9 on every valid few-shot reply, so the 0.55 gate never fires; repair rescues formatting errors (47 of 60) but invented labels almost never (1 of 62), because the repair prompt does not list the valid labels (`schema.py`, Kishore's file, not changed); only 5 of 181 wrong answers fall in the six predicted confusable pairs. Report §3 subset, §7, §8, §10.1, §11, §12.1, §13 and Appendix E, F written from the data. **Environment recipe for a fresh Kubeflow image (driver 535, Python 3.11):** upgrade NumPy to 2.x (the `pyarrow` that `datasets` 5.1.0 needs), upgrade torch to 2.6 or newer with CUDA 12 (`transformers` 5.19.0 needs `torch.accelerator`; the T4 run's CUDA 13 build needs a newer driver), upgrade `brotli` to 1.2 or newer, restart the kernel after each install, and copy the two BANKING77 CSVs in through `github.com` if `raw.githubusercontent.com` is blocked. No code in `src/` changed |
 
 ### Still open for the group
-1. 🔴 **The Colab run.** The environment question is settled (model work in Colab, everything else local). What is missing is the run itself: E1, E2, E3, E6 and the real E7 all wait on it.
+1. 🟡 **The runs.** E1 is merged (T4, 30 Oct) and E2, E3 and E6 ran on 31 Oct (A100). The real E7 integrated run is the one still open (Kishore).
 2. ✅ **BITS IDs for all 4 members** — on the report title page and in the contribution statement (28 Oct).
 
 The repo is **public on purpose**: the professor reviews and validates the project from GitHub.

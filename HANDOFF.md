@@ -29,13 +29,14 @@ Last updated: 30 Oct 2026 — PR #3 and PR #4 merged; `main` is `8aa5fce`.
 | **E1** model/tokenizer loading | `model_loader.py` | ✅ Done, 13 tests (6 gated on real GPT-2) | **Vishruth** |
 | Pinned dependencies | `requirements.txt`, `requirements-colab.txt` | ✅ Done | **Vishruth** |
 | Colab notebook | `notebooks/safebank_colab.ipynb` | ✅ **Merged with its Colab T4 outputs** (PR #3); `REPO_URL` still points at a fork | **Vishruth** |
+| **E2/E3/E6** experiment runner + notebook | `experiments.py`, `notebooks/safebank_experiments.ipynb` | ✅ Done, 45 tests; **run on an A100 Kubeflow server on 31 Oct**, results in `artifacts/results/` | **Satya** |
 | Report assembly | `report/` | 🟡 **Draft assembled**, builds with `python report/build_report.py`; 17 items pending | **Bhavani** |
 
 **All code is complete and merged — Kishore, Satya and Vishruth.** **353 tests** (347 run offline and pass, 6 gated on real GPT-2), a few seconds, with only pydantic required (scikit-learn additionally for the macro-F1 assertions).
 
-**Satya's share (E2/E3/E6) is merged** (PR #1, 25 Oct). It added **+79** tests: `test_prompts.py` grew 42 → 59 as the three new variants replaced the stub tests, plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). A further **+2** came from exposing the model reply in `to_row()` for evaluation criterion 4, giving 276. Vishruth's PR #2 then added +37, and the review fixes plus the safety screen +40, for **353**.
+**Satya's share (E2/E3/E6) is merged** (PR #1, 25 Oct). It added **+79** tests: `test_prompts.py` grew 42 → 59 as the three new variants replaced the stub tests, plus a new `test_decoding.py` (23) and `test_evaluate.py` (39, including 5 regression tests for the destructive-refusal routing credit). A further **+2** came from exposing the model reply in `to_row()` for evaluation criterion 4, giving 276. Vishruth's PR #2 then added +37, and the review fixes plus the safety screen +40, for **353**. The E2/E3/E6 runner (`experiments.py`) and its notebook add **+45** tests, taking the suite to **398**; report §4.1 was written alongside.
 
-**All code is now complete.** The experiment *runs* are what remains, and they wait only on a Colab session — see item 1 below.
+**All code is now complete.** E1 and the E7 smoke run (T4, 30 Oct) are merged and E2, E3 and E6 ran on 31 Oct (A100) — see item 1 below.
 
 ---
 
@@ -60,9 +61,9 @@ python -c "import sys; sys.path.insert(0,'src'); from safebank import *; p=SafeB
 
 ## Satya — done
 
-All three modules are implemented and tested through the real pipeline control flow via the `TextGenerator` seam, using the scripted `FakeGenerator` in place of the model so the logic can be verified with no GPU or model runtime present. The modules are model-agnostic by design: when Vishruth's `model_loader.HFGenerator` lands, the same code produces the real E2/E3/E6 numbers in Colab with no change — `FakeGenerator` is a development fixture, never a source of reported results. Summary of what landed, for the group:
+All three modules are implemented and tested through the real pipeline control flow via the `TextGenerator` seam, using the scripted `FakeGenerator` in place of the model so the logic can be verified with no GPU or model runtime present. The modules are model-agnostic by design, and the same code has since produced the real E2/E3/E6 numbers through Vishruth's `HFGenerator` (31 Oct, A100 server) with no change — `FakeGenerator` stayed a development fixture, never a source of reported results. All of S1–S7 are done; see the 31 Oct entry in `WORKLOG.md`. Summary of what landed, for the group:
 
-**1. `prompts.py` — 4 of 4 variants done.** `FEW_SHOT`, `ROLE_CONTEXT` and `CONSTRAINT_BASED` now build real prompts; none falls back to zero-shot. All reuse `format_intent_catalogue()`, `format_tool_catalogue()` and `format_schema_contract()`, so the shared blocks are byte-identical across variants and an E2 accuracy delta is attributable to the strategy. Few-shot takes train-split pairs via its `examples=` argument (offline fallback bank is clearly marked as illustrative, **not** eval data — pass Vishruth's train split for real E2 numbers). `TestPendingVariantsAreHonestlyAbsent` was replaced with content assertions; `test_prompts.py` is now 59 tests.
+**1. `prompts.py` — 4 of 4 variants done.** `FEW_SHOT`, `ROLE_CONTEXT` and `CONSTRAINT_BASED` now build real prompts; none falls back to zero-shot. All reuse `format_intent_catalogue()`, `format_tool_catalogue()` and `format_schema_contract()`, so the shared blocks are byte-identical across variants and an E2 accuracy delta is attributable to the strategy. Few-shot takes train-split pairs via its `examples=` argument (offline fallback bank is clearly marked as illustrative, **not** eval data; the E2 run used Vishruth's train-split bank). `TestPendingVariantsAreHonestlyAbsent` was replaced with content assertions; `test_prompts.py` is now 59 tests.
 
 **2. `decoding.py` — E3 grid done.** Built on top of `DecodeConfig`/`DecodeStrategy` (not redefined), via `to_generate_kwargs()` and `.with_seed(n)`. `build_decoding_grid()` returns the 6-config grid (greedy, two temperatures, top-k, two top-p); `self_consistency_configs()` returns the seed-varied run set for criterion 6. 23 tests.
 
@@ -106,12 +107,12 @@ The `top_k` follow-up raised in the PR #3 review is closed by **PR #4** (`8aa5fc
 
 ## Open items
 
-**1. 🟠 The Colab runs — E1 and the E7 smoke run are done on a T4 (30 Oct) and merged; E2, E3, E6 still to run.**
-Decided: the model stack (`torch`, `transformers`, `datasets`, `tokenizers`) runs in Colab only; the application layer and tests run locally on pydantic, numpy, pandas and scikit-learn. The environment is verified on a T4. **Nothing blocks E2, E3 or E6 any more** — the dataset fix is on `main` (PR #3) and the decoding path is clean (PR #4). One session setting to remember: set `REPO_URL` to the group repo before the clone cell, because the committed notebook still points at a fork.
+**1. ✅ The runs — E1 and the E7 smoke run (T4, 30 Oct) and E2, E3 and E6 (A100, Kubeflow server, 31 Oct) are done.** The real E7 integrated run remains Kishore's item.
+Decided: the model stack (`torch`, `transformers`, `datasets`, `tokenizers`) runs in Colab only; the application layer and tests run locally on pydantic, numpy, pandas and scikit-learn. The environment is verified on a T4. **E2, E3 and E6 have since run** (31 Oct); the environment recipe for a fresh Kubeflow image is in the 31 Oct entry of `WORKLOG.md`. One session setting to remember: set `REPO_URL` to the group repo before the clone cell, because the committed notebook still points at a fork.
 
 **2. 🟠 `PROJECT_PLAN.md` is stale — Bhavani must not quote it yet.**
 Most important: the plan says *20 intents / 200 eval rows*; the code uses the **full 77 intents / 385 rows** (`EVAL_EXAMPLES_PER_INTENT = 5`). Full list of deviations in `ARCHITECTURE.md` §10.
-Note the workload: 385 rows × 4 prompt variants × 6 decoding configs is far more inference than the plan assumed. **Satya should size this against Colab T4 time before starting E2.**
+Note the workload: 385 rows × 4 prompt variants × 6 decoding configs is far more inference than the plan assumed. Sized and run: E2 took about 10 minutes on an A100 (1,737 generations including repairs), and E3 ran 2,002 generations on the 77-row subset.
 
 **3. ✅ CLOSED — the 20 `FOCUS_INTENTS` names are verified.** `validate_label_space()` passed on the real 77 labels on 25 Oct.
 

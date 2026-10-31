@@ -25,5 +25,5 @@ BANKING77 [1] contains English customer-service queries from the online-banking 
 
 <!-- include: generated/fewshot_bank.md -->
 
-- **Decoding study (E3):** [[CONFIRM §3 — a stratified 77-row subset, one query per intent; update once the E3 run confirms the subset used.]]
+- **Decoding study (E3):** 77 rows, one query per intent: the first row of each intent in the frozen 385-row sample (`experiments.select_e3_subset`). It is a strict subset of the E2 rows, chosen by rule and not by hand, and checked against the committed `eval_sample.jsonl` (385 rows, 5 per intent, so 77 rows covering all 77 intents). E3 measures decoding behaviour and stability, not accuracy to a fraction of a point, so it does not need all 385 rows.
 - **Failure-analysis focus set:** 20 intents in five service themes, with six confusable pairs predicted before any results existed (Appendix H).

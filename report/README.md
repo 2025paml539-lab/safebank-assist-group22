@@ -30,7 +30,7 @@ Output: `report/build/SafeBank_Assist_Group22_Report.pdf`. Needs only what is al
 
 ## What is still pending
 
-Every gap is marked inline as `[[PENDING …]]`, `[[CONFIRM …]]` or `[[BITS ID]]`, highlighted in the draft PDF and listed by the build. They need the experiment runs (E1, E2, E3, E6 and the E7 trace), the tokenizer walkthrough and device report from the notebook, section 4.1, the BITS IDs, and each member's confirmation of the contribution statement. To fill one, edit the section file it is in and rebuild.
+Every gap is marked inline as `[[PENDING …]]`, `[[CONFIRM …]]` or `[[BITS ID]]`, highlighted in the draft PDF and listed by the build. They need the E7 trace and the tokenizer walkthrough from the notebook, the headline results sentences in sections 1, 9 and 14, and each member's confirmation of the contribution statement. To fill one, edit the section file it is in and rebuild.
 
 ## Checks the build runs
 
