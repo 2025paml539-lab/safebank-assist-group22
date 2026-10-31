@@ -75,7 +75,7 @@ All seven of Satya's items are done. E2, E3 and E6 ran on 31 Oct on an A100 Kube
 | B4 | ✅ | `report/section8_compliance.md` re-done against the finished text (31 Oct): all seven brief rules re-verified, 398 tests, body 15 pages, four BITS IDs present, no screenshots, citations complete both ways, every accuracy figure tied to its procedure. The T4/A100 split and the sub-50% headline accuracy are recorded as deliberate disclosures |
 | B5 | 🔴 | Upload the PDF, the notebook or repo link, and the contribution statement |
 
-**Everyone:** the demo deck is not built — only the opening-segment script exists, in `report/demo_opening_segment.md` — plus the 8–10 minute rehearsal, with every member able to explain the whole workflow.
+**Everyone:** the demo deck is built — `python report/build_demo_deck.py` produces `report/build/SafeBank_Assist_Group22_Demo.pptx`, 13 slides on a 0:00–9:30 timing plan with speaker notes on every slide and a four-way speaking split. Every figure on the slides is read from `artifacts/results/` at build time and was cross-checked against the report sections, so the deck cannot drift from the report. **Still outstanding: the 8–10 minute rehearsal**, with every member able to explain the whole workflow, and assigning the four speaking slots.
 
 ---
 
