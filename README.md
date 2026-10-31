@@ -12,19 +12,45 @@ Dataset D1 — BANKING77 · Final model `Qwen2.5-1.5B-Instruct` · Baseline `gpt
 
 ---
 
+## Links
+
+Every link on this page is a full URL. The repository is **public** — nothing here needs a GitHub
+account or a login.
+
+| | |
+|---|---|
+| **Code repository (this repo)** | https://github.com/2025paml539-lab/safebank-assist-group22 |
+| **Demo video (8–10 min)** | https://drive.google.com/file/d/1-Hq-l2G5sG9Ew2WHOgonSB35ubDcduhy/view?usp=sharing |
+| **Technical report (PDF)** | https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/submission/SafeBank_Assist_Group22_Report.pdf |
+| **Contribution statement (PDF)** | https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/submission/SafeBank_Assist_Group22_Contribution_Statement.pdf |
+| **Demo deck (PPTX)** | https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/submission/SafeBank_Assist_Group22_Demo.pptx |
+| **Notebook 1 — E1 baseline, tokenizer, E7 run (Colab T4)** | https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/submission/SafeBank_Assist_Group22_Notebook_1_Colab_T4_E1_E7.ipynb |
+| **Notebook 2 — E2, E3, E6 experiments (A100)** | https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/submission/SafeBank_Assist_Group22_Notebook_2_Experiments_E2_E3_E6.ipynb |
+
+Direct downloads, if the in-browser viewer is awkward:
+
+- Report PDF — https://github.com/2025paml539-lab/safebank-assist-group22/raw/main/submission/SafeBank_Assist_Group22_Report.pdf
+- Contribution statement PDF — https://github.com/2025paml539-lab/safebank-assist-group22/raw/main/submission/SafeBank_Assist_Group22_Contribution_Statement.pdf
+- Demo deck PPTX — https://github.com/2025paml539-lab/safebank-assist-group22/raw/main/submission/SafeBank_Assist_Group22_Demo.pptx
+
+Open a notebook in Colab without downloading anything:
+
+- Notebook 1 — https://colab.research.google.com/github/2025paml539-lab/safebank-assist-group22/blob/main/submission/SafeBank_Assist_Group22_Notebook_1_Colab_T4_E1_E7.ipynb
+- Notebook 2 — https://colab.research.google.com/github/2025paml539-lab/safebank-assist-group22/blob/main/submission/SafeBank_Assist_Group22_Notebook_2_Experiments_E2_E3_E6.ipynb
+
 ## Start here
 
 | What you want | Where it is |
 |---|---|
-| **The submitted documents** | **[`submission/`](submission/)** — report PDF, contribution statement, demo deck, both executed notebooks |
-| **The demo video** | **[8–10 minute group demonstration](https://drive.google.com/file/d/1-Hq-l2G5sG9Ew2WHOgonSB35ubDcduhy/view?usp=sharing)** (Google Drive) |
-| **The application code** | [`src/safebank/`](src/safebank/) |
-| **The tests** | [`tests/`](tests/) — 398 tests; the command is below |
-| **The experiment results** | [`artifacts/results/`](artifacts/results/) — every raw result row behind every number in the report |
-| **The notebooks** | [`notebooks/`](notebooks/) — both committed with stored outputs |
-| **The report source** | [`report/`](report/) — one file per section; `build_report.py` regenerates the PDF |
-| **Technical detail** | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| **Who did what, and when** | [`WORKLOG.md`](WORKLOG.md) |
+| **The submitted documents** | https://github.com/2025paml539-lab/safebank-assist-group22/tree/main/submission |
+| **The demo video** | https://drive.google.com/file/d/1-Hq-l2G5sG9Ew2WHOgonSB35ubDcduhy/view?usp=sharing |
+| **The application code** | https://github.com/2025paml539-lab/safebank-assist-group22/tree/main/src/safebank |
+| **The tests** (398) | https://github.com/2025paml539-lab/safebank-assist-group22/tree/main/tests |
+| **The experiment results** — every raw result row behind every number in the report | https://github.com/2025paml539-lab/safebank-assist-group22/tree/main/artifacts/results |
+| **The notebooks**, with stored outputs | https://github.com/2025paml539-lab/safebank-assist-group22/tree/main/notebooks |
+| **The report source**, one file per section | https://github.com/2025paml539-lab/safebank-assist-group22/tree/main/report |
+| **Technical detail** | https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/ARCHITECTURE.md |
+| **Who did what, and when** | https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/WORKLOG.md |
 
 ## What is in `submission/`
 
@@ -129,6 +155,10 @@ report/            report source, one file per section, plus the three build scr
 submission/        the submitted documents
 ```
 
-Status, the plan and the day-by-day record are in [`WORKLOG.md`](WORKLOG.md); the design rationale
-is in [`ARCHITECTURE.md`](ARCHITECTURE.md). `PROJECT_PLAN.md` predates the code and `WORKLOG.md`
-wins wherever they disagree.
+Status, the plan and the day-by-day record are in `WORKLOG.md`; the design rationale is in
+`ARCHITECTURE.md`. `PROJECT_PLAN.md` predates the code and `WORKLOG.md` wins wherever they
+disagree.
+
+- https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/WORKLOG.md
+- https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/ARCHITECTURE.md
+- https://github.com/2025paml539-lab/safebank-assist-group22/blob/main/PROJECT_PLAN.md
