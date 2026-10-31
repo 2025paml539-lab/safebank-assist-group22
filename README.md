@@ -17,7 +17,7 @@ Dataset D1 — BANKING77 · Final model `Qwen2.5-1.5B-Instruct` · Baseline `gpt
 | What you want | Where it is |
 |---|---|
 | **The submitted documents** | **[`submission/`](submission/)** — report PDF, contribution statement, demo deck, both executed notebooks |
-| **The demo video** | **[[DEMO VIDEO LINK — paste the URL here]]** |
+| **The demo video** | **[8–10 minute group demonstration](https://drive.google.com/file/d/1-Hq-l2G5sG9Ew2WHOgonSB35ubDcduhy/view?usp=sharing)** (Google Drive) |
 | **The application code** | [`src/safebank/`](src/safebank/) |
 | **The tests** | [`tests/`](tests/) — 398 tests; the command is below |
 | **The experiment results** | [`artifacts/results/`](artifacts/results/) — every raw result row behind every number in the report |
